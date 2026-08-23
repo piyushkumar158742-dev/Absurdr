@@ -151,6 +151,7 @@ h1{
   transform: translateY(10px);
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
+.result[hidden]{ display: none; }   /* ← add this line */
 .result.show{ opacity: 1; transform: translateY(0); }
 
 .card{
