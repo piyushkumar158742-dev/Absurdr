@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Absurdr — turn problems into nonsense</title>
+<meta name="description" content="Type a problem. Get back a wonderfully unnecessary solution.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="page">
+
+  <header class="hero">
+    <div class="logo">
+      Absurdr<span class="logo-dot">.</span>
+      <svg class="logo-squiggle" viewBox="0 0 120 14" aria-hidden="true">
+        <path d="M2 9 C 20 -2, 32 18, 50 8 S 82 -2, 100 8 S 116 14, 118 6" />
+      </svg>
+    </div>
+    <h1>Got a problem? We'll make it worse in the funniest way possible.</h1>
+    <p class="tagline">Type anything. Get back a needlessly complicated "fix" made for screenshotting.</p>
+  </header>
+
+  <section class="solver">
+    <label class="sr-only" for="problem-input">Describe your problem</label>
+    <div class="input-row">
+      <input id="problem-input" type="text" maxlength="140"
+        placeholder="e.g. my houseplants keep dying" autocomplete="off">
+      <button id="submit-btn" type="button">
+        <span class="btn-label">Solve it</span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </button>
+    </div>
+    <p class="error-msg" id="error-msg" role="alert"></p>
+  </section>
+
+  <section class="result" id="result" hidden aria-live="polite">
+    <div class="card" id="card">
+      <div class="card-emoji" id="card-emoji">🤯</div>
+      <p class="joke" id="joke-text"></p>
+      <div class="stats">
+        <div class="stat stat-budget">
+          <span class="stat-label">Budget</span>
+          <span class="stat-value" id="stat-budget"></span>
+        </div>
+        <div class="stat stat-time">
+          <span class="stat-label">Time to implement</span>
+          <span class="stat-value" id="stat-time"></span>
+        </div>
+      </div>
+      <div class="watermark">absurdr</div>
+    </div>
+
+    <div class="actions">
+      <button id="copy-btn" type="button" class="action-btn">Copy</button>
+      <button id="share-x-btn" type="button" class="action-btn">Share on 𝕏</button>
+      <button id="share-native-btn" type="button" class="action-btn" hidden>Share</button>
+      <button id="again-btn" type="button" class="action-btn action-btn-ghost">New problem</button>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <p>A new nonsense solution every time. Not affiliated with actual competence.</p>
+  </footer>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
