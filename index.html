@@ -11,9 +11,7 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
 <div class="page">
-
   <header class="hero">
     <div class="logo">
       Absurdr<span class="logo-dot">.</span>
@@ -24,7 +22,6 @@
     <h1>Got a problem? We'll make it worse in the funniest way possible.</h1>
     <p class="tagline">Type anything. Get back a needlessly complicated "fix" made for screenshotting.</p>
   </header>
-
   <section class="solver">
     <label class="sr-only" for="problem-input">Describe your problem</label>
     <div class="input-row">
@@ -36,8 +33,12 @@
       </button>
     </div>
     <p class="error-msg" id="error-msg" role="alert"></p>
+    <div class="examples" aria-label="Example problems">
+      <button type="button" class="example-chip">my houseplants keep dying</button>
+      <button type="button" class="example-chip">I can't stick to a morning routine</button>
+      <button type="button" class="example-chip">my inbox has 4,000 unread emails</button>
+    </div>
   </section>
-
   <section class="result" id="result" hidden aria-live="polite">
     <div class="card" id="card">
       <div class="card-emoji" id="card-emoji">🤯</div>
@@ -54,7 +55,6 @@
       </div>
       <div class="watermark">absurdr</div>
     </div>
-
     <div class="actions">
       <button id="copy-btn" type="button" class="action-btn">Copy</button>
       <button id="share-x-btn" type="button" class="action-btn">Share on 𝕏</button>
@@ -62,13 +62,10 @@
       <button id="again-btn" type="button" class="action-btn action-btn-ghost">New problem</button>
     </div>
   </section>
-
   <footer class="site-footer">
     <p>A new nonsense solution every time. Not affiliated with actual competence.</p>
   </footer>
-
 </div>
-
 <script src="script.js"></script>
 </body>
 </html>
