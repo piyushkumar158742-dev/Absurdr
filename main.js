@@ -1,10 +1,6 @@
 (function(){
   'use strict';
 
-  /* ============================================================
-     WORD BANKS
-     ============================================================ */
-
   const ADJECTIVES = [
     'quantum-entangled','blockchain-secured','AI-optimized','cloud-native',
     'geothermally powered','gyroscopically stabilized','biodegradable',
