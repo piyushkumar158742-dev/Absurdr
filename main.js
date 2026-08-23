@@ -82,9 +82,6 @@
     c => `Quietly replace ${c.device2} with ${c.device} and hope nobody notices "${c.problem}" is still happening.`
   ];
 
-  // Keyword net for clearly harmful requests. Not exhaustive, not a real
-  // safety system — just keeps the joke generator from being pointed at
-  // genuinely harmful topics. See DENIAL_TEXT below.
   const BLOCKLIST = [
     'suicide','kill myself','self harm','self-harm','end my life','how to die',
     'murder','mass shooting','build a bomb','make a bomb','bomb making',
@@ -97,10 +94,6 @@
 
   const DENIAL_TEXT = 'This is an omniscient, omnipresent, celestial, universal, cosmic, galactic, boundless, infinite, eternal, absolute, primordial, or apocalyptic problem.';
 
-  /* ============================================================
-     UTILITIES
-     ============================================================ */
-
   function shuffle(arr){
     const a = arr.slice();
     for(let i = a.length - 1; i > 0; i--){
@@ -111,9 +104,7 @@
   }
 
   function rand(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
-
   function randInt(min, max){ return Math.floor(Math.random() * (max - min + 1)) + min; }
-
   function capFirst(str){ return str.charAt(0).toUpperCase() + str.slice(1); }
 
   function makePicker(bank){
@@ -136,15 +127,12 @@
 
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ============================================================
-     GENERATION
-     ============================================================ */
-
   const adjPicker = makePicker(ADJECTIVES);
   const devicePicker = makePicker(DEVICES);
   const actionPicker = makePicker(ACTIONS);
   const committeePicker = makePicker(COMMITTEES);
 
+  // Offline fallback — used if the AI endpoint isn't set up yet or fails.
   function generateSolution(problem){
     const template = rand(SOLUTION_TEMPLATES);
     const sentence = template({
@@ -163,7 +151,6 @@
       `${randInt(2,7)} calendar years, pending review`
     ];
 
-    // small random tilt for the sticker card, never near 0deg
     const tilt = (randInt(0,1) === 0 ? -1 : 1) * (1.2 + Math.random() * 2.2);
 
     return {
@@ -189,10 +176,6 @@
     ].join('\n');
   }
 
-  /* ============================================================
-     DOM
-     ============================================================ */
-
   const problemInput = document.getElementById('problem-input');
   const submitBtn = document.getElementById('submit-btn');
   const btnLabel = submitBtn.querySelector('.btn-label');
@@ -208,6 +191,7 @@
   const shareXBtn = document.getElementById('share-x-btn');
   const shareNativeBtn = document.getElementById('share-native-btn');
   const againBtn = document.getElementById('again-btn');
+  const exampleChips = document.querySelectorAll('.example-chip');
 
   let lastPlainText = '';
 
@@ -226,9 +210,37 @@
     shareXBtn.addEventListener('click', handleShareX);
     shareNativeBtn.addEventListener('click', handleShareNative);
     againBtn.addEventListener('click', handleAgain);
+
+    exampleChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        problemInput.value = chip.textContent;
+        problemInput.focus();
+        handleSubmit();
+      });
+    });
   }
 
-  function handleSubmit(){
+  function sleep(ms){ return new Promise(resolve => setTimeout(resolve, ms)); }
+
+  async function fetchAiSolution(problem){
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+
+    const res = await fetch('/api/solve', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ problem }),
+      signal: controller.signal
+    });
+    clearTimeout(timeout);
+    if(!res.ok) throw new Error('AI endpoint returned ' + res.status);
+
+    const data = await res.json();
+    const tilt = (Math.random() < 0.5 ? -1 : 1) * (1.2 + Math.random() * 2.2);
+    return { ...data, tilt: tilt.toFixed(2) };
+  }
+
+  async function handleSubmit(){
     const problem = problemInput.value.trim();
     errorMsg.textContent = '';
 
@@ -242,21 +254,25 @@
     btnLabel.textContent = 'Solving…';
     result.classList.remove('show');
 
-    const delay = prefersReducedMotion ? 100 : (450 + Math.random() * 350);
-
-    setTimeout(() => {
-      if(isBlocked(problem)){
-        renderDenied(problem);
-      } else {
-        const data = generateSolution(problem);
-        renderResult(data);
-        lastPlainText = buildPlainText(data, problem);
+    if(isBlocked(problem)){
+      await sleep(prefersReducedMotion ? 100 : 400);
+      renderDenied(problem);
+    } else {
+      let data;
+      try{
+        data = await fetchAiSolution(problem);
+      } catch(err){
+        await sleep(prefersReducedMotion ? 100 : (450 + Math.random() * 350));
+        data = generateSolution(problem);
       }
-      result.hidden = false;
-      requestAnimationFrame(() => result.classList.add('show'));
-      submitBtn.disabled = false;
-      btnLabel.textContent = 'Solve it';
-    }, delay);
+      renderResult(data);
+      lastPlainText = buildPlainText(data, problem);
+    }
+
+    result.hidden = false;
+    requestAnimationFrame(() => result.classList.add('show'));
+    submitBtn.disabled = false;
+    btnLabel.textContent = 'Solve it';
   }
 
   function renderResult(data){
