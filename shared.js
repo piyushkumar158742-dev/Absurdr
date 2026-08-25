@@ -107,13 +107,11 @@
     }, 200);
   });
 
-  /* ============ Settings panel ============ */
+/* ============ Settings panel ============ */
   var settingsBtn = document.getElementById('settings-btn');
   var settingsPanel = document.getElementById('settings-panel');
   var soundToggle = document.getElementById('sound-toggle');
-  var hapticsToggle = document.getElementById('haptics-toggle');
   var soundOn = true;
-  var hapticsOn = true;
 
   function setToggleState(btn, on){
     if(!btn) return;
@@ -121,17 +119,12 @@
     btn.setAttribute('aria-checked', on ? 'true' : 'false');
   }
   setToggleState(soundToggle, soundOn);
-  setToggleState(hapticsToggle, hapticsOn);
 
   if(settingsBtn && settingsPanel){
     settingsBtn.addEventListener('click', function(){
       var open = settingsPanel.classList.toggle('open');
       settingsBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
-    // Fixed: use .contains() instead of a strict target === check, since a
-    // click on the button's inner <svg>/<circle> makes e.target that child
-    // node, not the button itself — the old strict check closed the panel
-    // on the same click that opened it.
     document.addEventListener('click', function(e){
       if(settingsPanel.classList.contains('open') &&
          !settingsPanel.contains(e.target) &&
@@ -141,26 +134,17 @@
       }
     });
   }
+  
   if(soundToggle){
     soundToggle.addEventListener('click', function(){
       soundOn = !soundOn;
       setToggleState(soundToggle, soundOn);
     });
   }
-  if(hapticsToggle){
-    hapticsToggle.addEventListener('click', function(){
-      hapticsOn = !hapticsOn;
-      setToggleState(hapticsToggle, hapticsOn);
-    });
-  }
-
-  function buzz(){
-    if(hapticsOn && navigator.vibrate){ navigator.vibrate(12); }
-  }
 
   /* ============ Game ecosystem — 10 slots ============ */
   var GAMES = [
-    { name:"Cosmic Calendar", url:"game1.html" },
+    { name:"Cosmic Calendar", url:"index.html" },
     { name:"Game 2", url:"game2.html" },
     { name:"Game 3", url:"game3.html" },
     { name:"Game 4", url:"game4.html" },
@@ -175,7 +159,6 @@
 
   function loadGame(idx){
     idx = ((idx % GAMES.length) + GAMES.length) % GAMES.length;
-    buzz();
     if(idx === currentGameIndex) return;
     window.location.href = GAMES[idx].url;
   }
