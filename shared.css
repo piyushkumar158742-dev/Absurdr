@@ -1,0 +1,202 @@
+:root{
+  --void:#05060f;
+  --void-2:#0a0d20;
+  --panel-glass:rgba(12,15,32,0.55);
+  --panel-glass-solid:rgba(12,15,32,0.92);
+  --panel-border:rgba(255,255,255,0.08);
+  --grid-line:rgba(148,140,255,0.05);
+  --orbit-line:rgba(148,140,255,0.16);
+  --nebula-violet:#7c6cf0;
+  --nebula-rose:#ef6c9b;
+  --stellar-gold:#f0c26e;
+  --text-primary:#f5f3ff;
+  --text-muted:#8d90b3;
+  --shadow-soft:0 20px 60px rgba(0,0,0,0.55);
+  --radius-lg:26px;
+  --radius-md:16px;
+}
+
+*{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+html{ background:var(--void); }
+html.no-motion *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important; }
+
+body{
+  background:var(--void);
+  color:var(--text-primary);
+  font-family:'Inter',sans-serif;
+  width:100%;
+  min-height:100vh;
+  min-height:100dvh;
+  position:relative;
+  overflow-x:hidden;
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+  padding:max(20px, env(safe-area-inset-top)) 5vw calc(max(24px, env(safe-area-inset-bottom)) + 64px) 5vw;
+}
+
+/* ============ LAYERED SPACE BACKGROUND (shared across all games) ============ */
+.bg-void{
+  position:fixed; inset:0; z-index:-5; pointer-events:none;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 15%, rgba(124,108,240,0.16), transparent 60%),
+    radial-gradient(ellipse 70% 55% at 85% 80%, rgba(239,108,155,0.10), transparent 60%),
+    radial-gradient(ellipse 100% 100% at 50% 50%, var(--void-2), var(--void) 70%);
+}
+.bg-grid{
+  position:fixed; inset:0; z-index:-4; pointer-events:none;
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size:6vh 6vh;
+  background-position:center;
+  mask-image:radial-gradient(ellipse 90% 80% at 50% 50%, black 40%, transparent 90%);
+  -webkit-mask-image:radial-gradient(ellipse 90% 80% at 50% 50%, black 40%, transparent 90%);
+}
+.bg-orbit-wrap{
+  position:fixed; top:50%; left:50%; width:135vmax; height:135vmax;
+  transform:translate(-50%,-50%);
+  z-index:-3; pointer-events:none; opacity:0.55;
+  animation:orbitSpin 420s linear infinite;
+}
+html.no-motion .bg-orbit-wrap{ animation:none; }
+@keyframes orbitSpin{ to{ transform:translate(-50%,-50%) rotate(360deg); } }
+#orbit-svg circle.orbit-ring{ fill:none; stroke:var(--orbit-line); stroke-width:1; }
+#orbit-svg line.orbit-spoke{ stroke:var(--orbit-line); stroke-width:1; }
+#orbit-svg circle.orbit-sun{ fill:var(--stellar-gold); opacity:0.55; }
+#starfield{ position:fixed; inset:0; z-index:-2; pointer-events:none; width:100%; height:100%; }
+
+/* ============ HEADER (shared) ============ */
+header{
+  flex:0 0 auto;
+  display:flex; flex-direction:column; align-items:center; text-align:center; gap:4px;
+  z-index:10;
+}
+h1{
+  font-family:'Fraunces',serif; font-weight:600; font-style:normal;
+  font-size:clamp(1.5rem, 5vw, 2.5rem);
+  letter-spacing:-0.01em; color:#fff;
+  text-shadow:0 2px 24px rgba(124,108,240,0.35);
+}
+header .eyebrow{
+  font-family:'Space Mono',monospace;
+  font-size:clamp(0.62rem, 1.8vw, 0.8rem);
+  letter-spacing:3px; text-transform:uppercase;
+  color:var(--nebula-violet);
+}
+
+.app-container{
+  flex:1;
+  display:flex; flex-direction:column; gap:20px;
+  width:100%; max-width:1600px; margin:0 auto;
+  z-index:10; min-height:0;
+}
+
+.glass-panel{
+  background:var(--panel-glass);
+  backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+  border:1px solid var(--panel-border);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-soft);
+  display:flex; flex-direction:column;
+  min-height:0;
+}
+
+/* ============ SETTINGS BUTTON (shared) ============ */
+.settings-btn{
+  position:fixed; top:max(20px, env(safe-area-inset-top)); right:5vw;
+  width:44px; height:44px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--panel-glass);
+  backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+  border:1px solid var(--panel-border); color:var(--text-muted);
+  cursor:pointer; z-index:30;
+  transition:background .25s ease, color .25s ease, border-color .25s ease;
+}
+.settings-btn:hover{ background:rgba(255,255,255,0.08); color:var(--nebula-rose); border-color:var(--nebula-rose); }
+.settings-btn:focus-visible{ outline:2px solid var(--stellar-gold); outline-offset:2px; }
+.settings-btn svg{ width:18px; height:18px; }
+
+/* ============ GAME NAV — bottom bar (shared) ============ */
+.game-nav{
+  position:fixed; left:50%; bottom:max(16px, env(safe-area-inset-bottom));
+  transform:translateX(-50%);
+  display:flex; align-items:center; gap:4px;
+  background:var(--panel-glass-solid);
+  backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+  border:1px solid var(--panel-border); border-radius:50px; padding:6px;
+  box-shadow:var(--shadow-soft); z-index:30;
+}
+.game-nav-btn{
+  background:transparent; border:none; color:var(--text-muted);
+  width:44px; height:44px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:background .25s ease, color .25s ease;
+}
+.game-nav-btn svg{ width:18px; height:18px; }
+.game-nav-btn:hover{ background:rgba(255,255,255,0.08); color:var(--text-primary); }
+.game-nav-btn:focus-visible{ outline:2px solid var(--stellar-gold); outline-offset:2px; }
+.game-nav-btn.random-btn{ color:var(--stellar-gold); }
+.game-nav-btn.random-btn:hover{ background:rgba(240,194,110,0.14); }
+
+/* ============ SETTINGS PANEL (shared) ============ */
+.settings-panel{
+  position:fixed; top:max(70px, calc(env(safe-area-inset-top) + 70px)); right:5vw;
+  width:min(280px, 80vw);
+  background:var(--panel-glass-solid);
+  backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+  border:1px solid var(--panel-border); border-radius:var(--radius-md);
+  box-shadow:var(--shadow-soft); padding:18px; z-index:30;
+  opacity:0; pointer-events:none; transform:translateY(-8px);
+  transition:opacity .25s ease, transform .25s ease;
+}
+.settings-panel.open{ opacity:1; pointer-events:auto; transform:translateY(0); }
+.settings-panel h2{
+  font-family:'Space Mono',monospace; font-size:0.75rem; letter-spacing:2px;
+  text-transform:uppercase; color:var(--text-muted); margin-bottom:14px;
+}
+.settings-row{ display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-top:1px solid var(--panel-border); }
+.settings-row:first-of-type{ border-top:none; }
+.settings-row span{ font-size:0.9rem; color:var(--text-primary); }
+.settings-toggle{
+  width:40px; height:22px; border-radius:20px;
+  background:rgba(255,255,255,0.12); border:1px solid var(--panel-border);
+  position:relative; cursor:pointer; transition:background .2s ease;
+}
+.settings-toggle::after{
+  content:''; position:absolute; top:2px; left:2px;
+  width:16px; height:16px; border-radius:50%;
+  background:var(--text-muted); transition:transform .2s ease, background .2s ease;
+}
+.settings-toggle.on{ background:rgba(124,108,240,0.35); border-color:var(--nebula-violet); }
+.settings-toggle.on::after{ transform:translateX(18px); background:var(--nebula-violet); }
+
+/* ============ PLACEHOLDER STAGE (games not yet built) ============ */
+.stage{
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:14px; text-align:center; z-index:10; padding:20px;
+}
+.stage .stage-number{
+  font-family:'Space Mono',monospace; font-size:clamp(0.7rem,2vw,0.85rem);
+  letter-spacing:3px; text-transform:uppercase; color:var(--nebula-violet);
+}
+.stage h2{
+  font-family:'Fraunces',serif; font-weight:600; font-size:clamp(2.2rem,8vw,4rem);
+  color:#fff; text-shadow:0 2px 24px rgba(124,108,240,0.35);
+}
+.stage p{ font-size:clamp(0.85rem,2.4vw,1rem); color:var(--text-muted); max-width:42ch; }
+
+/* ============ RESPONSIVE (shared) ============ */
+@media (min-width:992px){
+  body{
+    height:100vh; height:100dvh;
+    overflow:hidden;
+    padding:4vh 5vw calc(4vh + 64px) 5vw;
+    gap:3vh;
+  }
+  header{ flex:0 0 auto; margin-bottom:0; }
+}
+
+@media (max-width:380px){
+  body{ padding-left:4vw; padding-right:4vw; gap:14px; }
+}
