@@ -501,13 +501,21 @@
     renderCalendar(currentMonthIndex, focusIndex);
   }
 
-  function resetPanel(){
+function resetPanel(){
     eventContent.classList.remove('visible');
     setTimeout(function(){
-      document.getElementById('meta-header').style.display = 'none';
-      document.getElementById('orbit-progress').style.display = 'none';
-      displayTitle.textContent = "Select a Date";
-      displayDesc.textContent = "";
+      document.getElementById('meta-header').style.display = 'flex';
+      document.getElementById('orbit-progress').style.display = 'flex';
+      document.getElementById('orbit-progress').style.opacity = '0.3'; // Powers down the tracker
+      
+      displayDate.textContent = "STATUS: STANDBY";
+      displayTime.textContent = "Awaiting Coordinates";
+      displayTitle.textContent = "Cosmic Archive";
+      displayDesc.textContent = "The timeline spans 13.8 billion years. Select a temporal coordinate from the grid to retrieve archival data and observe the evolution of the cosmos.";
+      
+      orbitArc.style.strokeDashoffset = ORBIT_CIRCUMFERENCE;
+      orbitLabel.textContent = "Orbit tracker offline.";
+      
       eventContent.classList.add('visible');
     }, reduceMotion ? 0 : 200);
   }
