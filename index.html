@@ -155,7 +155,7 @@
   <div class="bg-orbit-wrap"><svg id="orbit-svg" viewBox="0 0 700 700"></svg></div>
   <canvas id="starfield" aria-hidden="true"></canvas>
 
-  <button id="settings-btn" class="settings-btn" aria-label="Settings" aria-haspopup="true" aria-expanded="false" type="button">
+ <button id="settings-btn" class="settings-btn" aria-label="Settings" aria-haspopup="true" aria-expanded="false" type="button">
     <svg viewBox="0 0 24 24">
       <circle cx="12" cy="5" r="1.6" fill="currentColor"></circle>
       <circle cx="12" cy="12" r="1.6" fill="currentColor"></circle>
@@ -163,16 +163,11 @@
     </svg>
   </button>
 
- <div class="settings-panel" id="settings-panel" role="dialog" aria-label="Settings">
+  <div class="settings-panel" id="settings-panel" role="dialog" aria-label="Settings">
     <h2>Settings</h2>
     <div class="settings-row">
       <span>Sound</span>
       <button class="settings-toggle" id="sound-toggle" role="switch" aria-checked="true" type="button"></button>
-    </div>
-  </div>
-    <div class="settings-row">
-      <span>Haptic Feedback</span>
-      <button class="settings-toggle" id="haptics-toggle" role="switch" aria-checked="true" type="button"></button>
     </div>
   </div>
 
@@ -193,25 +188,23 @@
     </div>
 
     <div class="glass-panel event-panel">
-      <div class="event-content visible" id="event-content" aria-live="polite">
-        <div class="meta-header">
-          <span class="event-date" id="display-date">System Ready</span>
-          <span class="time-ago" id="display-time">Awaiting Input</span>
-        </div>
-        <div class="event-title" id="display-title">Chronological Database</div>
-        <div class="event-desc" id="display-desc">
-          Every day on this calendar represents roughly 37.8 million years of universal history. Select a date on the grid — or use the arrow keys and Enter — to read the telemetry for that era.
-        </div>
-        <div class="orbit-progress">
-          <svg viewBox="0 0 60 60" aria-hidden="true">
-            <circle class="track" cx="30" cy="30" r="25"></circle>
-            <circle class="arc" id="orbit-arc" cx="30" cy="30" r="25" stroke-dasharray="157" stroke-dashoffset="157"></circle>
-          </svg>
-          <div class="orbit-label" id="orbit-label">Select a day to place it on the orbit</div>
-        </div>
-      </div>
+  <div class="event-content visible" id="event-content" aria-live="polite">
+    <div class="meta-header" id="meta-header" style="display: none;">
+      <span class="event-date" id="display-date"></span>
+      <span class="time-ago" id="display-time"></span>
+    </div>
+    <div class="event-title" id="display-title">Select a Date</div>
+    <div class="event-desc" id="display-desc"></div>
+    
+    <div class="orbit-progress" id="orbit-progress" style="display: none;">
+      <svg viewBox="0 0 60 60" aria-hidden="true">
+        <circle class="track" cx="30" cy="30" r="25"></circle>
+        <circle class="arc" id="orbit-arc" cx="30" cy="30" r="25" stroke-dasharray="157" stroke-dashoffset="157"></circle>
+      </svg>
+      <div class="orbit-label" id="orbit-label"></div>
     </div>
   </div>
+</div>
 
   <nav class="game-nav" aria-label="Game navigation">
     <button class="game-nav-btn" id="first-game-btn" aria-label="First game" type="button">
