@@ -504,12 +504,10 @@
   function resetPanel(){
     eventContent.classList.remove('visible');
     setTimeout(function(){
-      displayDate.textContent = "System Ready";
-      displayTime.textContent = "Awaiting Input";
-      displayTitle.textContent = "Chronological Database";
-      displayDesc.textContent = "Every day on this calendar represents roughly 37.8 million years of universal history. Select a date on the grid — or use the arrow keys and Enter — to read the telemetry for that era.";
-      orbitArc.style.strokeDashoffset = ORBIT_CIRCUMFERENCE;
-      orbitLabel.textContent = "Select a day to place it on the orbit";
+      document.getElementById('meta-header').style.display = 'none';
+      document.getElementById('orbit-progress').style.display = 'none';
+      displayTitle.textContent = "Select a Date";
+      displayDesc.textContent = "";
       eventContent.classList.add('visible');
     }, reduceMotion ? 0 : 200);
   }
