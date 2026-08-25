@@ -199,9 +199,10 @@
 
 <div class="glass-panel event-panel">
   <div class="event-content visible" id="event-content" aria-live="polite">
-    <div class="meta-header" id="meta-header" style="display: flex;">
-      <span class="event-date" id="display-date">STATUS: STANDBY</span>
-      <span class="time-ago" id="display-time">Awaiting Coordinates</span>
+    <!-- Hidden by default -->
+    <div class="meta-header" id="meta-header" style="display: none;">
+      <span class="event-date" id="display-date"></span>
+      <span class="time-ago" id="display-time"></span>
     </div>
     
     <div class="event-title" id="display-title">Select a Date</div>
@@ -210,12 +211,13 @@
       The timeline spans 13.8 billion years. Select a temporal coordinate from the grid to retrieve archival data and observe the evolution of the cosmos.
     </div>
     
-    <div class="orbit-progress" id="orbit-progress" style="display: flex; opacity: 0.3; transition: opacity 0.4s ease;">
+    <!-- Hidden by default -->
+    <div class="orbit-progress" id="orbit-progress" style="display: none;">
       <svg viewBox="0 0 60 60" aria-hidden="true">
         <circle class="track" cx="30" cy="30" r="25"></circle>
         <circle class="arc" id="orbit-arc" cx="30" cy="30" r="25" stroke-dasharray="157" stroke-dashoffset="157"></circle>
       </svg>
-      <div class="orbit-label" id="orbit-label">Orbit tracker offline.</div>
+      <div class="orbit-label" id="orbit-label"></div>
     </div>
   </div>
 </div>
