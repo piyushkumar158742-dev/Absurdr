@@ -204,7 +204,7 @@
       <span class="time-ago" id="display-time">Awaiting Coordinates</span>
     </div>
     
-    <div class="event-title" id="display-title">Cosmic Archive</div>
+    <div class="event-title" id="display-title">Select a Date</div>
     
     <div class="event-desc" id="display-desc">
       The timeline spans 13.8 billion years. Select a temporal coordinate from the grid to retrieve archival data and observe the evolution of the cosmos.
@@ -506,11 +506,11 @@ function resetPanel(){
     setTimeout(function(){
       document.getElementById('meta-header').style.display = 'flex';
       document.getElementById('orbit-progress').style.display = 'flex';
-      document.getElementById('orbit-progress').style.opacity = '0.3'; // Powers down the tracker
+      document.getElementById('orbit-progress').style.opacity = '0.3'; 
       
       displayDate.textContent = "STATUS: STANDBY";
       displayTime.textContent = "Awaiting Coordinates";
-      displayTitle.textContent = "Cosmic Archive";
+      displayTitle.textContent = "Select a Date";
       displayDesc.textContent = "The timeline spans 13.8 billion years. Select a temporal coordinate from the grid to retrieve archival data and observe the evolution of the cosmos.";
       
       orbitArc.style.strokeDashoffset = ORBIT_CIRCUMFERENCE;
