@@ -357,11 +357,7 @@
     var texts = proceduralTexts[quarter];
     var textLog = texts[(monthIndex*31+dayIndex) % texts.length];
 
-    var dynamicTitle = "Chronological Node " + doy;
-    if(monthIndex<3) dynamicTitle = "Dark Ages: Node " + doy;
-    else if(monthIndex<7) dynamicTitle = "Galactic Era: Node " + doy;
-    else if(monthIndex<11) dynamicTitle = "Stellar Era: Node " + doy;
-    else dynamicTitle = "Planetary Era: Node " + doy;
+    var dynamicTitle = "Day " + doy;
 
     var desc = textLog + " Background cosmic expansion remains steady, stabilizing the environment for subsequent evolutionary milestones.";
 
