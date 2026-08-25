@@ -3,69 +3,574 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Absurdr — turn problems into nonsense</title>
-<meta name="description" content="Type a problem. Get back a wonderfully unnecessary solution.">
+<meta name="theme-color" content="#05060f">
+<title>Cosmic Calendar — Game 1</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,700;1,500&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+  /* ============ Calendar-specific styles (game 1 only) ============ */
+  .calendar-section{ padding:20px; gap:16px; }
+
+  .month-nav{
+    flex:0 0 auto;
+    display:flex; align-items:center; justify-content:space-between;
+    background:rgba(0,0,0,0.35);
+    border:1px solid var(--panel-border);
+    border-radius:50px;
+    padding:6px;
+  }
+  .nav-btn{
+    background:transparent; border:none; color:var(--text-muted);
+    font-size:1.3rem; cursor:pointer;
+    width:44px; height:44px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    transition:background .25s ease, color .25s ease, box-shadow .25s ease;
+  }
+  .nav-btn:hover{ background:rgba(255,255,255,0.08); color:var(--nebula-rose); }
+  .nav-btn:focus-visible{ outline:2px solid var(--stellar-gold); outline-offset:2px; }
+  .month-display{
+    font-family:'Space Mono',monospace; font-weight:700;
+    font-size:clamp(0.95rem, 3vw, 1.2rem);
+    letter-spacing:2px; text-transform:uppercase; color:var(--text-primary);
+  }
+
+  .calendar-grid{
+    flex:1; display:grid;
+    grid-template-columns:repeat(7, 1fr);
+    grid-auto-rows:minmax(40px, 1fr);
+    gap:6px; min-height:0;
+  }
+
+  .day{
+    background:rgba(255,255,255,0.03);
+    border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Space Mono',monospace;
+    font-size:clamp(0.75rem, 2.4vw, 1rem);
+    color:var(--text-muted);
+    cursor:pointer; user-select:none;
+    border:1px solid transparent;
+    transition:background .25s cubic-bezier(.2,.8,.2,1), color .25s ease, transform .2s ease, border-color .25s ease;
+    opacity:0; transform:scale(0.9);
+    animation:softPop .4s ease forwards;
+    animation-delay:calc(var(--i) * 8ms);
+  }
+  html.no-motion .day{ opacity:1; transform:none; animation:none; }
+  @keyframes softPop{ to{ opacity:1; transform:scale(1); } }
+
+  .day:hover{ background:rgba(255,255,255,0.09); color:var(--text-primary); }
+  .day:focus-visible{ outline:2px solid var(--stellar-gold); outline-offset:2px; color:var(--text-primary); }
+
+  .day.major-event{ color:var(--stellar-gold); font-weight:700; position:relative; }
+  .day.major-event::after{
+    content:''; position:absolute; bottom:5px; width:4px; height:4px; border-radius:50%;
+    background:var(--stellar-gold); box-shadow:0 0 8px var(--stellar-gold);
+  }
+  .day.active{
+    background:var(--nebula-violet); color:#05060f; border-color:var(--nebula-violet);
+    box-shadow:0 0 22px rgba(124,108,240,0.55);
+    font-weight:700; transform:scale(1.06); z-index:2;
+  }
+  .day.active::after{ display:none; }
+
+  .event-panel{ padding:28px 24px; justify-content:center; position:relative; overflow:hidden; }
+  .event-panel::before{
+    content:''; position:absolute; inset:0;
+    background:radial-gradient(circle at top right, rgba(124,108,240,0.08), transparent 60%);
+    pointer-events:none;
+  }
+  .event-content{
+    display:flex; flex-direction:column; justify-content:center;
+    opacity:0; transform:translateY(10px);
+    transition:opacity .4s ease, transform .4s ease;
+  }
+  .event-content.visible{ opacity:1; transform:translateY(0); }
+
+  .meta-header{ display:flex; align-items:center; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
+  .event-date{
+    font-family:'Space Mono',monospace; color:var(--nebula-rose);
+    font-size:clamp(0.75rem, 2vw, 0.95rem); font-weight:700; letter-spacing:1px; text-transform:uppercase;
+  }
+  .time-ago{
+    background:rgba(240,194,110,0.14); color:var(--stellar-gold);
+    padding:4px 12px; border-radius:20px;
+    font-family:'Space Mono',monospace;
+    font-size:clamp(0.65rem, 1.8vw, 0.8rem); font-weight:700;
+    border:1px solid rgba(240,194,110,0.3);
+  }
+  .event-title{
+    font-family:'Fraunces',serif; font-weight:600;
+    font-size:clamp(1.4rem, 4.2vw, 2.4rem);
+    color:#fff; line-height:1.2; margin-bottom:16px;
+  }
+  .event-desc{
+    font-size:clamp(0.92rem, 2.4vw, 1.1rem);
+    color:var(--text-muted); line-height:1.65; font-weight:300; max-width:52ch;
+  }
+
+  .orbit-progress{ display:flex; align-items:center; gap:14px; margin-top:22px; }
+  .orbit-progress svg{ width:52px; height:52px; flex:0 0 auto; transform:rotate(-90deg); }
+  .orbit-progress .track{ fill:none; stroke:rgba(255,255,255,0.09); stroke-width:6; }
+  .orbit-progress .arc{ fill:none; stroke:var(--stellar-gold); stroke-width:6; stroke-linecap:round; transition:stroke-dashoffset .5s ease; }
+  .orbit-progress .orbit-label{
+    font-family:'Space Mono',monospace; font-size:0.75rem; color:var(--text-muted); letter-spacing:1px;
+  }
+  .orbit-progress .orbit-label strong{ color:var(--text-primary); }
+
+  @media (min-width:600px){
+    .calendar-grid{ gap:8px; }
+    .event-panel{ padding:36px 40px; }
+  }
+
+  @media (min-width:768px){
+    .calendar-section{ padding:28px; }
+    .day{ border-radius:14px; }
+  }
+
+  @media (min-width:992px){
+    .app-container{ flex-direction:row; gap:2vw; height:100%; }
+    .calendar-section{ flex:1.2; padding:3.5vh 2.6vw; gap:2vh; }
+    .event-panel{ flex:0.8; padding:5vh 3.4vw; }
+    .calendar-grid{ gap:1vh 0.9vw; }
+    .month-nav{ flex:0 0 6vh; }
+    .nav-btn{ width:5vh; height:5vh; }
+  }
+
+  @media (min-width:1400px){
+    .event-title{ font-size:clamp(1.8rem, 3vw, 2.7rem); }
+  }
+
+  @media (max-width:380px){
+    .calendar-grid{ gap:4px; }
+    .day{ border-radius:9px; }
+  }
+</style>
 </head>
-<body>
-<div class="page">
-  <header class="hero">
-    <div class="logo">
-      Absurdr<span class="logo-dot">.</span>
-      <svg class="logo-squiggle" viewBox="0 0 120 14" aria-hidden="true">
-        <path d="M2 9 C 20 -2, 32 18, 50 8 S 82 -2, 100 8 S 116 14, 118 6" />
-      </svg>
+<body data-game-index="0">
+
+  <div class="bg-void"></div>
+  <div class="bg-grid"></div>
+  <div class="bg-orbit-wrap"><svg id="orbit-svg" viewBox="0 0 700 700"></svg></div>
+  <canvas id="starfield" aria-hidden="true"></canvas>
+
+  <button id="settings-btn" class="settings-btn" aria-label="Settings" aria-haspopup="true" aria-expanded="false" type="button">
+    <svg viewBox="0 0 24 24">
+      <circle cx="12" cy="5" r="1.6" fill="currentColor"></circle>
+      <circle cx="12" cy="12" r="1.6" fill="currentColor"></circle>
+      <circle cx="12" cy="19" r="1.6" fill="currentColor"></circle>
+    </svg>
+  </button>
+
+  <div class="settings-panel" id="settings-panel" role="dialog" aria-label="Settings">
+    <h2>Settings</h2>
+    <div class="settings-row">
+      <span>Sound</span>
+      <button class="settings-toggle" id="sound-toggle" role="switch" aria-checked="true" type="button"></button>
     </div>
-    <h1>Got a problem? We'll make it worse in the funniest way possible.</h1>
-    <p class="tagline">Type anything. Get back a needlessly complicated "fix" made for screenshotting.</p>
+    <div class="settings-row">
+      <span>Haptic Feedback</span>
+      <button class="settings-toggle" id="haptics-toggle" role="switch" aria-checked="true" type="button"></button>
+    </div>
+  </div>
+
+  <header>
+    <h1>Cosmic Calendar</h1>
+    <p class="eyebrow">13.8 Billion Years, One Orbit</p>
   </header>
-  <section class="solver">
-    <label class="sr-only" for="problem-input">Describe your problem</label>
-    <div class="input-row">
-      <input id="problem-input" type="text" maxlength="140"
-        placeholder="e.g. my houseplants keep dying" autocomplete="off">
-      <button id="submit-btn" type="button">
-        <span class="btn-label">Solve it</span>
-        <span class="arrow" aria-hidden="true">→</span>
-      </button>
+
+  <div class="app-container">
+    <div class="glass-panel calendar-section">
+      <div class="month-nav">
+        <button id="prev-month" class="nav-btn" aria-label="Previous month" type="button">&#10094;</button>
+        <div id="current-month-display" class="month-display">September</div>
+        <button id="next-month" class="nav-btn" aria-label="Next month" type="button">&#10095;</button>
+      </div>
+
+      <div class="calendar-grid" id="calendar-grid" role="grid" aria-label="Cosmic calendar days"></div>
     </div>
-    <p class="error-msg" id="error-msg" role="alert"></p>
-    <div class="examples" aria-label="Example problems">
-      <button type="button" class="example-chip">my houseplants keep dying</button>
-      <button type="button" class="example-chip">I can't stick to a morning routine</button>
-      <button type="button" class="example-chip">my inbox has 4,000 unread emails</button>
-    </div>
-  </section>
-  <section class="result" id="result" hidden aria-live="polite">
-    <div class="card" id="card">
-      <div class="card-emoji" id="card-emoji">🤯</div>
-      <p class="joke" id="joke-text"></p>
-      <div class="stats">
-        <div class="stat stat-budget">
-          <span class="stat-label">Budget</span>
-          <span class="stat-value" id="stat-budget"></span>
+
+    <div class="glass-panel event-panel">
+      <div class="event-content visible" id="event-content" aria-live="polite">
+        <div class="meta-header">
+          <span class="event-date" id="display-date">System Ready</span>
+          <span class="time-ago" id="display-time">Awaiting Input</span>
         </div>
-        <div class="stat stat-time">
-          <span class="stat-label">Time to implement</span>
-          <span class="stat-value" id="stat-time"></span>
+        <div class="event-title" id="display-title">Chronological Database</div>
+        <div class="event-desc" id="display-desc">
+          Every day on this calendar represents roughly 37.8 million years of universal history. Select a date on the grid — or use the arrow keys and Enter — to read the telemetry for that era.
+        </div>
+        <div class="orbit-progress">
+          <svg viewBox="0 0 60 60" aria-hidden="true">
+            <circle class="track" cx="30" cy="30" r="25"></circle>
+            <circle class="arc" id="orbit-arc" cx="30" cy="30" r="25" stroke-dasharray="157" stroke-dashoffset="157"></circle>
+          </svg>
+          <div class="orbit-label" id="orbit-label">Select a day to place it on the orbit</div>
         </div>
       </div>
-      <div class="watermark">absurdr</div>
     </div>
-    <div class="actions">
-      <button id="copy-btn" type="button" class="action-btn">Copy</button>
-      <button id="share-x-btn" type="button" class="action-btn">Share on 𝕏</button>
-      <button id="share-native-btn" type="button" class="action-btn" hidden>Share</button>
-      <button id="again-btn" type="button" class="action-btn action-btn-ghost">New problem</button>
-    </div>
-  </section>
-  <footer class="site-footer">
-    <p>A new nonsense solution every time. Not affiliated with actual competence.</p>
-  </footer>
-</div>
-<script src="script.js"></script>
+  </div>
+
+  <nav class="game-nav" aria-label="Game navigation">
+    <button class="game-nav-btn" id="first-game-btn" aria-label="First game" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="6" y1="5" x2="6" y2="19"></line>
+        <path d="M18 5 9 12l9 7Z"></path>
+      </svg>
+    </button>
+    <button class="game-nav-btn" id="back-game-btn" aria-label="Previous game" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 5 6 12l9 7Z"></path>
+      </svg>
+    </button>
+    <button class="game-nav-btn random-btn" id="random-game-btn" aria-label="Random game" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="4"></rect>
+        <circle cx="8" cy="8" r="1.3" fill="currentColor" stroke="none"></circle>
+        <circle cx="16" cy="8" r="1.3" fill="currentColor" stroke="none"></circle>
+        <circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"></circle>
+        <circle cx="8" cy="16" r="1.3" fill="currentColor" stroke="none"></circle>
+        <circle cx="16" cy="16" r="1.3" fill="currentColor" stroke="none"></circle>
+      </svg>
+    </button>
+    <button class="game-nav-btn" id="next-game-btn" aria-label="Next game" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 5l9 7-9 7Z"></path>
+      </svg>
+    </button>
+    <button class="game-nav-btn" id="last-game-btn" aria-label="Last game" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 5l9 7-9 7Z"></path>
+        <line x1="18" y1="5" x2="18" y2="19"></line>
+      </svg>
+    </button>
+  </nav>
+
+<script src="shared.js"></script>
+<script>
+(function(){
+
+  var reduceMotion = document.documentElement.classList.contains('no-motion');
+
+  /* ============ Data ============ */
+  var daysInMonth = [31,28,31,30,31,30,31,31,30,31,30,31];
+  var monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var currentMonthIndex = 8; // September
+
+  var TOTAL_AGE_YEARS = 13800000000;
+  var YEARS_PER_DAY = TOTAL_AGE_YEARS / 365;
+
+  var majorEvents = {
+    0: {
+      1: { title:"Big Bang & First Atoms", desc:"The universe begins. Within the first 14 minutes, cosmic background radiation is emitted, and the very first atoms form." },
+      10:{ title:"First Stars Ignite", desc:"The cosmic dark ages end. Gravity pulls primordial hydrogen together to ignite the very first massive stars." },
+      19:{ title:"Oldest Gamma Ray Burst", desc:"GRB 090423, the oldest known Gamma Ray Burst, erupts across the ancient, dark universe." },
+      26:{ title:"First Galaxies Form", desc:"The universe's very first galaxies begin to take shape from massive clouds of hydrogen gas and dark matter." }
+    },
+    2: { 1:{ title:"Milky Way Formed", desc:"Our home galaxy, the Milky Way, is officially formed, taking its early place in the cosmos." } },
+    4: { 13:{ title:"Milky Way Disk Formed", desc:"The Milky Way Galaxy's distinct, flat disk shape is formed after billions of years of chaotic galactic evolution." } },
+    8: {
+      9: { title:"Solar System Formation", desc:"A molecular cloud collapses to form the early Sun and the swirling protoplanetary disk of our Solar System." },
+      14:{ title:"Earth & First Biotic Life", desc:"The Earth and Moon form. The first known remains of biotic life appear in rocks that will eventually become Western Australia." },
+      21:{ title:"First Life (Prokaryotes)", desc:"Simple, single-celled life forms without a nucleus firmly establish themselves in the primordial oceans." },
+      30:{ title:"Photosynthesis Emerges", desc:"Early life develops photosynthesis, the incredible biological technology to convert stellar radiation into energy." }
+    },
+    9: { 29:{ title:"Atmospheric Oxygenation", desc:"Photosynthetic life pumps massive amounts of oxygen into the atmosphere, fundamentally altering Earth's chemistry." } },
+    10:{ 9:{ title:"Complex Cells (Eukaryotes)", desc:"The first cells with a distinct nucleus appear, unlocking the pathway for advanced, multicellular biology." } },
+    11:{
+      5: { title:"First Multicellular Life", desc:"Individual cells begin cooperating, giving rise to the very first multicellular biological structures." },
+      7: { title:"Simple Animals", desc:"The first simple animals emerge in the darkness of the deep oceans." },
+      14:{ title:"Arthropods", desc:"Arthropods, the ancient armored ancestors of modern insects and arachnids, appear." },
+      17:{ title:"Cambrian Explosion & Fish", desc:"A massive biological boom! Most major animal phyla appear. The first true fish swim in the ancient seas." },
+      18:{ title:"Vertebrates", desc:"Organisms possessing skeletal backbones (vertebrates) firmly establish themselves on Earth." },
+      19:{ title:"Land Plants & Extinction", desc:"Plants conquer the land. Simultaneously, Earth suffers the devastating Ordovician-Silurian extinction event." },
+      20:{ title:"Jawed Fish", desc:"Fish evolve complex jaws, becoming the oceans' first true vertebrate apex predators." },
+      21:{ title:"Insects & Seeds", desc:"Insects take to the land and air, while terrestrial plants develop seeds to spread across the continents." },
+      22:{ title:"Amphibians & Extinction", desc:"Amphibians thrive, but the planet is rocked by the catastrophic Late Devonian extinction event." },
+      23:{ title:"Reptiles", desc:"The first true reptiles evolve, completely breaking their biological dependence on water for reproduction." },
+      24:{ title:"Permian-Triassic Extinction", desc:"The 'Great Dying'. A catastrophic mass extinction event where 57% of all biological families die." },
+      25:{ title:"Dinosaurs", desc:"The era of the Dinosaurs begins as they quickly rise to dominate all terrestrial ecosystems." },
+      26:{ title:"Mammals & Extinction", desc:"The first mammals emerge in the shadows, coinciding with the Triassic-Jurassic extinction event." },
+      27:{ title:"Birds", desc:"Avian dinosaurs take to the skies, evolving into the first true avian species." },
+      28:{ title:"Flowers", desc:"Angiosperms (flowering plants) bloom for the first time, transforming the landscape forever." },
+      30:{ title:"K-Pg Extinction & Primates", desc:"At 06:24, the Cretaceous-Paleogene event wipes out non-avian dinosaurs. Early primates emerge in the aftermath." },
+      31:{ title:"Human Evolution", desc:"Apes appear at 06:05. Hominids arrive by 14:24. Modern humans evolve in the final few minutes before midnight." }
+    }
+  };
+
+  var proceduralTexts = [
+    [
+      "A hypernova explodes in a primordial dwarf galaxy, emitting a massive gamma-ray burst.",
+      "Supermassive black hole collision detected, creating ripples in the fabric of spacetime.",
+      "A rogue proto-galaxy is dismantled by the intense tidal forces of a larger cosmic neighbor.",
+      "Dark matter halos condense, establishing the invisible scaffolding for future superclusters.",
+      "Universal expansion continues rapidly. Ancient quasars cast high-energy radiation across the void."
+    ],
+    [
+      "Two massive spiral galaxies enter a gravitational dance, projecting an imminent cosmic merger.",
+      "Short-lived stellar lifecycles terminate in supernovae, seeding the cosmos with heavy elements.",
+      "A rogue stellar body is violently ejected from its home cluster after encountering a singularity.",
+      "Distant quasar telemetry fades as its central supermassive black hole consumes all local matter.",
+      "Fierce stellar winds from giant blue stars form massive glowing gas bubbles in the interstellar medium."
+    ],
+    [
+      "Stellar nurseries are highly active. The birth of millions of stars is observed across local clusters.",
+      "A rogue asteroid collision is detected with a newly formed exoplanet in a chaotic young star system.",
+      "A protoplanetary disk is disturbed by a passing giant star, altering the orbits of its infant planets.",
+      "Universal metallicity rises steadily. The raw ingredients for rocky terrestrial planets are now abundant.",
+      "Early planetary bodies are violently sweeping their orbital paths clear of remaining rocky debris."
+    ],
+    [
+      "A massive meteorite impacts primitive oceans, sending continent-spanning tsunamis across coastlines.",
+      "A severe global ice age takes hold. Glaciers advance from the poles, locking oceans beneath thick ice.",
+      "Supervolcanic eruptions alter atmospheric composition, drastically shifting global climate parameters.",
+      "Shifting tectonic plates open massive hydrothermal vents, releasing mineral-rich fluid into the deep ocean.",
+      "Continental drift forces massive landmass collisions, establishing jagged, towering mountain ranges.",
+      "Atmospheric greenhouse gas fluctuations trigger a localized extinction of early microscopic organisms.",
+      "A powerful geomagnetic storm from the young Sun violently strips the atmosphere of a neighboring planet."
+    ]
+  ];
+
+  function dayOfYearFor(monthIndex, dayIndex){
+    var d = 0;
+    for(var i=0;i<monthIndex;i++){ d += daysInMonth[i]; }
+    return d + dayIndex;
+  }
+
+  function getProceduralEvent(monthIndex, dayIndex){
+    var doy = dayOfYearFor(monthIndex, dayIndex);
+    var yearsAgoRaw = TOTAL_AGE_YEARS - (doy * YEARS_PER_DAY);
+    var timeString;
+    if(yearsAgoRaw > 1000000000){
+      timeString = (yearsAgoRaw/1000000000).toFixed(2) + " Billion Yrs Ago";
+    } else {
+      timeString = (yearsAgoRaw/1000000).toFixed(0) + " Million Yrs Ago";
+    }
+    if(monthIndex===11 && dayIndex===31){ timeString = "Present Era"; }
+
+    var quarter = Math.floor(monthIndex/3);
+    var texts = proceduralTexts[quarter];
+    var textLog = texts[(monthIndex*31+dayIndex) % texts.length];
+
+    var dynamicTitle = "Chronological Node " + doy;
+    if(monthIndex<3) dynamicTitle = "Dark Ages: Node " + doy;
+    else if(monthIndex<7) dynamicTitle = "Galactic Era: Node " + doy;
+    else if(monthIndex<11) dynamicTitle = "Stellar Era: Node " + doy;
+    else dynamicTitle = "Planetary Era: Node " + doy;
+
+    var desc = textLog + " Background cosmic expansion remains steady, stabilizing the environment for subsequent evolutionary milestones.";
+
+    return { title:dynamicTitle, desc:desc, timeAgo:timeString };
+  }
+
+  /* ============ Calendar rendering ============ */
+  var grid = document.getElementById('calendar-grid');
+  var displayDate = document.getElementById('display-date');
+  var displayTime = document.getElementById('display-time');
+  var displayTitle = document.getElementById('display-title');
+  var displayDesc = document.getElementById('display-desc');
+  var eventContent = document.getElementById('event-content');
+  var monthDisplay = document.getElementById('current-month-display');
+  var orbitArc = document.getElementById('orbit-arc');
+  var orbitLabel = document.getElementById('orbit-label');
+  var ORBIT_CIRCUMFERENCE = 2*Math.PI*25;
+
+  function updateOrbitProgress(monthIndex, dayIndex){
+    var doy = dayOfYearFor(monthIndex, dayIndex);
+    var fraction = doy/365;
+    var offset = ORBIT_CIRCUMFERENCE * (1-fraction);
+    orbitArc.style.strokeDasharray = ORBIT_CIRCUMFERENCE;
+    orbitArc.style.strokeDashoffset = offset;
+    orbitLabel.innerHTML = 'Day <strong>'+doy+'</strong> of 365 around the orbit';
+  }
+
+  function selectDay(monthIndex, dayEl, dayIndex, eventData){
+    document.querySelectorAll('.day').forEach(function(d){
+      d.classList.remove('active');
+      d.setAttribute('tabindex','-1');
+      d.setAttribute('aria-selected','false');
+    });
+    dayEl.classList.add('active');
+    dayEl.setAttribute('tabindex','0');
+    dayEl.setAttribute('aria-selected','true');
+
+    eventContent.classList.remove('visible');
+    setTimeout(function(){
+      displayDate.textContent = monthNames[monthIndex] + ' ' + dayIndex;
+      displayTime.textContent = eventData.timeAgo;
+      displayTitle.textContent = eventData.title;
+      displayDesc.textContent = eventData.desc;
+      eventContent.classList.add('visible');
+      updateOrbitProgress(monthIndex, dayIndex);
+    }, reduceMotion ? 0 : 200);
+  }
+
+  function renderCalendar(monthIndex, focusIndex){
+    monthDisplay.textContent = monthNames[monthIndex];
+    grid.innerHTML = '';
+    var days = daysInMonth[monthIndex];
+    var monthMajorEvents = majorEvents[monthIndex] || {};
+    var dayEls = [];
+
+    for(var i=1;i<=days;i++){
+      (function(i){
+        var dayEl = document.createElement('div');
+        dayEl.className = 'day';
+        dayEl.textContent = i;
+        dayEl.style.setProperty('--i', i);
+        dayEl.setAttribute('role','gridcell');
+        dayEl.setAttribute('tabindex', i===1 ? '0' : '-1');
+
+        var eventData;
+        if(monthMajorEvents[i]){
+          dayEl.classList.add('major-event');
+          var tempProcedural = getProceduralEvent(monthIndex, i);
+          eventData = { title:monthMajorEvents[i].title, desc:monthMajorEvents[i].desc, timeAgo:tempProcedural.timeAgo };
+        } else {
+          eventData = getProceduralEvent(monthIndex, i);
+        }
+
+        dayEl.setAttribute('aria-label', monthNames[monthIndex]+' '+i+' — '+eventData.title+', '+eventData.timeAgo);
+
+        dayEl.addEventListener('click', function(){
+          selectDay(monthIndex, dayEl, i, eventData);
+        });
+
+        dayEl.addEventListener('keydown', function(e){
+          handleDayKeydown(e, monthIndex, i, dayEl, eventData);
+        });
+
+        grid.appendChild(dayEl);
+        dayEls.push(dayEl);
+      })(i);
+    }
+
+    if(typeof focusIndex === 'number'){
+      var target = dayEls[focusIndex-1] || dayEls[dayEls.length-1];
+      if(target){
+        dayEls.forEach(function(d){ d.setAttribute('tabindex','-1'); });
+        target.setAttribute('tabindex','0');
+        target.focus();
+      }
+    }
+  }
+
+  function handleDayKeydown(e, monthIndex, dayIndex, dayEl, eventData){
+    var key = e.key;
+    if(key==='Enter' || key===' ' || key==='Spacebar'){
+      e.preventDefault();
+      selectDay(monthIndex, dayEl, dayIndex, eventData);
+      return;
+    }
+    var days = daysInMonth[monthIndex];
+    if(key==='ArrowRight'){
+      e.preventDefault();
+      if(dayIndex+1 > days){ goToMonth((monthIndex+1)%12, 1); }
+      else { focusDayInCurrentMonth(dayIndex+1); }
+    } else if(key==='ArrowLeft'){
+      e.preventDefault();
+      if(dayIndex-1 < 1){ var pm=(monthIndex-1+12)%12; goToMonth(pm, daysInMonth[pm]); }
+      else { focusDayInCurrentMonth(dayIndex-1); }
+    } else if(key==='ArrowDown'){
+      e.preventDefault();
+      var down = Math.min(dayIndex+7, days);
+      focusDayInCurrentMonth(down);
+    } else if(key==='ArrowUp'){
+      e.preventDefault();
+      var up = Math.max(dayIndex-7, 1);
+      focusDayInCurrentMonth(up);
+    }
+  }
+
+  function focusDayInCurrentMonth(idx){
+    var cells = grid.querySelectorAll('.day');
+    cells.forEach(function(d){ d.setAttribute('tabindex','-1'); });
+    var target = cells[idx-1];
+    if(target){ target.setAttribute('tabindex','0'); target.focus(); }
+  }
+
+  function goToMonth(monthIndex, focusIndex){
+    currentMonthIndex = monthIndex;
+    renderCalendar(currentMonthIndex, focusIndex);
+  }
+
+  function resetPanel(){
+    eventContent.classList.remove('visible');
+    setTimeout(function(){
+      displayDate.textContent = "System Ready";
+      displayTime.textContent = "Awaiting Input";
+      displayTitle.textContent = "Chronological Database";
+      displayDesc.textContent = "Every day on this calendar represents roughly 37.8 million years of universal history. Select a date on the grid — or use the arrow keys and Enter — to read the telemetry for that era.";
+      orbitArc.style.strokeDashoffset = ORBIT_CIRCUMFERENCE;
+      orbitLabel.textContent = "Select a day to place it on the orbit";
+      eventContent.classList.add('visible');
+    }, reduceMotion ? 0 : 200);
+  }
+
+  document.getElementById('prev-month').addEventListener('click', function(){
+    currentMonthIndex = (currentMonthIndex-1+12)%12;
+    renderCalendar(currentMonthIndex);
+    resetPanel();
+  });
+  document.getElementById('next-month').addEventListener('click', function(){
+    currentMonthIndex = (currentMonthIndex+1)%12;
+    renderCalendar(currentMonthIndex);
+    resetPanel();
+  });
+
+  var touchStartX = null;
+  var calendarSection = document.querySelector('.calendar-section');
+  calendarSection.addEventListener('touchstart', function(e){
+    touchStartX = e.changedTouches[0].clientX;
+  }, {passive:true});
+  calendarSection.addEventListener('touchend', function(e){
+    if(touchStartX===null) return;
+    var dx = e.changedTouches[0].clientX - touchStartX;
+    if(Math.abs(dx) > 50){
+      if(dx < 0){ document.getElementById('next-month').click(); }
+      else { document.getElementById('prev-month').click(); }
+    }
+    touchStartX = null;
+  }, {passive:true});
+
+  renderCalendar(currentMonthIndex);
+})();
+</script>
 </body>
 </html>
+<!--
+  GAME 1 — COSMIC CALENDAR
+  =========================
+  Concept: the "Cosmic Calendar" thought experiment (popularized by Carl
+  Sagan) that maps the entire 13.8-billion-year history of the universe
+  onto a single 365-day year, so a human lifespan-scale view can grasp
+  deep time. Each calendar day = ~37.8 million real years. Jan 1 = the
+  Big Bang; the Earth doesn't form until ~Aug 31; multicellular life
+  shows up in November; and every human who has ever lived fits inside
+  the final ~30 seconds before midnight on Dec 31.
+
+  How it works: `majorEvents` hardcodes real, dated cosmic/evolutionary
+  milestones (Big Bang, first stars, Earth forms, first life, Cambrian
+  explosion, dinosaurs, K-Pg extinction, humans, etc.) onto specific
+  calendar days. Any day WITHOUT a hardcoded milestone still gets a
+  flavor event, procedurally generated from `proceduralTexts` (one pool
+  of generic cosmic "log" lines per quarter of the year) plus a computed
+  "X billion/million years ago" readout derived from `YEARS_PER_DAY`.
+  Clicking/tapping a day (or arrow-keys + Enter for a11y) updates the
+  event panel and an orbit-shaped day-of-year progress ring.
+
+  This is Game 1 of a planned 10-game ecosystem living at game1.html
+  through game10.html. Shared chrome — starfield/orbit background,
+  the top-right settings button + panel, and the bottom first/back/
+  random/next/last game nav — lives in shared.css + shared.js so every
+  game in the ecosystem looks and navigates consistently; only this
+  file's own <style>/<script> blocks are Cosmic-Calendar-specific.
+  Each page sets `data-game-index` on <body> to tell shared.js which
+  of the 10 slots it is, for next/back/random navigation.
+
+  Known open items for a future pass: sound toggle in settings is a
+  stub (no audio wired yet); haptics toggle fires navigator.vibrate()
+  on game-nav clicks where supported. Games 2–10 are placeholder
+  stubs — see the bottom-of-file comment in each for status.
+-->
