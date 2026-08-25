@@ -105,10 +105,20 @@
     font-size:clamp(1.4rem, 4.2vw, 2.4rem);
     color:#fff; line-height:1.2; margin-bottom:16px;
   }
-  .event-desc{
+.event-desc{
     font-size:clamp(0.92rem, 2.4vw, 1.1rem);
     color:var(--text-muted); line-height:1.65; font-weight:300; max-width:52ch;
+    /* Scrolling logic */
+    max-height: 35vh; 
+    overflow-y: auto;
+    padding-right: 12px;
   }
+  
+  /* Custom Scrollbar for the description */
+  .event-desc::-webkit-scrollbar { width: 6px; }
+  .event-desc::-webkit-scrollbar-track { background: transparent; }
+  .event-desc::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
+  .event-desc::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
 
   .orbit-progress{ display:flex; align-items:center; gap:14px; margin-top:22px; }
   .orbit-progress svg{ width:52px; height:52px; flex:0 0 auto; transform:rotate(-90deg); }
@@ -391,6 +401,8 @@
 
     eventContent.classList.remove('visible');
     setTimeout(function(){
+      document.getElementById('meta-header').style.display = 'flex';
+      document.getElementById('orbit-progress').style.display = 'flex';
       displayDate.textContent = monthNames[monthIndex] + ' ' + dayIndex;
       displayTime.textContent = eventData.timeAgo;
       displayTitle.textContent = eventData.title;
