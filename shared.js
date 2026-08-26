@@ -209,4 +209,44 @@
     }, true);
   }
 
+/* ============ Nav Bar Visibility Logic ============ */
+  var navBar = document.querySelector('.game-nav');
+  if (navBar) {
+    
+    // Desktop: Track mouse to show navbar when near the bottom
+    document.addEventListener('mousemove', function(e) {
+      if (window.innerWidth >= 992) {
+        // If mouse is within the bottom 120 pixels of the screen
+        if (window.innerHeight - e.clientY < 120) {
+          navBar.classList.add('desktop-visible');
+        } else {
+          navBar.classList.remove('desktop-visible');
+        }
+      }
+    });
+
+    // Mobile: Tap to expand card, 10-second timeout to collapse
+    var collapseTimeout;
+    navBar.addEventListener('click', function(e) {
+      if (window.innerWidth < 992) {
+        if (!navBar.classList.contains('mobile-expanded')) {
+          // If closed, prevent underlying buttons from triggering, just open the card
+          e.preventDefault();
+          navBar.classList.add('mobile-expanded');
+          resetCollapseTimeout();
+        } else {
+          // It's open. Keep it open if they are interacting
+          resetCollapseTimeout();
+        }
+      }
+    });
+
+    function resetCollapseTimeout() {
+      clearTimeout(collapseTimeout);
+      collapseTimeout = setTimeout(function() {
+        navBar.classList.remove('mobile-expanded');
+      }, 10000); // 10 seconds 
+    }
+  }
+  
 })();
