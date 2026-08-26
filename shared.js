@@ -107,7 +107,7 @@
     }, 200);
   });
 
-/* ============ Settings panel ============ */
+  /* ============ Settings panel ============ */
   var settingsBtn = document.getElementById('settings-btn');
   var settingsPanel = document.getElementById('settings-panel');
   var soundToggle = document.getElementById('sound-toggle');
@@ -134,7 +134,6 @@
       }
     });
   }
-  
   if(soundToggle){
     soundToggle.addEventListener('click', function(){
       soundOn = !soundOn;
@@ -167,7 +166,6 @@
     var el = document.getElementById(id);
     if(el){ el.addEventListener('click', handler); }
   }
-  wireNavButton('first-game-btn', function(){ loadGame(0); });
   wireNavButton('back-game-btn', function(){ loadGame(currentGameIndex-1); });
   wireNavButton('random-game-btn', function(){
     var idx;
@@ -175,6 +173,43 @@
     loadGame(idx);
   });
   wireNavButton('next-game-btn', function(){ loadGame(currentGameIndex+1); });
-  wireNavButton('last-game-btn', function(){ loadGame(GAMES.length-1); });
+
+  /* ============ Game nav — auto-hide / reveal-on-hover-or-tap ============ */
+  var gameNav = document.getElementById('game-nav');
+  var navHideTimer = null;
+
+  function expandNav(){
+    if(!gameNav) return;
+    gameNav.classList.add('expanded');
+    resetNavHideTimer();
+  }
+  function collapseNav(){
+    if(!gameNav) return;
+    gameNav.classList.remove('expanded');
+    clearTimeout(navHideTimer);
+  }
+  function resetNavHideTimer(){
+    clearTimeout(navHideTimer);
+    navHideTimer = setTimeout(collapseNav, 10000);
+  }
+
+  if(gameNav){
+    gameNav.addEventListener('mouseenter', expandNav);
+    gameNav.addEventListener('mouseleave', function(){
+      clearTimeout(navHideTimer);
+      navHideTimer = setTimeout(collapseNav, 400);
+    });
+    // Capture phase: a tap while collapsed only opens the nav — it must not
+    // also fire whichever button was under the finger on that same tap.
+    gameNav.addEventListener('click', function(e){
+      if(!gameNav.classList.contains('expanded')){
+        e.preventDefault();
+        e.stopPropagation();
+        expandNav();
+        return;
+      }
+      resetNavHideTimer();
+    }, true);
+  }
 
 })();
