@@ -183,10 +183,11 @@
   if (navBar) {
     
     // Desktop: Track mouse to show navbar when near the bottom edge
-    document.addEventListener('mousemove', function(e) {
+   document.addEventListener('mousemove', function(e) {
       if (window.innerWidth >= 992) {
-        // Show if mouse is within 100px of bottom
-        if (window.innerHeight - e.clientY < 100) {
+        // Show when mouse is anywhere in the bottom ~18% of the screen
+        var revealZone = Math.max(140, window.innerHeight * 0.18);
+        if (window.innerHeight - e.clientY < revealZone) {
           navBar.classList.add('desktop-visible');
         } else {
           navBar.classList.remove('desktop-visible');
