@@ -141,7 +141,7 @@
     });
   }
 
-  /* ============ Game ecosystem — 10 slots ============ */
+  /* ============ Game ecosystem — 7 slots ============ */
   var GAMES = [
     { name:"Cosmic Calendar", url:"index.html" },
     { name:"Game 2", url:"game2.html" },
@@ -149,10 +149,7 @@
     { name:"Game 4", url:"game4.html" },
     { name:"Game 5", url:"game5.html" },
     { name:"Game 6", url:"game6.html" },
-    { name:"Game 7", url:"game7.html" },
-    { name:"Game 8", url:"game8.html" },
-    { name:"Game 9", url:"game9.html" },
-    { name:"Game 10", url:"game10.html" }
+    { name:"Game 7", url:"game7.html" }
   ];
   var currentGameIndex = parseInt(document.body.getAttribute('data-game-index'), 10) || 0;
 
