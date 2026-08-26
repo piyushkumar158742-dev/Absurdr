@@ -31,27 +31,17 @@
       <span>Sound</span>
       <button class="settings-toggle" id="sound-toggle" role="switch" aria-checked="true" type="button"></button>
     </div>
-    <div class="settings-row">
-      <span>Haptic Feedback</span>
-      <button class="settings-toggle" id="haptics-toggle" role="switch" aria-checked="true" type="button"></button>
-    </div>
   </div>
 
   <div class="app-container">
     <div class="stage">
-      <span class="stage-number">Slot 5 of 10</span>
+      <span class="stage-number">Slot 5 of 7</span>
       <h2>Game 5</h2>
       <p>Not built yet — this is a reserved placeholder in the Cosmic Arcade ecosystem.</p>
     </div>
   </div>
 
-  <nav class="game-nav" aria-label="Game navigation">
-    <button class="game-nav-btn" id="first-game-btn" aria-label="First game" type="button">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="6" y1="5" x2="6" y2="19"></line>
-        <path d="M18 5 9 12l9 7Z"></path>
-      </svg>
-    </button>
+  <nav class="game-nav" id="game-nav" aria-label="Game navigation" tabindex="0">
     <button class="game-nav-btn" id="back-game-btn" aria-label="Previous game" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M15 5 6 12l9 7Z"></path>
@@ -72,12 +62,6 @@
         <path d="M9 5l9 7-9 7Z"></path>
       </svg>
     </button>
-    <button class="game-nav-btn" id="last-game-btn" aria-label="Last game" type="button">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M6 5l9 7-9 7Z"></path>
-        <line x1="18" y1="5" x2="18" y2="19"></line>
-      </svg>
-    </button>
   </nav>
 
 <script src="shared.js"></script>
@@ -86,17 +70,16 @@
 <!--
   GAME 5 — RESERVED SLOT (not yet built)
   ==========================================
-  This is slot 5 of 10 in the Cosmic Arcade ecosystem (see game1.html,
+  This is slot 5 of 7 in the Cosmic Arcade ecosystem (see index.html,
   the Cosmic Calendar, for the first real game and the shared-chrome
-  explanation). No concept has been chosen for this slot yet — it's
+  explanation). No concept has been chosen for this slot yet — its
   currently just a centered "Game 5" label inside the shared .stage
-  layout so the first/back/random/next/last game nav has something to
-  land on.
+  layout so the back/random/next game nav has something to land on.
 
   For whoever (human or AI) builds this next: replace the .stage block
   in <body> with the real game markup, add any game-specific CSS in a
   <style> block in <head> (after the shared.css link, same pattern as
-  game1.html), and add game-specific JS in a <script> block after
+  index.html), and add game-specific JS in a <script> block after
   shared.js. Leave shared.css/shared.js untouched and keep the
   data-game-index attribute on <body> as-is (it's what tells the
   shared nav which slot this page is) — then update THIS comment to
