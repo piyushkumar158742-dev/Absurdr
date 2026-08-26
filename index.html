@@ -104,21 +104,19 @@
     font-family:'Fraunces',serif; font-weight:600;
     font-size:clamp(1.4rem, 4.2vw, 2.4rem);
     color:#fff; line-height:1.2; margin-bottom:16px;
+    min-height:1em;
   }
-.event-desc{
+  .event-desc{
     font-size:clamp(0.92rem, 2.4vw, 1.1rem);
     color:var(--text-muted); line-height:1.65; font-weight:300; max-width:52ch;
-    /* Scrolling logic */
-    max-height: 35vh; 
-    overflow-y: auto;
-    padding-right: 12px;
+    max-height:35vh;
+    overflow-y:auto;
+    padding-right:12px;
   }
-  
-  /* Custom Scrollbar for the description */
-  .event-desc::-webkit-scrollbar { width: 6px; }
-  .event-desc::-webkit-scrollbar-track { background: transparent; }
-  .event-desc::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
-  .event-desc::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
+  .event-desc::-webkit-scrollbar{ width:6px; }
+  .event-desc::-webkit-scrollbar-track{ background:transparent; }
+  .event-desc::-webkit-scrollbar-thumb{ background:rgba(255,255,255,0.15); border-radius:10px; }
+  .event-desc::-webkit-scrollbar-thumb:hover{ background:rgba(255,255,255,0.25); }
 
   .orbit-progress{ display:flex; align-items:center; gap:14px; margin-top:22px; }
   .orbit-progress svg{ width:52px; height:52px; flex:0 0 auto; transform:rotate(-90deg); }
@@ -165,7 +163,7 @@
   <div class="bg-orbit-wrap"><svg id="orbit-svg" viewBox="0 0 700 700"></svg></div>
   <canvas id="starfield" aria-hidden="true"></canvas>
 
- <button id="settings-btn" class="settings-btn" aria-label="Settings" aria-haspopup="true" aria-expanded="false" type="button">
+  <button id="settings-btn" class="settings-btn" aria-label="Settings" aria-haspopup="true" aria-expanded="false" type="button">
     <svg viewBox="0 0 24 24">
       <circle cx="12" cy="5" r="1.6" fill="currentColor"></circle>
       <circle cx="12" cy="12" r="1.6" fill="currentColor"></circle>
@@ -173,7 +171,7 @@
     </svg>
   </button>
 
-<div class="settings-panel" id="settings-panel" role="dialog" aria-label="Settings">
+  <div class="settings-panel" id="settings-panel" role="dialog" aria-label="Settings">
     <h2>Settings</h2>
     <div class="settings-row">
       <span>Sound</span>
@@ -197,38 +195,28 @@
       <div class="calendar-grid" id="calendar-grid" role="grid" aria-label="Cosmic calendar days"></div>
     </div>
 
-<div class="glass-panel event-panel">
-  <div class="event-content visible" id="event-content" aria-live="polite">
-    <!-- Hidden by default -->
-    <div class="meta-header" id="meta-header" style="display: none;">
-      <span class="event-date" id="display-date"></span>
-      <span class="time-ago" id="display-time"></span>
-    </div>
-    
-    <div class="event-title" id="display-title">Select a Date</div>
-    
-    <div class="event-desc" id="display-desc">
-      The timeline spans 13.8 billion years. Select a temporal coordinate from the grid to retrieve archival data and observe the evolution of the cosmos.
-    </div>
-    
-    <!-- Hidden by default -->
-    <div class="orbit-progress" id="orbit-progress" style="display: none;">
-      <svg viewBox="0 0 60 60" aria-hidden="true">
-        <circle class="track" cx="30" cy="30" r="25"></circle>
-        <circle class="arc" id="orbit-arc" cx="30" cy="30" r="25" stroke-dasharray="157" stroke-dashoffset="157"></circle>
-      </svg>
-      <div class="orbit-label" id="orbit-label"></div>
+    <div class="glass-panel event-panel">
+      <div class="event-content visible" id="event-content" aria-live="polite">
+        <div class="meta-header" id="meta-header" style="display:none;">
+          <span class="event-date" id="display-date"></span>
+          <span class="time-ago" id="display-time"></span>
+        </div>
+
+        <div class="event-title" id="display-title"></div>
+        <div class="event-desc" id="display-desc"></div>
+
+        <div class="orbit-progress" id="orbit-progress" style="display:none;">
+          <svg viewBox="0 0 60 60" aria-hidden="true">
+            <circle class="track" cx="30" cy="30" r="25"></circle>
+            <circle class="arc" id="orbit-arc" cx="30" cy="30" r="25" stroke-dasharray="157" stroke-dashoffset="157"></circle>
+          </svg>
+          <div class="orbit-label" id="orbit-label"></div>
+        </div>
+      </div>
     </div>
   </div>
-</div>
 
-  <nav class="game-nav" aria-label="Game navigation">
-    <button class="game-nav-btn" id="first-game-btn" aria-label="First game" type="button">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="6" y1="5" x2="6" y2="19"></line>
-        <path d="M18 5 9 12l9 7Z"></path>
-      </svg>
-    </button>
+  <nav class="game-nav" id="game-nav" aria-label="Game navigation" tabindex="0">
     <button class="game-nav-btn" id="back-game-btn" aria-label="Previous game" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M15 5 6 12l9 7Z"></path>
@@ -247,12 +235,6 @@
     <button class="game-nav-btn" id="next-game-btn" aria-label="Next game" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M9 5l9 7-9 7Z"></path>
-      </svg>
-    </button>
-    <button class="game-nav-btn" id="last-game-btn" aria-label="Last game" type="button">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M6 5l9 7-9 7Z"></path>
-        <line x1="18" y1="5" x2="18" y2="19"></line>
       </svg>
     </button>
   </nav>
@@ -503,17 +485,13 @@
     renderCalendar(currentMonthIndex, focusIndex);
   }
 
-function resetPanel(){
+  function resetPanel(){
     eventContent.classList.remove('visible');
     setTimeout(function(){
-      // Hide the top date/time and bottom tracker
       document.getElementById('meta-header').style.display = 'none';
       document.getElementById('orbit-progress').style.display = 'none';
-      
-      // Set the clean default text
-      displayTitle.textContent = "Select a Date";
-      displayDesc.textContent = "The timeline spans 13.8 billion years. Select a temporal coordinate from the grid to retrieve archival data and observe the evolution of the cosmos.";
-      
+      displayTitle.textContent = '';
+      displayDesc.textContent = '';
       eventContent.classList.add('visible');
     }, reduceMotion ? 0 : 200);
   }
@@ -544,6 +522,8 @@ function resetPanel(){
     touchStartX = null;
   }, {passive:true});
 
+  // No day is pre-selected on load — the event panel stays empty until
+  // the person actually picks a day (see resetPanel/selectDay above).
   renderCalendar(currentMonthIndex);
 })();
 </script>
@@ -568,19 +548,27 @@ function resetPanel(){
   of generic cosmic "log" lines per quarter of the year) plus a computed
   "X billion/million years ago" readout derived from `YEARS_PER_DAY`.
   Clicking/tapping a day (or arrow-keys + Enter for a11y) updates the
-  event panel and an orbit-shaped day-of-year progress ring.
+  event panel and an orbit-shaped day-of-year progress ring. Nothing is
+  pre-selected on load — the panel is intentionally blank until the
+  person picks a day.
 
-  This is Game 1 of a planned 10-game ecosystem living at game1.html
-  through game10.html. Shared chrome — starfield/orbit background,
-  the top-right settings button + panel, and the bottom first/back/
-  random/next/last game nav — lives in shared.css + shared.js so every
-  game in the ecosystem looks and navigates consistently; only this
-  file's own <style>/<script> blocks are Cosmic-Calendar-specific.
-  Each page sets `data-game-index` on <body> to tell shared.js which
-  of the 10 slots it is, for next/back/random navigation.
+  This is Game 1 of a planned 10-game ecosystem living at index.html
+  (this file) through game10.html. Shared chrome — starfield/orbit
+  background, the top-right settings button + panel, and the game nav
+  — lives in shared.css + shared.js so every game in the ecosystem
+  looks and navigates consistently; only this file's own <style>/
+  <script> blocks are Cosmic-Calendar-specific. Each page sets
+  `data-game-index` on <body> to tell shared.js which of the 10 slots
+  it is, for back/random/next navigation.
+
+  Game nav UX: the 3-button nav (#game-nav in shared.js) is collapsed
+  to a small scaled-down "card" by default — a footer pill on desktop
+  that expands on hover/focus, or a card pinned to the right edge on
+  mobile (<768px) where the first tap only opens it (the tap is
+  swallowed in the capture phase) and a second tap on a button actually
+  navigates. It auto-collapses after 10s of no interaction either way.
 
   Known open items for a future pass: sound toggle in settings is a
-  stub (no audio wired yet); haptics toggle fires navigator.vibrate()
-  on game-nav clicks where supported. Games 2–10 are placeholder
-  stubs — see the bottom-of-file comment in each for status.
+  stub (no audio wired yet). Games 2–10 are placeholder stubs — see
+  the bottom-of-file comment in each for status.
 -->
