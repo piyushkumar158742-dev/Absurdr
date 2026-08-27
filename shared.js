@@ -150,16 +150,14 @@
     { name:"Game 4", url:"game4.html" },
     { name:"Game 5", url:"game5.html" },
     { name:"Game 6", url:"game6.html" },
-    { name:"Game 7", url:"game7.html" },
-    { name:"Game 8", url:"game8.html" },
-    { name:"Game 9", url:"game9.html" },
-    { name:"Game 10", url:"game10.html" }
+    { name:"Game 7", url:"game7.html" }
   ];
   var currentGameIndex = parseInt(document.body.getAttribute('data-game-index'), 10) || 0;
 
   function loadGame(idx){
     idx = ((idx % GAMES.length) + GAMES.length) % GAMES.length;
     if(idx === currentGameIndex) return;
+    if (window.innerWidth < 992) { sessionStorage.setItem('navExpanded', '1'); }
     window.location.href = GAMES[idx].url;
   }
 
@@ -183,7 +181,7 @@
   if (navBar) {
     
     // Desktop: Track mouse to show navbar when near the bottom edge
-   document.addEventListener('mousemove', function(e) {
+    document.addEventListener('mousemove', function(e) {
       if (window.innerWidth >= 992) {
         // Show when mouse is anywhere in the bottom ~18% of the screen
         var revealZone = Math.max(140, window.innerHeight * 0.18);
@@ -233,6 +231,14 @@
       collapseTimeout = setTimeout(function() {
         navBar.classList.remove('mobile-expanded');
       }, 10000); // Wait exactly 10 seconds before collapsing back to card
+    }
+
+    // Landed here from a nav-bar button tap — keep the card open (and the
+    // 10s timer running) instead of snapping back to closed on load
+    if (window.innerWidth < 992 && sessionStorage.getItem('navExpanded') === '1') {
+      sessionStorage.removeItem('navExpanded');
+      navBar.classList.add('mobile-expanded');
+      resetCollapseTimeout();
     }
   }
 
