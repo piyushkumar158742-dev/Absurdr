@@ -4,11 +4,84 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#05060f">
-<title>Game 2 — Cosmic Arcade</title>
+<title>The Impossible Button — Game 2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,700;1,500&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="shared.css">
+<style>
+  /* ============ Game 2 — The Impossible Button (game-specific) ============ */
+  .rage-game{ flex:1; display:flex; flex-direction:column; position:relative; z-index:10; }
+
+  .rage-screen{
+    display:none; flex:1; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; gap:18px; padding:20px;
+  }
+  .rage-screen.active{ display:flex; }
+  .rage-screen h2{
+    font-family:'Fraunces',serif; font-weight:600; font-size:clamp(1.8rem,6vw,3rem);
+    color:#fff; text-shadow:0 2px 24px rgba(124,108,240,0.35);
+  }
+  .rage-screen p{ color:var(--text-muted); max-width:46ch; font-size:clamp(0.9rem,2.2vw,1.05rem); line-height:1.6; }
+
+  .rage-diff-row{ display:flex; gap:14px; flex-wrap:wrap; justify-content:center; margin-top:8px; }
+  .rage-diff-btn{
+    font-family:'Space Mono',monospace; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+    font-size:0.85rem; color:var(--text-primary);
+    background:var(--panel-glass); border:1px solid var(--panel-border); border-radius:var(--radius-md);
+    padding:16px 26px; cursor:pointer; transition:background .2s ease, border-color .2s ease, transform .2s ease;
+  }
+  .rage-diff-btn:hover{ background:rgba(255,255,255,0.08); border-color:var(--nebula-violet); transform:translateY(-2px); }
+  .rage-diff-btn .diff-time{ display:block; color:var(--stellar-gold); font-size:0.75rem; margin-top:4px; }
+
+  .rage-hud{ display:flex; gap:26px; align-items:center; justify-content:center; margin-bottom:4px; }
+  .rage-hud-item{ font-family:'Space Mono',monospace; font-size:0.75rem; color:var(--text-muted); letter-spacing:1px; text-transform:uppercase; }
+  .rage-hud-item strong{ display:block; font-size:1.4rem; color:var(--text-primary); font-family:'Fraunces',serif; margin-top:2px; }
+  #rage-timer{ color:var(--nebula-rose); }
+
+  .rage-taunt{ font-family:'Space Mono',monospace; font-size:0.8rem; color:var(--stellar-gold); min-height:1.2em; }
+
+  .rage-arena{
+    position:relative; flex:1; width:100%; max-width:900px; margin:0 auto;
+    border:1px solid var(--panel-border); border-radius:var(--radius-lg);
+    background:rgba(255,255,255,0.02); overflow:hidden; min-height:320px;
+  }
+  .rage-button{
+    position:absolute; width:84px; height:84px; border-radius:50%;
+    background:linear-gradient(145deg, var(--nebula-violet), var(--nebula-rose));
+    border:none; color:#fff; font-family:'Space Mono',monospace; font-weight:700; font-size:0.78rem;
+    cursor:pointer; box-shadow:0 10px 30px rgba(124,108,240,0.5);
+    transition:left .18s cubic-bezier(.2,.8,.2,1), top .18s cubic-bezier(.2,.8,.2,1);
+  }
+  html.no-motion .rage-button{ transition:none; }
+
+  .rage-retry-btn{
+    font-family:'Space Mono',monospace; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+    font-size:0.85rem; color:var(--text-primary);
+    background:var(--panel-glass); border:1px solid var(--panel-border); border-radius:var(--radius-md);
+    padding:14px 26px; cursor:pointer; transition:background .2s ease, border-color .2s ease;
+  }
+  .rage-retry-btn:hover{ background:rgba(255,255,255,0.08); border-color:var(--nebula-violet); }
+
+  /* The joke ending: everything else on the page disappears — plain
+     white screen, one plain button. */
+  .rage-win-overlay{
+    position:fixed; inset:0; background:#ffffff; z-index:9999;
+    display:none; align-items:center; justify-content:center;
+  }
+  .rage-win-overlay.active{ display:flex; }
+  .rage-win-overlay button{
+    font-family:'Inter',sans-serif; font-size:1rem; color:#111;
+    background:#fff; border:1px solid #ccc; border-radius:8px;
+    padding:14px 30px; cursor:pointer;
+  }
+  .rage-win-overlay button:hover{ background:#f2f2f2; }
+
+  @media (max-width:600px){
+    .rage-arena{ min-height:260px; }
+    .rage-button{ width:68px; height:68px; font-size:0.68rem; }
+  }
+</style>
 </head>
 <body data-game-index="1">
 
@@ -34,17 +107,45 @@
   </div>
 
   <div class="app-container">
-    <div class="stage">
-      <span class="stage-number">Slot 2 of 7</span>
-      <h2>Game 2</h2>
-      <p>Not built yet — this is a reserved placeholder in the Cosmic Arcade ecosystem.</p>
+    <div class="rage-game">
+
+      <div class="rage-screen active" id="screen-select">
+        <h2>The Impossible Button</h2>
+        <p>One button. One job: press it. It has other plans. Pick your torment — corner it before the clock runs out.</p>
+        <div class="rage-diff-row">
+          <button class="rage-diff-btn" id="select-beginner" type="button">Beginner<span class="diff-time">15:00</span></button>
+          <button class="rage-diff-btn" id="select-pro" type="button">Pro<span class="diff-time">5:00</span></button>
+        </div>
+      </div>
+
+      <div class="rage-screen" id="screen-play">
+        <div class="rage-hud">
+          <div class="rage-hud-item">Time<strong id="rage-timer">5:00</strong></div>
+          <div class="rage-hud-item">Dodges<strong id="rage-dodges">0</strong></div>
+        </div>
+        <div class="rage-taunt" id="rage-taunt">&nbsp;</div>
+        <div class="rage-arena" id="rage-arena">
+          <button class="rage-button" id="rage-button" type="button">PRESS ME</button>
+        </div>
+      </div>
+
+      <div class="rage-screen" id="screen-fail">
+        <h2>Time's Up</h2>
+        <p>It won. Again. Want to go another round?</p>
+        <button class="rage-retry-btn" id="retry-btn" type="button">Try Again</button>
+      </div>
+
     </div>
+  </div>
+
+  <div class="rage-win-overlay" id="screen-win">
+    <button id="win-btn" type="button">Press</button>
   </div>
 
   <nav class="game-nav" id="game-nav" aria-label="Game navigation" tabindex="0">
     <button class="game-nav-btn" id="back-game-btn" aria-label="Previous game" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M16.5 5 7.5 12l9 7Z"></path>
+        <path d="M15 5 6 12l9 7Z"></path>
       </svg>
     </button>
     <button class="game-nav-btn random-btn" id="random-game-btn" aria-label="Random game" type="button">
@@ -59,29 +160,186 @@
     </button>
     <button class="game-nav-btn" id="next-game-btn" aria-label="Next game" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M7.5 5l9 7-9 7Z"></path>
+        <path d="M9 5l9 7-9 7Z"></path>
       </svg>
     </button>
   </nav>
 
 <script src="shared.js"></script>
+<script>
+(function(){
+
+  var TIME = { beginner: 15*60, pro: 5*60 };
+  var timeLeft = TIME.beginner;
+  var timerInterval = null;
+  var dodgeCount = 0;
+
+  var screens = {
+    select: document.getElementById('screen-select'),
+    play: document.getElementById('screen-play'),
+    fail: document.getElementById('screen-fail')
+  };
+  var winOverlay = document.getElementById('screen-win');
+
+  function showScreen(name){
+    Object.keys(screens).forEach(function(k){
+      screens[k].classList.toggle('active', k===name);
+    });
+    winOverlay.classList.toggle('active', name==='win');
+  }
+
+  var arena = document.getElementById('rage-arena');
+  var btn = document.getElementById('rage-button');
+  var timerEl = document.getElementById('rage-timer');
+  var dodgeEl = document.getElementById('rage-dodges');
+  var tauntEl = document.getElementById('rage-taunt');
+
+  var taunts = ["So close!", "Nope!", "Almost had it!", "Try again!", "Ha!", "Not today.", "Nice try!", "Too slow!", "Keep going!", "You'll never catch me!"];
+  function randomTaunt(){
+    tauntEl.textContent = taunts[Math.floor(Math.random()*taunts.length)];
+  }
+
+  var BTN_SIZE = 84;
+  var DODGE_RADIUS = 90;
+
+  function placeButtonRandom(){
+    var rect = arena.getBoundingClientRect();
+    var size = btn.offsetWidth || BTN_SIZE;
+    var maxX = Math.max(0, rect.width - size);
+    var maxY = Math.max(0, rect.height - size);
+    btn.style.left = (Math.random()*maxX)+'px';
+    btn.style.top = (Math.random()*maxY)+'px';
+  }
+
+  function dodgeFrom(clientX, clientY){
+    var rect = arena.getBoundingClientRect();
+    var size = btn.offsetWidth || BTN_SIZE;
+    var btnRect = btn.getBoundingClientRect();
+    var bx = btnRect.left - rect.left + size/2;
+    var by = btnRect.top - rect.top + size/2;
+    var cx = clientX - rect.left, cy = clientY - rect.top;
+    var dx = bx - cx, dy = by - cy;
+    var dist = Math.sqrt(dx*dx + dy*dy) || 1;
+    dx /= dist; dy /= dist;
+    var jump = 130 + Math.random()*90;
+    var nx = bx - size/2 + dx*jump + (Math.random()-0.5)*70;
+    var ny = by - size/2 + dy*jump + (Math.random()-0.5)*70;
+    var maxX = Math.max(0, rect.width - size);
+    var maxY = Math.max(0, rect.height - size);
+    nx = Math.max(0, Math.min(maxX, nx));
+    ny = Math.max(0, Math.min(maxY, ny));
+    btn.style.left = nx+'px';
+    btn.style.top = ny+'px';
+    dodgeCount++;
+    dodgeEl.textContent = dodgeCount;
+    randomTaunt();
+  }
+
+  var dodgeCooldown = false;
+  function tryDodge(clientX, clientY){
+    if(dodgeCooldown) return;
+    var btnRect = btn.getBoundingClientRect();
+    var bx = btnRect.left + btnRect.width/2;
+    var by = btnRect.top + btnRect.height/2;
+    var dist = Math.sqrt(Math.pow(bx-clientX,2) + Math.pow(by-clientY,2));
+    if(dist < DODGE_RADIUS){
+      dodgeFrom(clientX, clientY);
+      dodgeCooldown = true;
+      setTimeout(function(){ dodgeCooldown = false; }, 90);
+    }
+  }
+
+  function onMouseMove(e){ tryDodge(e.clientX, e.clientY); }
+  function onTouchMove(e){
+    if(e.touches && e.touches[0]){ tryDodge(e.touches[0].clientX, e.touches[0].clientY); }
+  }
+
+  function formatTime(s){
+    var m = Math.floor(s/60), sec = s%60;
+    return m + ':' + (sec<10 ? '0'+sec : sec);
+  }
+
+  function startTimer(){
+    clearInterval(timerInterval);
+    timerEl.textContent = formatTime(timeLeft);
+    timerInterval = setInterval(function(){
+      timeLeft--;
+      timerEl.textContent = formatTime(Math.max(0,timeLeft));
+      if(timeLeft <= 0){
+        clearInterval(timerInterval);
+        endGame(false);
+      }
+    }, 1000);
+  }
+
+  function startGame(diff){
+    timeLeft = TIME[diff] || TIME.beginner;
+    dodgeCount = 0;
+    dodgeEl.textContent = '0';
+    tauntEl.textContent = '\u00A0';
+    showScreen('play');
+    placeButtonRandom();
+    startTimer();
+    arena.addEventListener('mousemove', onMouseMove);
+    arena.addEventListener('touchmove', onTouchMove, {passive:true});
+  }
+
+  function endGame(won){
+    clearInterval(timerInterval);
+    arena.removeEventListener('mousemove', onMouseMove);
+    arena.removeEventListener('touchmove', onTouchMove);
+    showScreen(won ? 'win' : 'fail');
+  }
+
+  btn.addEventListener('click', function(){ endGame(true); });
+  document.getElementById('select-beginner').addEventListener('click', function(){ startGame('beginner'); });
+  document.getElementById('select-pro').addEventListener('click', function(){ startGame('pro'); });
+  document.getElementById('retry-btn').addEventListener('click', function(){ showScreen('select'); });
+  document.getElementById('win-btn').addEventListener('click', function(){ showScreen('select'); });
+
+  window.addEventListener('resize', function(){
+    if(screens.play.classList.contains('active')){ placeButtonRandom(); }
+  });
+
+  showScreen('select');
+})();
+</script>
 </body>
 </html>
 <!--
-  GAME 2 — RESERVED SLOT (not yet built)
-  ==========================================
-  This is slot 2 of 7 in the Cosmic Arcade ecosystem (see index.html,
-  the Cosmic Calendar, for the first real game and the shared-chrome
-  explanation). No concept has been chosen for this slot yet — its
-  currently just a centered "Game 2" label inside the shared .stage
-  layout so the back/random/next game nav has something to land on.
+  GAME 2 — THE IMPOSSIBLE BUTTON
+  ================================
+  Concept: a rage game. One button, one task: press it. On
+  #screen-select the player picks a difficulty, which is really just a
+  time limit — Beginner gets 15:00, Pro gets 5:00 (picked as reasonable
+  defaults for "10 or 15 for beginners"; adjust TIME{} in the script
+  below if a different split is wanted). On #screen-play the button
+  (#rage-button) sits inside a bounded arena (#rage-arena) and actively
+  dodges the cursor: any mousemove/touchmove within DODGE_RADIUS (90px)
+  of the button's center teleports it ~130-220px further away, clamped
+  to the arena's bounds, plus random jitter so it isn't perfectly
+  predictable. Each dodge increments a taunt-flavored dodge counter.
 
-  For whoever (human or AI) builds this next: replace the .stage block
-  in <body> with the real game markup, add any game-specific CSS in a
-  <style> block in <head> (after the shared.css link, same pattern as
-  index.html), and add game-specific JS in a <script> block after
-  shared.js. Leave shared.css/shared.js untouched and keep the
-  data-game-index attribute on <body> as-is (it's what tells the
-  shared nav which slot this page is) — then update THIS comment to
-  describe the finished game's idea instead of "not yet built".
+  It's intentionally winnable, not literally impossible: because the
+  teleport target is clamped to the arena's edges, a player who
+  corners the button (drives it into a wall/corner where it has
+  nowhere left to flee) can close in and actually click it — the
+  classic "impossible button" trick, skill-based rather than luck-
+  based. A real click on the button fires endGame(true); the countdown
+  hitting zero first fires endGame(false) -> #screen-fail (retry loops
+  back to #screen-select).
+
+  The payoff joke: catching the button doesn't lead to a fireworks
+  screen. #screen-win is a separate fixed, full-viewport, deliberately
+  plain WHITE overlay (breaks the app's whole dark theme on purpose,
+  z-index 9999 so it covers even the settings/nav chrome) with one
+  plain button. Pressing that button is the anticlimax and loops back
+  to #screen-select — the "reward" for beating the rage game is just
+  another button to press.
+
+  Ecosystem conventions carried over from index.html/other game
+  placeholders still apply here: shared.css/shared.js are untouched,
+  data-game-index="1" is what tells shared.js's back/random/next nav
+  this is slot 2, and the settings button/panel + starfield/orbit
+  background chrome are copied as-is from the shared pattern.
 -->
