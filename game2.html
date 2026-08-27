@@ -23,13 +23,20 @@
             background-color: #ff0000;
             color: #ffffff;
             border: none;
-            padding: 40px 80px;
-            font-size: 3rem;
+            /* Making it a perfect circle */
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            font-size: 2.5rem;
             font-weight: bold;
-            border-radius: 15px;
             cursor: pointer;
             box-shadow: 0 10px 20px rgba(255, 0, 0, 0.4);
             position: absolute;
+            /* Flexbox to keep text perfectly centered in the circle */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
             transition: transform 0.1s, background-color 0.2s;
             z-index: 100;
         }
@@ -42,14 +49,19 @@
             background-color: #cc0000;
             color: #ffffff;
             border: none;
-            padding: 20px 40px;
-            font-size: 1.5rem;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            font-size: 1rem;
             font-weight: bold;
-            border-radius: 10px;
             position: absolute;
             opacity: 0.8;
             pointer-events: none;
             z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
         }
 
         .insult-text {
@@ -64,27 +76,32 @@
             transition: opacity 0.5s;
         }
 
-        /* Trap Animations */
+        /* Rage Trap Animations */
         @keyframes shake {
-            0% { transform: translate(1px, 1px) rotate(0deg); }
-            10% { transform: translate(-1px, -2px) rotate(-1deg); }
-            20% { transform: translate(-3px, 0px) rotate(1deg); }
-            30% { transform: translate(3px, 2px) rotate(0deg); }
-            40% { transform: translate(1px, -1px) rotate(1deg); }
-            50% { transform: translate(-1px, 2px) rotate(-1deg); }
-            60% { transform: translate(-3px, 1px) rotate(0deg); }
-            70% { transform: translate(3px, 1px) rotate(-1deg); }
-            80% { transform: translate(-1px, -1px) rotate(1deg); }
-            90% { transform: translate(1px, 2px) rotate(0deg); }
-            100% { transform: translate(1px, -2px) rotate(-1deg); }
+            0% { transform: translate(2px, 2px) rotate(0deg); }
+            10% { transform: translate(-2px, -4px) rotate(-2deg); }
+            20% { transform: translate(-6px, 0px) rotate(2deg); }
+            30% { transform: translate(6px, 4px) rotate(0deg); }
+            40% { transform: translate(2px, -2px) rotate(2deg); }
+            50% { transform: translate(-2px, 4px) rotate(-2deg); }
+            60% { transform: translate(-6px, 2px) rotate(0deg); }
+            70% { transform: translate(6px, 2px) rotate(-2deg); }
+            80% { transform: translate(-2px, -2px) rotate(2deg); }
+            90% { transform: translate(2px, 4px) rotate(0deg); }
+            100% { transform: translate(2px, -4px) rotate(-2deg); }
         }
 
         @keyframes flash {
-            0% { background-color: white; }
-            25% { background-color: red; }
-            50% { background-color: yellow; }
-            75% { background-color: blue; }
-            100% { background-color: white; }
+            0% { background-color: #ffffff; }
+            25% { background-color: #ff0000; }
+            50% { background-color: #00ff00; }
+            75% { background-color: #0000ff; }
+            100% { background-color: #ffffff; }
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         #fake-popup {
@@ -94,25 +111,26 @@
             left: 50%;
             transform: translate(-50%, -50%);
             background: white;
-            border: 2px solid black;
-            padding: 30px;
+            border: 4px solid red;
+            padding: 40px;
             z-index: 1000;
             text-align: center;
-            box-shadow: 0 0 100px rgba(0,0,0,0.5);
+            box-shadow: 0 0 100px rgba(255,0,0,0.8);
         }
     </style>
 </head>
 <body>
 
-    <button id="mainBtn">The Impossible Button Press</button>
+    <button id="mainBtn">The Impossible<br>Button Press</button>
     
-    <div id="insult1" class="insult-text" style="top: 20%; left: 10%;">MY GRANDMA IS FASTER!</div>
-    <div id="insult2" class="insult-text" style="bottom: 20%; right: 10%;">JUST GIVE UP ALREADY.</div>
+    <div id="insult1" class="insult-text" style="top: 20%; left: 10%;">TOO SLOW!</div>
+    <div id="insult2" class="insult-text" style="bottom: 20%; right: 10%;">ARE YOU EVEN TRYING?</div>
+    <div id="insult3" class="insult-text" style="top: 50%; left: 30%; color: red; font-size: 6rem;">RAGE QUIT YET?</div>
 
     <div id="fake-popup">
-        <h2>FATAL ERROR 404</h2>
-        <p>Your cursor is too slow.</p>
-        <button onclick="document.getElementById('fake-popup').style.display='none'">OK</button>
+        <h2 style="color: red; font-size: 2rem;">CRITICAL FAILURE</h2>
+        <p style="font-size: 1.5rem;">Your cursor skills are statistically terrible.</p>
+        <button style="padding: 10px 20px; font-size: 1.2rem; cursor: pointer;" onclick="document.getElementById('fake-popup').style.display='none'">I Accept Defeat</button>
     </div>
 
     <script>
@@ -122,31 +140,31 @@
         let state = 0; 
         // 0 = Initial
         // 1 = Dodging
-        // 2 = Shrinking
-        // 3 = Trap sequence
+        // 2 = Shrinking & Teleporting
+        // 3 = Full Rage Traps
 
-        let dodgeTarget = Math.floor(Math.random() * 11) + 10; // Random 10 to 20 dodges
+        let dodgeTarget = Math.floor(Math.random() * 11) + 10; // 10 to 20 dodges
         let dodges = 0;
         let teleports = 0;
         let trapInterval;
 
-        // Ensure button starts centered
+        // Center initially
         btn.style.left = `calc(50% - ${btn.offsetWidth / 2}px)`;
         btn.style.top = `calc(50% - ${btn.offsetHeight / 2}px)`;
 
         function moveButton() {
             const maxX = window.innerWidth - btn.offsetWidth;
             const maxY = window.innerHeight - btn.offsetHeight;
-            const randomX = Math.random() * maxX;
-            const randomY = Math.random() * maxY;
+            // Keep it within screen bounds
+            const randomX = Math.max(0, Math.min(Math.random() * maxX, maxX));
+            const randomY = Math.max(0, Math.min(Math.random() * maxY, maxY));
             
             btn.style.left = `${randomX}px`;
             btn.style.top = `${randomY}px`;
         }
 
-        // Proximity detection for dodging and shrinking
         document.addEventListener('mousemove', (e) => {
-            if (state === 0 || state === 3) return; // Do nothing on initial or trap phase
+            if (state === 0 || state === 3) return;
 
             const rect = btn.getBoundingClientRect();
             const btnX = rect.left + rect.width / 2;
@@ -155,63 +173,69 @@
 
             if (state === 1) {
                 // Phase 1: Dodging
-                if (dist < 200) { // If mouse gets within 200px
+                if (dist < 250) { // Slightly larger detection radius for the big circle
                     dodges++;
                     if (dodges >= dodgeTarget) {
-                        state = 2; // Move to shrinking phase
+                        state = 2; 
                     } else {
                         moveButton();
                     }
                 }
             } else if (state === 2) {
-                // Phase 2: Shrinking based on proximity
-                let scale = Math.max(0, dist / 400); // Scales down as you get closer
+                // Phase 2: Shrinking and Teleporting
+                let scale = Math.max(0, dist / 500); 
                 if (scale > 1) scale = 1;
                 
-                // Keep the button centered on its coordinates while shrinking
                 btn.style.transform = `scale(${scale})`;
+
+                // The trigger: If the button gets too small (cursor gets very close)
+                if (scale <= 0.15) {
+                    teleports++;
+                    if (teleports >= 5) {
+                        state = 3;
+                        initiateTraps();
+                    } else {
+                        // Snap back to original size and teleport
+                        btn.style.transition = 'none'; // Temporarily remove transition for instant teleport
+                        btn.style.transform = 'scale(1)';
+                        moveButton();
+                        
+                        // Re-enable smooth shrinking after a tiny delay
+                        setTimeout(() => {
+                            btn.style.transition = 'transform 0.1s, background-color 0.2s';
+                        }, 50);
+                    }
+                }
             }
         });
 
         btn.addEventListener('click', () => {
             if (state === 0) {
-                // First click
+                // First click shrinks the button to its gameplay size
                 state = 1;
-                btn.innerText = "Press Me!";
-                btn.style.padding = "20px 40px"; // Smaller but still big
-                btn.style.fontSize = "2rem";
+                btn.innerHTML = "Press<br>Me!";
+                btn.style.width = "180px";
+                btn.style.height = "180px";
+                btn.style.fontSize = "1.8rem";
                 moveButton();
-            } else if (state === 2) {
-                // Clicked during shrinking phase (the "teleport" resets)
-                teleports++;
-                if (teleports >= 5) {
-                    state = 3;
-                    initiateTraps();
-                } else {
-                    // Teleport and reset scale
-                    btn.style.transform = 'scale(1)';
-                    moveButton();
-                    // Force mouse to have to back away to avoid instant re-shrinking bug
-                    btn.style.pointerEvents = 'none';
-                    setTimeout(() => { btn.style.pointerEvents = 'auto'; }, 500);
-                }
             }
         });
 
-        // The 15 Rage Traps Sequence
+        // The Ultimate Rage Trap Sequence
         function initiateTraps() {
-            btn.innerText = "U MAD?";
+            btn.innerHTML = "U<br>MAD?";
             btn.style.transform = 'scale(1)';
+            btn.style.transition = 'all 0.1s';
             
             let trapStep = 1;
             
             const traps = setInterval(() => {
                 switch(trapStep) {
                     case 1:
-                        // Trap 1: Spawn fake buttons
-                        for(let i=0; i<30; i++) {
-                            let fake = document.createElement('button');
-                            fake.innerText = "Press Me!";
+                        // Trap 1: Clone the button 50 times
+                        for(let i=0; i<50; i++) {
+                            let fake = document.createElement('div');
+                            fake.innerHTML = "Press<br>Me!";
                             fake.className = 'fake-btn';
                             fake.style.left = Math.random() * window.innerWidth + 'px';
                             fake.style.top = Math.random() * window.innerHeight + 'px';
@@ -219,70 +243,70 @@
                         }
                         break;
                     case 2:
-                        // Trap 2: Screen goes upside down
-                        body.style.transform = 'rotate(180deg)';
+                        // Trap 2: Aggressive screen shake
+                        body.style.animation = 'shake 0.3s infinite';
                         break;
                     case 3:
-                        // Trap 3: Fake popup
+                        // Trap 3: Fake popup blocks the middle of the screen
                         document.getElementById('fake-popup').style.display = 'block';
                         break;
                     case 4:
-                        // Trap 4: Hide cursor
+                        // Trap 4: Taunting text appears
+                        document.getElementById('insult1').style.opacity = '1';
+                        break;
+                    case 5:
+                        // Trap 5: Continuous slow screen rotation
+                        body.style.animation = 'shake 0.3s infinite, spin 4s linear infinite';
+                        break;
+                    case 6:
+                        // Trap 6: Hide the cursor completely
                         body.style.cursor = 'none';
                         btn.style.cursor = 'none';
                         break;
-                    case 5:
-                        // Trap 5: Screen shake
-                        body.style.animation = 'shake 0.5s infinite';
-                        break;
-                    case 6:
-                        // Trap 6: Insult 1 appears
-                        document.getElementById('insult1').style.opacity = '1';
-                        break;
                     case 7:
-                        // Trap 7: Flashing colors
-                        body.style.animation = 'shake 0.5s infinite, flash 0.5s infinite';
-                        break;
-                    case 8:
-                        // Trap 8: Heavy blur
-                        body.style.filter = 'blur(4px)';
-                        break;
-                    case 9:
-                        // Trap 9: Button moves erratically on its own
-                        trapInterval = setInterval(moveButton, 300);
-                        break;
-                    case 10:
-                        // Trap 10: Invert colors
-                        body.style.filter = 'blur(4px) invert(100%)';
-                        break;
-                    case 11:
-                        // Trap 11: Insult 2 appears
+                        // Trap 7: More taunting text
                         document.getElementById('insult2').style.opacity = '1';
                         break;
+                    case 8:
+                        // Trap 8: Flashing strobe colors
+                        body.style.animation = 'shake 0.3s infinite, spin 4s linear infinite, flash 0.2s infinite';
+                        break;
+                    case 9:
+                        // Trap 9: Real button starts spazzing out randomly
+                        trapInterval = setInterval(moveButton, 150);
+                        break;
+                    case 10:
+                        // Trap 10: Invert all colors
+                        body.style.filter = 'invert(100%)';
+                        break;
+                    case 11:
+                        // Trap 11: Massive insult in the middle
+                        document.getElementById('insult3').style.opacity = '1';
+                        break;
                     case 12:
-                        // Trap 12: Shrink the whole game window
-                        body.style.transform = 'rotate(180deg) scale(0.5)';
+                        // Trap 12: Extreme blur
+                        body.style.filter = 'invert(100%) blur(5px)';
                         break;
                     case 13:
-                        // Trap 13: Button grows massive
-                        btn.style.transform = 'scale(10)';
-                        btn.style.opacity = '0.5';
+                        // Trap 13: Real button inflates and takes over
+                        clearInterval(trapInterval);
+                        btn.style.transform = 'scale(20)';
+                        btn.style.opacity = '0.9';
                         break;
                     case 14:
-                        // Trap 14: Change text to final troll
-                        btn.innerText = "FORMATTING C: DRIVE...";
-                        btn.style.fontSize = "0.5rem";
+                        // Trap 14: Change text right before the end
+                        btn.innerHTML = "DELETING<br>SYSTEM32...";
+                        btn.style.fontSize = "0.2rem"; // Tiny text on huge button
                         break;
                     case 15:
                         // Trap 15: Black screen of death
                         clearInterval(traps);
-                        clearInterval(trapInterval);
-                        body.style = "background-color: black; color: white; display: flex; justify-content: center; align-items: center; font-size: 2rem;";
-                        body.innerHTML = "<h1>GAME OVER. YOU GOT TROLLED.</h1>";
+                        body.style = "background-color: black; color: red; display: flex; justify-content: center; align-items: center; font-size: 3rem; text-align: center; font-weight: bold; font-family: monospace;";
+                        body.innerHTML = "<div>CRITICAL SYSTEM FAILURE<br><br>ERROR CODE: T-R-0-L-L-E-D<br><br>PLEASE RESTART YOUR BROWSER.</div>";
                         break;
                 }
                 trapStep++;
-            }, 2000); // Triggers a new trap every 2 seconds
+            }, 1800); // Triggers a new rage mechanic every 1.8 seconds
         }
     </script>
 </body>
