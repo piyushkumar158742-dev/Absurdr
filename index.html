@@ -30,6 +30,7 @@
   }
   .nav-btn:hover{ background:rgba(255,255,255,0.08); color:var(--nebula-rose); }
   .nav-btn:focus-visible{ outline:2px solid var(--stellar-gold); outline-offset:2px; }
+  .nav-btn:disabled{ opacity:0; pointer-events:none; cursor:default; }
   .month-display{
     font-family:'Space Mono',monospace; font-weight:700;
     font-size:clamp(0.95rem, 3vw, 1.2rem);
@@ -201,11 +202,9 @@
           <span class="time-ago" id="display-time"></span>
         </div>
         
-        <div class="event-title" id="display-title">Select a Date</div>
+        <div class="event-title" id="display-title">Loading...</div>
         
-        <div class="event-desc" id="display-desc">
-          The timeline spans 13.8 billion years. Select a temporal coordinate from the grid to retrieve archival data and observe the evolution of the cosmos.
-        </div>
+        <div class="event-desc" id="display-desc"></div>
         
         <div class="orbit-progress" id="orbit-progress" style="display: none;">
           <svg viewBox="0 0 60 60" aria-hidden="true">
@@ -218,16 +217,10 @@
     </div>
   </div>
 
-  <nav class="game-nav" aria-label="Game navigation">
-    <button class="game-nav-btn" id="first-game-btn" aria-label="First game" type="button">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="6" y1="5" x2="6" y2="19"></line>
-        <path d="M18 5 9 12l9 7Z"></path>
-      </svg>
-    </button>
+  <nav class="game-nav" id="game-nav" aria-label="Game navigation" tabindex="0">
     <button class="game-nav-btn" id="back-game-btn" aria-label="Previous game" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M15 5 6 12l9 7Z"></path>
+        <path d="M16.5 5 7.5 12l9 7Z"></path>
       </svg>
     </button>
     <button class="game-nav-btn random-btn" id="random-game-btn" aria-label="Random game" type="button">
@@ -242,13 +235,7 @@
     </button>
     <button class="game-nav-btn" id="next-game-btn" aria-label="Next game" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M9 5l9 7-9 7Z"></path>
-      </svg>
-    </button>
-    <button class="game-nav-btn" id="last-game-btn" aria-label="Last game" type="button">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M6 5l9 7-9 7Z"></path>
-        <line x1="18" y1="5" x2="18" y2="19"></line>
+        <path d="M7.5 5l9 7-9 7Z"></path>
       </svg>
     </button>
   </nav>
@@ -259,7 +246,21 @@
   var reduceMotion = document.documentElement.classList.contains('no-motion');
   var daysInMonth = [31,28,31,30,31,30,31,31,30,31,30,31];
   var monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-  var currentMonthIndex = 8; // September
+
+  var todayDate = new Date();
+  var REAL_TODAY_MONTH = todayDate.getMonth();
+  var REAL_TODAY_DATE = todayDate.getDate();
+  var currentMonthIndex = REAL_TODAY_MONTH;
+
+  function autoSelectForMonth(monthIndex){
+    var day = (monthIndex === REAL_TODAY_MONTH) ? REAL_TODAY_DATE : 1;
+    return Math.min(day, daysInMonth[monthIndex]);
+  }
+
+  function updateMonthNavButtons(){
+    document.getElementById('prev-month').disabled = (currentMonthIndex === 0);
+    document.getElementById('next-month').disabled = (currentMonthIndex === 11);
+  }
 
   var TOTAL_AGE_YEARS = 13800000000;
   var YEARS_PER_DAY = TOTAL_AGE_YEARS / 365;
@@ -405,12 +406,16 @@
     }, reduceMotion ? 0 : 200);
   }
 
-  function renderCalendar(monthIndex, focusIndex){
+  function renderCalendar(monthIndex, selectIndex){
     monthDisplay.textContent = monthNames[monthIndex];
     grid.innerHTML = '';
     var days = daysInMonth[monthIndex];
     var monthMajorEvents = majorEvents[monthIndex] || {};
     var dayEls = [];
+    var dayData = [];
+
+    if(typeof selectIndex !== 'number'){ selectIndex = autoSelectForMonth(monthIndex); }
+    selectIndex = Math.min(Math.max(selectIndex, 1), days);
 
     for(var i=1;i<=days;i++){
       (function(i){
@@ -419,7 +424,7 @@
         dayEl.textContent = i;
         dayEl.style.setProperty('--i', i);
         dayEl.setAttribute('role','gridcell');
-        dayEl.setAttribute('tabindex', i===1 ? '0' : '-1');
+        dayEl.setAttribute('tabindex', i===selectIndex ? '0' : '-1');
 
         var eventData;
         if(monthMajorEvents[i]){
@@ -442,17 +447,17 @@
 
         grid.appendChild(dayEl);
         dayEls.push(dayEl);
+        dayData.push(eventData);
       })(i);
     }
 
-    if(typeof focusIndex === 'number'){
-      var target = dayEls[focusIndex-1] || dayEls[dayEls.length-1];
-      if(target){
-        dayEls.forEach(function(d){ d.setAttribute('tabindex','-1'); });
-        target.setAttribute('tabindex','0');
-        target.focus();
-      }
+    var target = dayEls[selectIndex-1];
+    if(target){
+      selectDay(monthIndex, target, selectIndex, dayData[selectIndex-1]);
+      target.focus();
     }
+
+    updateMonthNavButtons();
   }
 
   function handleDayKeydown(e, monthIndex, dayIndex, dayEl, eventData){
@@ -465,11 +470,11 @@
     var days = daysInMonth[monthIndex];
     if(key==='ArrowRight'){
       e.preventDefault();
-      if(dayIndex+1 > days){ goToMonth((monthIndex+1)%12, 1); }
+      if(dayIndex+1 > days){ if(monthIndex < 11){ goToMonth(monthIndex+1, 1); } }
       else { focusDayInCurrentMonth(dayIndex+1); }
     } else if(key==='ArrowLeft'){
       e.preventDefault();
-      if(dayIndex-1 < 1){ var pm=(monthIndex-1+12)%12; goToMonth(pm, daysInMonth[pm]); }
+      if(dayIndex-1 < 1){ if(monthIndex > 0){ var pm=monthIndex-1; goToMonth(pm, daysInMonth[pm]); } }
       else { focusDayInCurrentMonth(dayIndex-1); }
     } else if(key==='ArrowDown'){
       e.preventDefault();
@@ -494,26 +499,15 @@
     renderCalendar(currentMonthIndex, focusIndex);
   }
 
-  function resetPanel(){
-    eventContent.classList.remove('visible');
-    setTimeout(function(){
-      document.getElementById('meta-header').style.display = 'none';
-      document.getElementById('orbit-progress').style.display = 'none';
-      displayTitle.textContent = "Select a Date";
-      displayDesc.textContent = "The timeline spans 13.8 billion years. Select a temporal coordinate from the grid to retrieve archival data and observe the evolution of the cosmos.";
-      eventContent.classList.add('visible');
-    }, reduceMotion ? 0 : 200);
-  }
-
   document.getElementById('prev-month').addEventListener('click', function(){
-    currentMonthIndex = (currentMonthIndex-1+12)%12;
+    if(currentMonthIndex === 0) return;
+    currentMonthIndex = currentMonthIndex-1;
     renderCalendar(currentMonthIndex);
-    resetPanel();
   });
   document.getElementById('next-month').addEventListener('click', function(){
-    currentMonthIndex = (currentMonthIndex+1)%12;
+    if(currentMonthIndex === 11) return;
+    currentMonthIndex = currentMonthIndex+1;
     renderCalendar(currentMonthIndex);
-    resetPanel();
   });
 
   var touchStartX = null;
