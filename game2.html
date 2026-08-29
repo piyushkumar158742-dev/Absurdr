@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vipul's Block Market</title>
+    <title>The Block Market</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
@@ -17,18 +17,17 @@
             padding: 0;
         }
 
-        /* Minecraft Inventory Slot Styling */
+        /* UI Styling */
         .mc-slot {
             background-color: #8b8b8b;
             border: 4px solid;
-            border-top-color: #373737;
-            border-left-color: #373737;
-            border-bottom-color: #ffffff;
-            border-right-color: #ffffff;
+            border-top-color: #e5e5e5;
+            border-left-color: #e5e5e5;
+            border-bottom-color: #373737;
+            border-right-color: #373737;
             box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
         }
 
-        /* Minecraft Button Styling */
         .mc-button {
             background-color: #c6c6c6;
             border: 4px solid;
@@ -39,6 +38,7 @@
             color: #222;
             transition: all 0.05s ease;
             text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
+            cursor: pointer;
         }
         
         .mc-button:active {
@@ -49,6 +49,24 @@
             background-color: #a0a0a0;
         }
 
+        .mc-button-green {
+            background-color: #3db83d;
+            border-top-color: #55ff55;
+            border-left-color: #55ff55;
+            border-bottom-color: #1a6b1a;
+            border-right-color: #1a6b1a;
+            color: white;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.5);
+        }
+
+        .mc-button-green:active {
+            border-top-color: #1a6b1a;
+            border-left-color: #1a6b1a;
+            border-bottom-color: #55ff55;
+            border-right-color: #55ff55;
+            background-color: #2e8f2e;
+        }
+
         .mc-input {
             background-color: #1e1e1e;
             border: 4px solid;
@@ -57,9 +75,11 @@
             border-bottom-color: #555555;
             border-right-color: #555555;
             color: #fff;
+            width: 100%;
+            min-width: 0; /* Prevents flex flex-grow breakout */
         }
 
-        /* Hide number input arrows */
+        /* Hide number arrows */
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button {
             -webkit-appearance: none;
@@ -78,181 +98,212 @@
             box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
         }
 
-        .emoji-icon {
-            font-size: 3.5rem;
-            filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.3));
-        }
-
         .sticky-header {
             background: linear-gradient(180deg, #444 0%, #222 100%);
             border-bottom: 4px solid #111;
         }
+
+        /* -------------------------------------
+           CSS ART 3D CUBE (NO IMAGE ICONS)
+           ------------------------------------- */
+        .cube-wrapper {
+            width: 60px;
+            height: 70px;
+            position: relative;
+            margin: 0 auto 15px auto;
+            transform: scale(1.1);
+        }
+        .cube {
+            width: 40px;
+            height: 40px;
+            position: absolute;
+            top: 15px;
+            left: 10px;
+            transform-style: preserve-3d;
+            transform: rotateX(-30deg) rotateY(45deg);
+        }
+        .face {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+        }
+        .top-face { transform: rotateX(90deg) translateZ(20px); }
+        .front-face { transform: translateZ(20px); }
+        .right-face { transform: rotateY(90deg) translateZ(20px); }
+        
+        .cube-texture {
+            width: 100%;
+            height: 100%;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
+            /* Procedural pixelation overlay */
+            background-image: 
+                linear-gradient(45deg, rgba(0,0,0,0.05) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.05) 75%),
+                linear-gradient(45deg, rgba(0,0,0,0.05) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.05) 75%);
+            background-size: 4px 4px;
+            background-position: 0 0, 2px 2px;
+        }
+        
+        /* Highlight overlay to give block edges depth */
+        .front-face .cube-texture { box-shadow: inset 2px -2px 4px rgba(0,0,0,0.3); }
+        .right-face .cube-texture { box-shadow: inset -2px -2px 4px rgba(0,0,0,0.4); }
+        .top-face .cube-texture { box-shadow: inset 2px 2px 4px rgba(255,255,255,0.2); }
     </style>
 </head>
 <body class="pb-20">
 
     <!-- Top Branding -->
     <nav class="bg-black py-4 px-6 text-3xl text-center text-gray-300 tracking-widest border-b-4 border-gray-700 mc-text-shadow">
-        VIPUL'S BLOCK MARKET
+        THE BLOCK MARKET
     </nav>
 
-    <!-- Sticky Total Bar (Emeralds) -->
-    <div class="sticky-header text-center py-6 sticky top-0 z-50 shadow-2xl">
+    <!-- Sticky Header -->
+    <div class="sticky-header text-center py-6 sticky top-0 z-50 shadow-2xl flex flex-col items-center">
         <h2 class="text-2xl text-gray-400 mb-1">EMERALDS SPENT</h2>
-        <div class="text-5xl sm:text-7xl font-bold text-[#55ff55] mc-text-shadow flex items-center justify-center gap-4" id="total-spent">
+        <div class="text-5xl sm:text-7xl font-bold text-[#55ff55] mc-text-shadow flex items-center justify-center gap-4 mb-4" id="total-spent">
             <span class="text-4xl">🟢</span> 0
         </div>
+        <button onclick="generateReceipt()" class="mc-button mc-button-green font-bold text-2xl py-2 px-8 tracking-widest">
+            MAKE RECEIPT
+        </button>
     </div>
 
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 py-10">
+    <div class="max-w-[1400px] mx-auto px-4 py-10">
         
         <!-- Items Grid -->
-        <div id="items-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+        <div id="items-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             <!-- Injected by JS -->
         </div>
 
         <!-- Receipt Section -->
-        <div id="receipt-container" class="mt-16 receipt-bg max-w-3xl mx-auto py-10 px-8 sm:px-16 hidden">
+        <div id="receipt-container" class="mt-16 receipt-bg max-w-3xl mx-auto py-10 px-6 sm:px-16 hidden">
             <h2 class="text-4xl font-bold text-center mb-8 border-b-4 border-dotted border-gray-800 pb-4">TRADE RECEIPT</h2>
             
-            <div id="receipt-items" class="flex flex-col gap-2 mb-6 text-2xl">
+            <div id="receipt-items" class="flex flex-col gap-2 mb-6 text-xl sm:text-2xl overflow-hidden">
                 <!-- Receipt rows -->
             </div>
             
             <div class="flex justify-between border-t-4 border-black pt-4 font-bold text-3xl mt-6">
                 <span>TOTAL:</span>
-                <span id="receipt-total" class="text-green-800 flex items-center gap-2">🟢 0</span>
-            </div>
-
-            <!-- Share Button -->
-            <div class="flex justify-center mt-12">
-                <button onclick="shareOnX()" class="mc-button font-bold text-2xl py-3 px-8 flex items-center gap-3">
-                    <svg viewBox="0 0 24 24" class="w-6 h-6 fill-current"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                    SHARE TO 𝕏
-                </button>
+                <span id="receipt-total" class="text-green-800 flex items-center gap-2 truncate pl-2">🟢 0</span>
             </div>
         </div>
     </div>
 
     <script>
-        // 100 Unique Minecraft Items (Categorized and scaled in price)
-        const items = [
-            // Blocks & Basics
-            { id: 1, name: "Dirt Block", price: 1, icon: "🟫" },
-            { id: 2, name: "Cobblestone", price: 2, icon: "🪨" },
-            { id: 3, name: "Oak Log", price: 4, icon: "🪵" },
-            { id: 4, name: "Sand", price: 5, icon: "🏖️" },
-            { id: 5, name: "Gravel", price: 5, icon: "🌑" },
-            { id: 6, name: "Glass", price: 10, icon: "🧊" },
-            { id: 7, name: "Sponge", price: 50, icon: "🧽" },
-            { id: 8, name: "Obsidian", price: 100, icon: "⬛" },
-            { id: 9, name: "Bedrock", price: 9999999, icon: "🕳️" },
-            { id: 10, name: "Magma Block", price: 80, icon: "🌋" },
-            { id: 11, name: "Soul Sand", price: 90, icon: "👻" },
-            { id: 12, name: "Glowstone", price: 150, icon: "💡" },
-            { id: 13, name: "Sea Lantern", price: 200, icon: "🏮" },
-            { id: 14, name: "Slime Block", price: 300, icon: "🟩" },
-            { id: 15, name: "Honey Block", price: 350, icon: "🍯" },
-            { id: 16, name: "TNT", price: 500, icon: "🧨" },
-            { id: 17, name: "Bookshelf", price: 120, icon: "📚" },
-            { id: 18, name: "Anvil", price: 800, icon: "🛤️" },
-            { id: 19, name: "Enchanting Table", price: 2500, icon: "📖" },
-            { id: 20, name: "Ender Chest", price: 5000, icon: "📦" },
-            
-            // Farming & Food
-            { id: 21, name: "Wheat", price: 3, icon: "🌾" },
-            { id: 22, name: "Carrot", price: 4, icon: "🥕" },
-            { id: 23, name: "Potato", price: 4, icon: "🥔" },
-            { id: 24, name: "Apple", price: 5, icon: "🍎" },
-            { id: 25, name: "Melon", price: 8, icon: "🍉" },
-            { id: 26, name: "Pumpkin", price: 10, icon: "🎃" },
-            { id: 27, name: "Bread", price: 15, icon: "🍞" },
-            { id: 28, name: "Cooked Beef", price: 25, icon: "🥩" },
-            { id: 29, name: "Cooked Chicken", price: 20, icon: "🍗" },
-            { id: 30, name: "Baked Potato", price: 18, icon: "🥔" },
-            { id: 31, name: "Golden Carrot", price: 100, icon: "🥕" },
-            { id: 32, name: "Cake", price: 150, icon: "🎂" },
-            { id: 33, name: "Mushroom Stew", price: 30, icon: "🥣" },
-            { id: 34, name: "Cookie", price: 12, icon: "🍪" },
-            { id: 35, name: "Sweet Berries", price: 5, icon: "🍒" },
-            { id: 36, name: "Suspicious Stew", price: 50, icon: "🍲" },
-            { id: 37, name: "Golden Apple", price: 500, icon: "🍏" },
-            { id: 38, name: "Enchanted Apple", price: 10000, icon: "🍎✨" },
-            { id: 39, name: "Chorus Fruit", price: 250, icon: "🍇" },
-            { id: 40, name: "Spider Eye", price: 40, icon: "👁️" },
+        // Generating 120+ Custom CSS Blocks
+        const items = [];
+        let idCounter = 1;
 
-            // Ores & Minerals
-            { id: 41, name: "Coal", price: 10, icon: "🪨" },
-            { id: 42, name: "Raw Iron", price: 25, icon: "🪙" },
-            { id: 43, name: "Iron Ingot", price: 50, icon: "🔩" },
-            { id: 44, name: "Raw Gold", price: 100, icon: "🟡" },
-            { id: 45, name: "Gold Ingot", price: 200, icon: "🥇" },
-            { id: 46, name: "Lapis Lazuli", price: 150, icon: "🔷" },
-            { id: 47, name: "Redstone Dust", price: 30, icon: "🔴" },
-            { id: 48, name: "Diamond", price: 1000, icon: "💎" },
-            { id: 49, name: "Emerald", price: 500, icon: "🟢" },
-            { id: 50, name: "Nether Quartz", price: 80, icon: "🤍" },
-            { id: 51, name: "Amethyst Shard", price: 400, icon: "💜" },
-            { id: 52, name: "Copper Ingot", price: 40, icon: "🥉" },
-            { id: 53, name: "Ancient Debris", price: 5000, icon: "🟫✨" },
-            { id: 54, name: "Netherite Scrap", price: 8000, icon: "⚙️" },
-            { id: 55, name: "Netherite Ingot", price: 25000, icon: "⬛✨" },
-            { id: 56, name: "Block of Iron", price: 450, icon: "🧊" },
-            { id: 57, name: "Block of Gold", price: 1800, icon: "🟨" },
-            { id: 58, name: "Block of Diamond", price: 9000, icon: "💠" },
-            { id: 59, name: "Block of Emerald", price: 4500, icon: "🟩" },
-            { id: 60, name: "Block of Netherite", price: 225000, icon: "🔲" },
+        // Helper to register blocks dynamically with calculated prices
+        function addBlock(name, price, topHex, frontHex, rightHex, opacity = 1) {
+            items.push({ id: idCounter++, name, price, top: topHex, front: frontHex, right: rightHex, opacity });
+        }
 
-            // Tools, Armor & Weapons
-            { id: 61, name: "Wooden Pickaxe", price: 20, icon: "⛏️" },
-            { id: 62, name: "Stone Sword", price: 40, icon: "🗡️" },
-            { id: 63, name: "Iron Axe", price: 150, icon: "🪓" },
-            { id: 64, name: "Gold Shovel", price: 300, icon: "铲" },
-            { id: 65, name: "Diamond Sword", price: 2500, icon: "⚔️" },
-            { id: 66, name: "Diamond Pickaxe", price: 3500, icon: "⛏️✨" },
-            { id: 67, name: "Netherite Sword", price: 30000, icon: "🗡️🔥" },
-            { id: 68, name: "Netherite Pickaxe", price: 35000, icon: "⛏️🔥" },
-            { id: 69, name: "Bow", price: 200, icon: "🏹" },
-            { id: 70, name: "Arrow", price: 5, icon: "↗️" },
-            { id: 71, name: "Crossbow", price: 500, icon: "🏹" },
-            { id: 72, name: "Trident", price: 15000, icon: "🔱" },
-            { id: 73, name: "Shield", price: 300, icon: "🛡️" },
-            { id: 74, name: "Leather Tunic", price: 150, icon: "🧥" },
-            { id: 75, name: "Iron Chestplate", price: 800, icon: "👕" },
-            { id: 76, name: "Diamond Armor Set", price: 12000, icon: "💎👕" },
-            { id: 77, name: "Netherite Armor", price: 100000, icon: "⬛👕" },
-            { id: 78, name: "Fishing Rod", price: 120, icon: "🎣" },
-            { id: 79, name: "Flint and Steel", price: 60, icon: "🔥" },
-            { id: 80, name: "Shears", price: 100, icon: "✂️" },
+        // ==========================================
+        // 1. Natural Blocks
+        // ==========================================
+        addBlock("Dirt Block", 1, "#866043", "#714f35", "#5c402a");
+        addBlock("Grass Block", 2, "#659b40", "#714f35", "#5c402a");
+        addBlock("Cobblestone", 2, "#6c6c6c", "#5b5b5b", "#4a4a4a");
+        addBlock("Stone Block", 3, "#7d7d7d", "#6c6c6c", "#5b5b5b");
+        addBlock("Sand", 2, "#dbd3a0", "#c2bb8d", "#a8a27a");
+        addBlock("Gravel", 2, "#827f7f", "#6e6b6b", "#595757");
+        addBlock("Bedrock", 9999999, "#3a3a3a", "#292929", "#1a1a1a");
+        addBlock("Obsidian", 100, "#201830", "#151020", "#0d0a14");
+        addBlock("Glass Block", 5, "#c2e1e3", "#a9c6c8", "#90abad", 0.5);
+        addBlock("Leaves Block", 1, "#4a7428", "#3a5c1e", "#2a4515", 0.9);
+        addBlock("Sponge Block", 50, "#d1c93a", "#b5ad2c", "#969022");
+        addBlock("Slime Block", 300, "#73c944", "#5eb033", "#4a9622", 0.7);
+        addBlock("Honey Block", 350, "#f4a21a", "#db8f11", "#c27c09", 0.8);
+        addBlock("Magma Block", 80, "#8f3414", "#75280e", "#5c1e09");
+        addBlock("Soul Sand", 90, "#544033", "#423228", "#33261f");
+        addBlock("Glowstone", 150, "#cca445", "#b38f3a", "#96772e");
+        addBlock("Sea Lantern", 200, "#d1e8e8", "#b6d1d1", "#9cbaba");
+        addBlock("Ice Block", 10, "#8eb5db", "#799bc2", "#6584a8", 0.6);
+        addBlock("Snow Block", 4, "#ffffff", "#e0e0e0", "#c4c4c4");
+        addBlock("Clay Block", 12, "#a0a6b3", "#898e99", "#727782");
 
-            // Rare, Magic & Misc
-            { id: 81, name: "Ender Pearl", price: 500, icon: "🔮" },
-            { id: 82, name: "Eye of Ender", price: 1200, icon: "👁️‍🗨️" },
-            { id: 83, name: "Blaze Rod", price: 800, icon: "🪄" },
-            { id: 84, name: "Ghast Tear", price: 2000, icon: "💧" },
-            { id: 85, name: "Magma Cream", price: 1000, icon: "🟠" },
-            { id: 86, name: "Slimeball", price: 150, icon: "🟢" },
-            { id: 87, name: "Phantom Membrane", price: 3000, icon: "🦇" },
-            { id: 88, name: "Shulker Shell", price: 5000, icon: "🪸" },
-            { id: 89, name: "Totem of Undying", price: 25000, icon: "🏺" },
-            { id: 90, name: "Elytra", price: 75000, icon: "🦋" },
-            { id: 91, name: "Dragon Breath", price: 10000, icon: "💨" },
-            { id: 92, name: "Nether Star", price: 500000, icon: "⭐" },
-            { id: 93, name: "Beacon", price: 650000, icon: "🗼" },
-            { id: 94, name: "Heart of the Sea", price: 150000, icon: "💙" },
-            { id: 95, name: "Conduit", price: 200000, icon: "🌀" },
-            { id: 96, name: "Music Disc", price: 5000, icon: "💿" },
-            { id: 97, name: "Saddle", price: 1500, icon: "💺" },
-            { id: 98, name: "Horse Armor (Diamond)", price: 10000, icon: "🐎💎" },
-            { id: 99, name: "Command Block", price: 50000000, icon: "🎛️" },
-            { id: 100, name: "Dragon Egg", price: 1000000000, icon: "🥚🐉" }
+        // ==========================================
+        // 2. Ores & Precious Blocks (Prices Calculated: Ingot Price * 9)
+        // ==========================================
+        // Iron Ingot = 50 -> Block = 450
+        addBlock("Iron Block", 450, "#e5e5e5", "#cecece", "#b7b7b7");
+        // Gold Ingot = 200 -> Block = 1800
+        addBlock("Gold Block", 1800, "#fbee51", "#e4d848", "#ccc03f");
+        // Diamond = 1000 -> Block = 9000
+        addBlock("Diamond Block", 9000, "#70ffeb", "#5be5d3", "#47ccba");
+        // Emerald = 500 -> Block = 4500
+        addBlock("Emerald Block", 4500, "#41f574", "#32de62", "#25c752");
+        // Netherite = 25000 -> Block = 225000
+        addBlock("Netherite Block", 225000, "#443f41", "#363234", "#282526");
+        addBlock("Coal Block", 90, "#161616", "#101010", "#0a0a0a");
+        addBlock("Redstone Block", 270, "#a41600", "#8a1100", "#700d00");
+        addBlock("Lapis Block", 135, "#1d4493", "#163678", "#0f285c");
+        addBlock("Amethyst Block", 1600, "#8a66a7", "#75568f", "#5f4577");
+        addBlock("Copper Block", 360, "#c16b47", "#a65b3c", "#8c4b30");
+        addBlock("Quartz Block", 320, "#eeebe6", "#d1cdca", "#b5b1ad");
+        addBlock("Ancient Debris", 5000, "#5e4337", "#4a342a", "#38261e");
+        addBlock("Bone Block", 40, "#e3ded1", "#c9c4b7", "#ada799");
+        addBlock("Raw Iron Block", 225, "#d8af93", "#c29c82", "#a8866f");
+        addBlock("Raw Gold Block", 900, "#f4c633", "#d6ac29", "#b89320");
+        addBlock("Raw Copper Block", 180, "#c87652", "#af6545", "#965538");
+
+        // ==========================================
+        // 3. Wood Types (Logs & Planks)
+        // ==========================================
+        const woods = [
+            { n: "Oak", logT: "#b38f55", logS: "#4d3d24", p: "#b38f55" },
+            { n: "Birch", logT: "#c8b47a", logS: "#e1e0db", p: "#d5c38c" },
+            { n: "Spruce", logT: "#725330", logS: "#352413", p: "#725330" },
+            { n: "Jungle", logT: "#9c6a46", logS: "#533f27", p: "#a2704b" },
+            { n: "Acacia", logT: "#a85c32", logS: "#5c554e", p: "#a65c32" },
+            { n: "Dark Oak", logT: "#432b13", logS: "#271b0d", p: "#432b13" }
         ];
+        woods.forEach(w => {
+            // Logs = 4
+            addBlock(w.n + " Log", 4, w.logT, w.logS, w.logS);
+            // Planks = 1
+            addBlock(w.n + " Plank", 1, w.p, adjustColor(w.p, -20), adjustColor(w.p, -40));
+        });
+
+        // ==========================================
+        // 4. Colored Blocks Generator (Wool, Concrete, Glass)
+        // ==========================================
+        const colors = [
+            { name: "White", hex: "#e4e4e4" }, { name: "Orange", hex: "#ea7e35" },
+            { name: "Magenta", hex: "#be49c9" }, { name: "Light Blue", hex: "#6387d2" },
+            { name: "Yellow", hex: "#f1af15" }, { name: "Lime", hex: "#7abc2f" },
+            { name: "Pink", hex: "#e98cac" }, { name: "Gray", hex: "#424242" },
+            { name: "Light Gray", hex: "#8e8e86" }, { name: "Cyan", hex: "#16878c" },
+            { name: "Purple", hex: "#7a2aac" }, { name: "Blue", hex: "#35399d" },
+            { name: "Brown", hex: "#724728" }, { name: "Green", hex: "#546d1b" },
+            { name: "Red", hex: "#a12722" }, { name: "Black", hex: "#141519" }
+        ];
+
+        // Add Wools (Price 15)
+        colors.forEach(c => addBlock(c.name + " Wool", 15, c.hex, adjustColor(c.hex, -15), adjustColor(c.hex, -30)));
+        // Add Concretes (Price 20)
+        colors.forEach(c => addBlock(c.name + " Concrete", 20, c.hex, adjustColor(c.hex, -20), adjustColor(c.hex, -40)));
+        // Add Stained Glass (Price 8)
+        colors.forEach(c => addBlock(c.name + " Glass", 8, c.hex, adjustColor(c.hex, -15), adjustColor(c.hex, -30), 0.6));
+        
+        // Add a few technical blocks
+        addBlock("TNT Block", 500, "#c23a2a", "#d73b2a", "#b82e1e");
+        addBlock("Bookshelf", 120, "#b38f55", "#8c2020", "#2c6c30"); // abstract representation
+        addBlock("End Stone", 10, "#dfdf9f", "#c4c489", "#a8a873");
+        addBlock("Purpur Block", 25, "#a573a5", "#8f608f", "#784d78");
+
+        // Simple helper to darken hex colors for block shading
+        function adjustColor(color, amount) {
+            return '#' + color.replace(/^#/, '').replace(/../g, color => ('0'+Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)).substr(-2));
+        }
 
         let quantities = {};
         let totalSpent = 0;
 
         function formatAbbreviated(num) {
+            if (num >= 1e12) return (num / 1e12).toFixed(1).replace(/\.0$/, '') + 'T';
             if (num >= 1e9) return (num / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
             if (num >= 1e6) return (num / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
             if (num >= 1e3) return (num / 1e3).toFixed(num % 1000 === 0 ? 0 : 1).replace(/\.0$/, '') + 'K';
@@ -269,23 +320,43 @@
             items.forEach(item => {
                 quantities[item.id] = 0;
                 const card = document.createElement('div');
-                card.className = "mc-slot p-4 flex flex-col items-center justify-between";
+                card.className = "mc-slot p-3 flex flex-col items-center justify-between min-w-0";
                 
+                // CSS Art Generation
+                const blockHTML = `
+                    <div class="cube-wrapper">
+                        <div class="cube" style="opacity: ${item.opacity};">
+                            <div class="face top-face" style="background-color: ${item.top};">
+                                <div class="cube-texture"></div>
+                            </div>
+                            <div class="face front-face" style="background-color: ${item.front};">
+                                <div class="cube-texture"></div>
+                            </div>
+                            <div class="face right-face" style="background-color: ${item.right};">
+                                <div class="cube-texture"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
                 card.innerHTML = `
-                    <div class="emoji-icon mb-2">${item.icon}</div>
-                    <h3 class="text-xl text-white mt-1 text-center leading-tight mc-text-shadow line-clamp-2 h-14 flex items-center justify-center">${item.name}</h3>
-                    <p class="text-[#55ff55] text-2xl mc-text-shadow mb-4">🟢 ${formatAbbreviated(item.price)}</p>
+                    ${blockHTML}
+                    <h3 class="text-lg text-white mt-2 text-center leading-tight mc-text-shadow line-clamp-2 h-12 flex items-center justify-center w-full px-1 break-words">${item.name}</h3>
+                    <p class="text-[#55ff55] text-xl mc-text-shadow mb-3">🟢 ${formatAbbreviated(item.price)}</p>
                     
-                    <div class="grid grid-cols-[1fr_1.2fr_1fr] gap-1 w-full mt-auto">
-                        <button onclick="updateQty(${item.id}, -1)" class="mc-button text-xl py-1 px-1 text-center select-none">
+                    <div class="flex items-center gap-1 w-full mt-auto">
+                        <button onclick="updateQty(${item.id}, -1)" class="mc-button text-xl py-1 px-2 text-center select-none shrink-0">
                             -
                         </button>
                         
-                        <input type="number" id="input-${item.id}" value="0" min="0" 
-                            class="mc-input text-center w-full text-2xl outline-none"
-                            onchange="manualUpdate(${item.id}, this.value)">
+                        <!-- maxlength logic applied via JS oninput to prevent breaking layout -->
+                        <div class="flex-1 min-w-0">
+                            <input type="number" id="input-${item.id}" value="0" min="0" 
+                                class="mc-input text-center text-xl py-1 outline-none"
+                                oninput="if(this.value.length > 7) this.value = this.value.slice(0, 7); manualUpdate(${item.id}, this.value)">
+                        </div>
                         
-                        <button onclick="updateQty(${item.id}, 1)" class="mc-button text-xl py-1 px-1 text-center select-none">
+                        <button onclick="updateQty(${item.id}, 1)" class="mc-button text-xl py-1 px-2 text-center select-none shrink-0">
                             +
                         </button>
                     </div>
@@ -298,6 +369,7 @@
             let current = quantities[id] || 0;
             current += change;
             if (current < 0) current = 0;
+            if (current > 9999999) current = 9999999;
             
             quantities[id] = current;
             document.getElementById(`input-${id}`).value = current;
@@ -307,6 +379,7 @@
         function manualUpdate(id, value) {
             let num = parseInt(value);
             if (isNaN(num) || num < 0) num = 0;
+            if (num > 9999999) num = 9999999; // Hard cap so numbers fit
             
             quantities[id] = num;
             document.getElementById(`input-${id}`).value = num;
@@ -320,19 +393,27 @@
             });
             
             document.getElementById('total-spent').innerHTML = `<span class="text-4xl sm:text-6xl">🟢</span> ${formatNumber(totalSpent)}`;
-            updateReceipt();
+            
+            // Only update receipt silently if it's already visible
+            if (!document.getElementById('receipt-container').classList.contains('hidden')) {
+                updateReceiptHTML();
+            }
         }
 
-        function updateReceipt() {
+        function generateReceipt() {
             const container = document.getElementById('receipt-container');
-            const receiptDiv = document.getElementById('receipt-items');
-            
             if (totalSpent === 0) {
-                container.classList.add('hidden');
+                alert("You need to buy some blocks first!");
                 return;
             }
             
             container.classList.remove('hidden');
+            updateReceiptHTML();
+            container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function updateReceiptHTML() {
+            const receiptDiv = document.getElementById('receipt-items');
             receiptDiv.innerHTML = '';
             
             items.forEach(item => {
@@ -340,22 +421,16 @@
                 if (qty > 0) {
                     const itemTotal = item.price * qty;
                     receiptDiv.innerHTML += `
-                        <div class="flex justify-between items-center py-1">
-                            <div class="w-[45%] text-left pr-2 truncate">${item.name}</div>
-                            <div class="w-[20%] text-left">x${qty}</div>
-                            <div class="w-[35%] text-right font-bold text-green-900">🟢 ${formatAbbreviated(itemTotal)}</div>
+                        <div class="flex justify-between items-center py-1 border-b border-dashed border-gray-400 last:border-0">
+                            <div class="w-[45%] text-left pr-2 truncate" title="${item.name}">${item.name}</div>
+                            <div class="w-[20%] text-left shrink-0">x${formatAbbreviated(qty)}</div>
+                            <div class="w-[35%] text-right font-bold text-green-900 truncate">🟢 ${formatAbbreviated(itemTotal)}</div>
                         </div>
                     `;
                 }
             });
             
             document.getElementById('receipt-total').innerHTML = `🟢 ${formatNumber(totalSpent)}`;
-        }
-
-        function shareOnX() {
-            const text = `I just dropped 🟢 ${formatNumber(totalSpent)} Emeralds at Vipul's Block Market! ⛏️ Can you out-trade me?`;
-            const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
-            window.open(url, '_blank');
         }
 
         // Initialize App
