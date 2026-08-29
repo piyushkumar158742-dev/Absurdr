@@ -3,176 +3,264 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spend Unlimited Money</title>
+    <title>Vipul's Block Market</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap');
-        
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f1f2f6;
+            font-family: 'VT323', monospace;
+            background-color: #1d1d1d;
+            background-image: radial-gradient(#333 1px, transparent 1px);
+            background-size: 32px 32px;
+            color: #ffffff;
             margin: 0;
             padding: 0;
         }
 
-        /* Hide number input arrows for a clean look */
+        /* Minecraft Inventory Slot Styling */
+        .mc-slot {
+            background-color: #8b8b8b;
+            border: 4px solid;
+            border-top-color: #373737;
+            border-left-color: #373737;
+            border-bottom-color: #ffffff;
+            border-right-color: #ffffff;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+        }
+
+        /* Minecraft Button Styling */
+        .mc-button {
+            background-color: #c6c6c6;
+            border: 4px solid;
+            border-top-color: #ffffff;
+            border-left-color: #ffffff;
+            border-bottom-color: #555555;
+            border-right-color: #555555;
+            color: #222;
+            transition: all 0.05s ease;
+            text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
+        }
+        
+        .mc-button:active {
+            border-top-color: #555555;
+            border-left-color: #555555;
+            border-bottom-color: #ffffff;
+            border-right-color: #ffffff;
+            background-color: #a0a0a0;
+        }
+
+        .mc-input {
+            background-color: #1e1e1e;
+            border: 4px solid;
+            border-top-color: #000000;
+            border-left-color: #000000;
+            border-bottom-color: #555555;
+            border-right-color: #555555;
+            color: #fff;
+        }
+
+        /* Hide number input arrows */
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button {
             -webkit-appearance: none;
             margin: 0;
         }
-        input[type="number"] {
-            -moz-appearance: textfield;
+        input[type="number"] { -moz-appearance: textfield; }
+
+        .mc-text-shadow {
+            text-shadow: 2px 2px 0px #3f3f3f;
+        }
+
+        .receipt-bg {
+            background-color: #f6e5b4;
+            color: #000;
+            border: 4px solid #4a3525;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
         }
 
         .emoji-icon {
-            font-size: 5rem;
-            line-height: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 120px;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
+            font-size: 3.5rem;
+            filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.3));
         }
 
-        .btn-sell {
-            background-color: #f1f2f6;
-            color: #333;
-            transition: all 0.15s ease;
-        }
-        
-        .btn-sell:active, .btn-sell.active {
-            background-color: #e2e8f0;
-        }
-
-        .btn-buy {
-            background-color: #2ecc71;
-            color: white;
-            transition: all 0.15s ease;
-        }
-
-        .btn-buy:active {
-            background-color: #27ae60;
+        .sticky-header {
+            background: linear-gradient(180deg, #444 0%, #222 100%);
+            border-bottom: 4px solid #111;
         }
     </style>
 </head>
-<body class="text-gray-900 pb-20">
+<body class="pb-20">
 
-    <!-- Top Navbar / Game Logo -->
-    <nav class="bg-white py-5 px-6 text-2xl font-black tracking-widest text-black flex justify-center shadow-sm">
-        UNLIMITED.SPEND
+    <!-- Top Branding -->
+    <nav class="bg-black py-4 px-6 text-3xl text-center text-gray-300 tracking-widest border-b-4 border-gray-700 mc-text-shadow">
+        VIPUL'S BLOCK MARKET
     </nav>
 
-    <!-- Header Profile Section -->
-    <div class="bg-white py-12 flex flex-col items-center justify-center mb-8">
-        <div class="w-28 h-28 bg-gray-100 rounded-full flex items-center justify-center text-6xl mb-4 overflow-hidden border border-gray-200">
-            🤑
+    <!-- Sticky Total Bar (Emeralds) -->
+    <div class="sticky-header text-center py-6 sticky top-0 z-50 shadow-2xl">
+        <h2 class="text-2xl text-gray-400 mb-1">EMERALDS SPENT</h2>
+        <div class="text-5xl sm:text-7xl font-bold text-[#55ff55] mc-text-shadow flex items-center justify-center gap-4" id="total-spent">
+            <span class="text-4xl">🟢</span> 0
         </div>
-        <h1 class="text-3xl font-bold text-gray-800">Spend Unlimited Money</h1>
-    </div>
-
-    <!-- Sticky Total Bar -->
-    <div class="bg-[#2ecc71] text-white text-center py-5 text-4xl sm:text-5xl font-bold sticky top-0 z-50 shadow-md transition-all" id="total-spent">
-        $0
     </div>
 
     <!-- Main Content -->
-    <div class="max-w-5xl mx-auto px-4 py-8">
+    <div class="max-w-7xl mx-auto px-4 py-10">
         
         <!-- Items Grid -->
-        <div id="items-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            <!-- Items injected by JavaScript -->
+        <div id="items-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+            <!-- Injected by JS -->
         </div>
 
         <!-- Receipt Section -->
-        <div id="receipt-container" class="mt-12 bg-white max-w-2xl mx-auto py-10 px-6 sm:px-12 hidden shadow-sm">
-            <h2 class="text-2xl font-bold text-center mb-8 text-gray-800">Your Receipt</h2>
+        <div id="receipt-container" class="mt-16 receipt-bg max-w-3xl mx-auto py-10 px-8 sm:px-16 hidden">
+            <h2 class="text-4xl font-bold text-center mb-8 border-b-4 border-dotted border-gray-800 pb-4">TRADE RECEIPT</h2>
             
-            <div id="receipt-items" class="flex flex-col gap-1 mb-4 text-[17px] font-medium text-gray-800">
-                <!-- Receipt rows injected here -->
+            <div id="receipt-items" class="flex flex-col gap-2 mb-6 text-2xl">
+                <!-- Receipt rows -->
             </div>
             
-            <div class="flex justify-between border-t border-black pt-3 font-bold text-lg mt-4">
-                <span>TOTAL</span>
-                <span id="receipt-total" class="text-[#2ecc71]">$0</span>
+            <div class="flex justify-between border-t-4 border-black pt-4 font-bold text-3xl mt-6">
+                <span>TOTAL:</span>
+                <span id="receipt-total" class="text-green-800 flex items-center gap-2">🟢 0</span>
             </div>
 
             <!-- Share Button -->
             <div class="flex justify-center mt-12">
-                <button onclick="shareOnX()" class="bg-black hover:bg-gray-800 text-white font-bold py-3 px-6 rounded-md flex items-center gap-2 transition-colors shadow-sm">
-                    <svg viewBox="0 0 24 24" class="w-5 h-5 fill-current"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                    Share on 𝕏
+                <button onclick="shareOnX()" class="mc-button font-bold text-2xl py-3 px-8 flex items-center gap-3">
+                    <svg viewBox="0 0 24 24" class="w-6 h-6 fill-current"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    SHARE TO 𝕏
                 </button>
             </div>
         </div>
     </div>
 
     <script>
-        // Array of realistic real-world items
+        // 100 Unique Minecraft Items (Categorized and scaled in price)
         const items = [
-            { id: 1, name: "Apple", price: 1, icon: "🍎" },
-            { id: 2, name: "Big Mac", price: 2, icon: "🍔" },
-            { id: 3, name: "Flip Flops", price: 3, icon: "🩴" },
-            { id: 4, name: "Coca-Cola Pack", price: 5, icon: "🥤" },
-            { id: 5, name: "Movie Ticket", price: 12, icon: "🎫" },
-            { id: 6, name: "Book", price: 15, icon: "📚" },
-            { id: 7, name: "Lobster Dinner", price: 45, icon: "🦞" },
-            { id: 8, name: "Video Game", price: 60, icon: "🎮" },
-            { id: 9, name: "Amazon Echo", price: 99, icon: "🔊" },
-            { id: 10, name: "Year of Netflix", price: 120, icon: "🍿" },
-            { id: 11, name: "Air Jordans", price: 200, icon: "👟" },
-            { id: 12, name: "Drone", price: 350, icon: "🚁" },
-            { id: 13, name: "Smartphone", price: 699, icon: "📱" },
-            { id: 14, name: "Bike", price: 800, icon: "🚲" },
-            { id: 15, name: "Kitten", price: 1500, icon: "🐈" },
-            { id: 16, name: "Puppy", price: 1500, icon: "🐕" },
-            { id: 17, name: "Auto Rickshaw", price: 2300, icon: "🛺" },
-            { id: 18, name: "Horse", price: 2500, icon: "🐎" },
-            { id: 19, name: "Acre of Farmland", price: 3000, icon: "🌾" },
-            { id: 20, name: "Designer Handbag", price: 5500, icon: "👜" },
-            { id: 21, name: "Hot Tub", price: 6000, icon: "🛁" },
-            { id: 22, name: "Diamond Ring", price: 10000, icon: "💍" },
-            { id: 23, name: "Jet Ski", price: 12000, icon: "🚤" },
-            { id: 24, name: "Rolex", price: 15000, icon: "⌚" },
-            { id: 25, name: "Ford F-150", price: 30000, icon: "🛻" },
-            { id: 26, name: "Tesla", price: 75000, icon: "🚘" },
-            { id: 27, name: "Monster Truck", price: 150000, icon: "🛞" },
-            { id: 28, name: "Ferrari", price: 250000, icon: "🏎️" },
-            { id: 29, name: "Single Family Home", price: 300000, icon: "🏠" },
-            { id: 30, name: "Gold Bar", price: 700000, icon: "🪙" },
-            { id: 31, name: "McDonalds Franchise", price: 1500000, icon: "🍟" },
-            { id: 32, name: "Superbowl Ad", price: 5250000, icon: "🏈" },
-            { id: 33, name: "Yacht", price: 7500000, icon: "🛥️" },
-            { id: 34, name: "M1 Abrams", price: 8000000, icon: "🪖" },
-            { id: 35, name: "Formula 1 Car", price: 15000000, icon: "🏁" },
-            { id: 36, name: "Apache Helicopter", price: 31000000, icon: "🚁" },
-            { id: 37, name: "Mansion", price: 45000000, icon: "🏛️" },
-            { id: 38, name: "Make a Movie", price: 100000000, icon: "🎬" },
-            { id: 39, name: "Boeing 747", price: 148000000, icon: "✈️" },
-            { id: 40, name: "Mona Lisa", price: 780000000, icon: "🖼️" },
-            { id: 41, name: "Skyscraper", price: 850000000, icon: "🏙️" },
-            { id: 42, name: "Cruise Ship", price: 930000000, icon: "🛳️" },
-            { id: 43, name: "NBA Team", price: 2120000000, icon: "🏀" }
+            // Blocks & Basics
+            { id: 1, name: "Dirt Block", price: 1, icon: "🟫" },
+            { id: 2, name: "Cobblestone", price: 2, icon: "🪨" },
+            { id: 3, name: "Oak Log", price: 4, icon: "🪵" },
+            { id: 4, name: "Sand", price: 5, icon: "🏖️" },
+            { id: 5, name: "Gravel", price: 5, icon: "🌑" },
+            { id: 6, name: "Glass", price: 10, icon: "🧊" },
+            { id: 7, name: "Sponge", price: 50, icon: "🧽" },
+            { id: 8, name: "Obsidian", price: 100, icon: "⬛" },
+            { id: 9, name: "Bedrock", price: 9999999, icon: "🕳️" },
+            { id: 10, name: "Magma Block", price: 80, icon: "🌋" },
+            { id: 11, name: "Soul Sand", price: 90, icon: "👻" },
+            { id: 12, name: "Glowstone", price: 150, icon: "💡" },
+            { id: 13, name: "Sea Lantern", price: 200, icon: "🏮" },
+            { id: 14, name: "Slime Block", price: 300, icon: "🟩" },
+            { id: 15, name: "Honey Block", price: 350, icon: "🍯" },
+            { id: 16, name: "TNT", price: 500, icon: "🧨" },
+            { id: 17, name: "Bookshelf", price: 120, icon: "📚" },
+            { id: 18, name: "Anvil", price: 800, icon: "🛤️" },
+            { id: 19, name: "Enchanting Table", price: 2500, icon: "📖" },
+            { id: 20, name: "Ender Chest", price: 5000, icon: "📦" },
+            
+            // Farming & Food
+            { id: 21, name: "Wheat", price: 3, icon: "🌾" },
+            { id: 22, name: "Carrot", price: 4, icon: "🥕" },
+            { id: 23, name: "Potato", price: 4, icon: "🥔" },
+            { id: 24, name: "Apple", price: 5, icon: "🍎" },
+            { id: 25, name: "Melon", price: 8, icon: "🍉" },
+            { id: 26, name: "Pumpkin", price: 10, icon: "🎃" },
+            { id: 27, name: "Bread", price: 15, icon: "🍞" },
+            { id: 28, name: "Cooked Beef", price: 25, icon: "🥩" },
+            { id: 29, name: "Cooked Chicken", price: 20, icon: "🍗" },
+            { id: 30, name: "Baked Potato", price: 18, icon: "🥔" },
+            { id: 31, name: "Golden Carrot", price: 100, icon: "🥕" },
+            { id: 32, name: "Cake", price: 150, icon: "🎂" },
+            { id: 33, name: "Mushroom Stew", price: 30, icon: "🥣" },
+            { id: 34, name: "Cookie", price: 12, icon: "🍪" },
+            { id: 35, name: "Sweet Berries", price: 5, icon: "🍒" },
+            { id: 36, name: "Suspicious Stew", price: 50, icon: "🍲" },
+            { id: 37, name: "Golden Apple", price: 500, icon: "🍏" },
+            { id: 38, name: "Enchanted Apple", price: 10000, icon: "🍎✨" },
+            { id: 39, name: "Chorus Fruit", price: 250, icon: "🍇" },
+            { id: 40, name: "Spider Eye", price: 40, icon: "👁️" },
+
+            // Ores & Minerals
+            { id: 41, name: "Coal", price: 10, icon: "🪨" },
+            { id: 42, name: "Raw Iron", price: 25, icon: "🪙" },
+            { id: 43, name: "Iron Ingot", price: 50, icon: "🔩" },
+            { id: 44, name: "Raw Gold", price: 100, icon: "🟡" },
+            { id: 45, name: "Gold Ingot", price: 200, icon: "🥇" },
+            { id: 46, name: "Lapis Lazuli", price: 150, icon: "🔷" },
+            { id: 47, name: "Redstone Dust", price: 30, icon: "🔴" },
+            { id: 48, name: "Diamond", price: 1000, icon: "💎" },
+            { id: 49, name: "Emerald", price: 500, icon: "🟢" },
+            { id: 50, name: "Nether Quartz", price: 80, icon: "🤍" },
+            { id: 51, name: "Amethyst Shard", price: 400, icon: "💜" },
+            { id: 52, name: "Copper Ingot", price: 40, icon: "🥉" },
+            { id: 53, name: "Ancient Debris", price: 5000, icon: "🟫✨" },
+            { id: 54, name: "Netherite Scrap", price: 8000, icon: "⚙️" },
+            { id: 55, name: "Netherite Ingot", price: 25000, icon: "⬛✨" },
+            { id: 56, name: "Block of Iron", price: 450, icon: "🧊" },
+            { id: 57, name: "Block of Gold", price: 1800, icon: "🟨" },
+            { id: 58, name: "Block of Diamond", price: 9000, icon: "💠" },
+            { id: 59, name: "Block of Emerald", price: 4500, icon: "🟩" },
+            { id: 60, name: "Block of Netherite", price: 225000, icon: "🔲" },
+
+            // Tools, Armor & Weapons
+            { id: 61, name: "Wooden Pickaxe", price: 20, icon: "⛏️" },
+            { id: 62, name: "Stone Sword", price: 40, icon: "🗡️" },
+            { id: 63, name: "Iron Axe", price: 150, icon: "🪓" },
+            { id: 64, name: "Gold Shovel", price: 300, icon: "铲" },
+            { id: 65, name: "Diamond Sword", price: 2500, icon: "⚔️" },
+            { id: 66, name: "Diamond Pickaxe", price: 3500, icon: "⛏️✨" },
+            { id: 67, name: "Netherite Sword", price: 30000, icon: "🗡️🔥" },
+            { id: 68, name: "Netherite Pickaxe", price: 35000, icon: "⛏️🔥" },
+            { id: 69, name: "Bow", price: 200, icon: "🏹" },
+            { id: 70, name: "Arrow", price: 5, icon: "↗️" },
+            { id: 71, name: "Crossbow", price: 500, icon: "🏹" },
+            { id: 72, name: "Trident", price: 15000, icon: "🔱" },
+            { id: 73, name: "Shield", price: 300, icon: "🛡️" },
+            { id: 74, name: "Leather Tunic", price: 150, icon: "🧥" },
+            { id: 75, name: "Iron Chestplate", price: 800, icon: "👕" },
+            { id: 76, name: "Diamond Armor Set", price: 12000, icon: "💎👕" },
+            { id: 77, name: "Netherite Armor", price: 100000, icon: "⬛👕" },
+            { id: 78, name: "Fishing Rod", price: 120, icon: "🎣" },
+            { id: 79, name: "Flint and Steel", price: 60, icon: "🔥" },
+            { id: 80, name: "Shears", price: 100, icon: "✂️" },
+
+            // Rare, Magic & Misc
+            { id: 81, name: "Ender Pearl", price: 500, icon: "🔮" },
+            { id: 82, name: "Eye of Ender", price: 1200, icon: "👁️‍🗨️" },
+            { id: 83, name: "Blaze Rod", price: 800, icon: "🪄" },
+            { id: 84, name: "Ghast Tear", price: 2000, icon: "💧" },
+            { id: 85, name: "Magma Cream", price: 1000, icon: "🟠" },
+            { id: 86, name: "Slimeball", price: 150, icon: "🟢" },
+            { id: 87, name: "Phantom Membrane", price: 3000, icon: "🦇" },
+            { id: 88, name: "Shulker Shell", price: 5000, icon: "🪸" },
+            { id: 89, name: "Totem of Undying", price: 25000, icon: "🏺" },
+            { id: 90, name: "Elytra", price: 75000, icon: "🦋" },
+            { id: 91, name: "Dragon Breath", price: 10000, icon: "💨" },
+            { id: 92, name: "Nether Star", price: 500000, icon: "⭐" },
+            { id: 93, name: "Beacon", price: 650000, icon: "🗼" },
+            { id: 94, name: "Heart of the Sea", price: 150000, icon: "💙" },
+            { id: 95, name: "Conduit", price: 200000, icon: "🌀" },
+            { id: 96, name: "Music Disc", price: 5000, icon: "💿" },
+            { id: 97, name: "Saddle", price: 1500, icon: "💺" },
+            { id: 98, name: "Horse Armor (Diamond)", price: 10000, icon: "🐎💎" },
+            { id: 99, name: "Command Block", price: 50000000, icon: "🎛️" },
+            { id: 100, name: "Dragon Egg", price: 1000000000, icon: "🥚🐉" }
         ];
 
         let quantities = {};
         let totalSpent = 0;
 
-        // Formats large numbers to shorthand (e.g. $100k, $1.3m) matching the receipt screenshot
         function formatAbbreviated(num) {
-            if (num >= 1e9) return '$' + (num / 1e9).toFixed(1).replace(/\.0$/, '') + 'b';
-            if (num >= 1e6) return '$' + (num / 1e6).toFixed(1).replace(/\.0$/, '') + 'm';
-            if (num >= 1e3) return '$' + (num / 1e3).toFixed(num % 1000 === 0 ? 0 : 1).replace(/\.0$/, '') + 'k';
-            return '$' + num;
+            if (num >= 1e9) return (num / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
+            if (num >= 1e6) return (num / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+            if (num >= 1e3) return (num / 1e3).toFixed(num % 1000 === 0 ? 0 : 1).replace(/\.0$/, '') + 'K';
+            return num;
         }
 
-        // Formats standard currency
-        function formatMoney(amount) {
-            return new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD',
-                maximumFractionDigits: 0
-            }).format(amount);
+        function formatNumber(num) {
+            return new Intl.NumberFormat('en-US').format(num);
         }
 
         function renderGrid() {
@@ -181,24 +269,24 @@
             items.forEach(item => {
                 quantities[item.id] = 0;
                 const card = document.createElement('div');
-                card.className = "bg-white p-5 flex flex-col items-center justify-between shadow-sm";
+                card.className = "mc-slot p-4 flex flex-col items-center justify-between";
                 
                 card.innerHTML = `
-                    <div class="emoji-icon">${item.icon}</div>
-                    <h3 class="font-bold text-xl text-gray-800 mt-2 text-center leading-tight">${item.name}</h3>
-                    <p class="text-[#2ecc71] font-bold text-xl mb-5">${formatMoney(item.price)}</p>
+                    <div class="emoji-icon mb-2">${item.icon}</div>
+                    <h3 class="text-xl text-white mt-1 text-center leading-tight mc-text-shadow line-clamp-2 h-14 flex items-center justify-center">${item.name}</h3>
+                    <p class="text-[#55ff55] text-2xl mc-text-shadow mb-4">🟢 ${formatAbbreviated(item.price)}</p>
                     
-                    <div class="grid grid-cols-[1fr_1.5fr_1fr] gap-2 w-full mt-auto">
-                        <button onclick="updateQty(${item.id}, -1)" class="btn-sell font-bold py-2 px-1 rounded text-sm sm:text-base select-none">
-                            Sell
+                    <div class="grid grid-cols-[1fr_1.2fr_1fr] gap-1 w-full mt-auto">
+                        <button onclick="updateQty(${item.id}, -1)" class="mc-button text-xl py-1 px-1 text-center select-none">
+                            -
                         </button>
                         
                         <input type="number" id="input-${item.id}" value="0" min="0" 
-                            class="border border-gray-300 rounded text-center w-full font-bold text-gray-800 py-2 outline-none focus:border-[#2ecc71] transition-colors"
+                            class="mc-input text-center w-full text-2xl outline-none"
                             onchange="manualUpdate(${item.id}, this.value)">
                         
-                        <button onclick="updateQty(${item.id}, 1)" class="btn-buy font-bold py-2 px-1 rounded text-sm sm:text-base select-none">
-                            Buy
+                        <button onclick="updateQty(${item.id}, 1)" class="mc-button text-xl py-1 px-1 text-center select-none">
+                            +
                         </button>
                     </div>
                 `;
@@ -231,7 +319,7 @@
                 totalSpent += (item.price * (quantities[item.id] || 0));
             });
             
-            document.getElementById('total-spent').innerText = formatMoney(totalSpent);
+            document.getElementById('total-spent').innerHTML = `<span class="text-4xl sm:text-6xl">🟢</span> ${formatNumber(totalSpent)}`;
             updateReceipt();
         }
 
@@ -251,22 +339,21 @@
                 const qty = quantities[item.id];
                 if (qty > 0) {
                     const itemTotal = item.price * qty;
-                    // Perfectly matching the 3-column spacing from the screenshot
                     receiptDiv.innerHTML += `
                         <div class="flex justify-between items-center py-1">
-                            <div class="w-[50%] text-left pr-2 truncate">${item.name}</div>
+                            <div class="w-[45%] text-left pr-2 truncate">${item.name}</div>
                             <div class="w-[20%] text-left">x${qty}</div>
-                            <div class="w-[30%] text-right font-bold text-[#2ecc71]">${formatAbbreviated(itemTotal)}</div>
+                            <div class="w-[35%] text-right font-bold text-green-900">🟢 ${formatAbbreviated(itemTotal)}</div>
                         </div>
                     `;
                 }
             });
             
-            document.getElementById('receipt-total').innerText = formatMoney(totalSpent);
+            document.getElementById('receipt-total').innerHTML = `🟢 ${formatNumber(totalSpent)}`;
         }
 
         function shareOnX() {
-            const text = `I just went on a shopping spree and spent ${formatMoney(totalSpent)} on UNLIMITED.SPEND! 💸 Try to beat my score.`;
+            const text = `I just dropped 🟢 ${formatNumber(totalSpent)} Emeralds at Vipul's Block Market! ⛏️ Can you out-trade me?`;
             const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
             window.open(url, '_blank');
         }
