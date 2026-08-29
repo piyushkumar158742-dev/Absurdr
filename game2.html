@@ -27,7 +27,7 @@
         }
         input[type="number"] { -moz-appearance: textfield; }
 
-        /* Item Card Styling */
+        /* Premium Item Card Styling */
         .item-card {
             background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
             border: 1px solid #334155;
@@ -40,7 +40,7 @@
         }
 
         .icon-2d {
-            font-size: 3rem;
+            font-size: 3.5rem;
             line-height: 1;
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
             user-select: none;
@@ -58,11 +58,11 @@
 <body class="pt-20 pb-12 antialiased">
 
     <!-- Slim Premium Sticky Header -->
-    <header class="fixed top-0 left-0 right-0 h-16 bg-slate-900/80 backdrop-blur-md border-b border-slate-800 z-50 flex items-center justify-between px-4 sm:px-8">
-        <div class="hidden sm:block font-black tracking-widest text-slate-400 text-sm uppercase">Marketplace</div>
+    <header class="fixed top-0 left-0 right-0 h-16 bg-slate-900/85 backdrop-blur-md border-b border-slate-800 z-50 flex items-center justify-between px-4 sm:px-8 shadow-lg">
+        <div class="hidden sm:block font-black tracking-widest text-slate-400 text-sm uppercase">The Market</div>
         
         <!-- Live Total -->
-        <div class="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-2">
+        <div class="absolute left-1/2 transform -translate-x-1/2 flex items-center">
             <span class="text-emerald-500 font-black text-2xl sm:text-3xl tracking-tight" id="total-spent">$0</span>
         </div>
 
@@ -76,7 +76,7 @@
     <!-- Main Grid -->
     <div class="max-w-[1600px] mx-auto px-4 sm:px-6">
         <div id="items-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
-            <!-- Injected dynamically -->
+            <!-- Injected dynamically by JavaScript -->
         </div>
     </div>
 
@@ -86,13 +86,13 @@
         <div id="receipt-content" class="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-lg flex flex-col relative shadow-2xl transform scale-95 transition-transform duration-300 max-h-[90vh]">
             
             <!-- Top Right Close (X) Icon -->
-            <button onclick="closeReceipt()" class="absolute top-5 right-5 text-slate-400 hover:text-white transition-colors p-1 rounded-md hover:bg-slate-700">
+            <button onclick="closeReceipt()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-slate-700 z-10">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
 
             <!-- Receipt Header -->
-            <div class="p-6 border-b border-slate-700">
-                <h2 class="text-xl sm:text-2xl font-black text-white uppercase tracking-wider">Official Receipt</h2>
+            <div class="p-6 border-b border-slate-700 pt-8">
+                <h2 class="text-2xl font-black text-white uppercase tracking-wider">Official Receipt</h2>
                 <p class="text-slate-400 text-sm mt-1">Transaction Details</p>
             </div>
             
@@ -120,50 +120,53 @@
         const inventory = [];
         let idCounter = 1;
 
-        // Generate 100 Blocks & 100 Items Programmatically to save space
-        function addEntity(name, price, icon, type) {
-            inventory.push({ id: idCounter++, name, price, icon, type });
+        // Generate ~100 Blocks & ~100 Items Dynamically
+        function addEntity(name, price, icon) {
+            inventory.push({ id: idCounter++, name, price, icon });
         }
 
         // ==========================================
-        // GENERATE ~100 BLOCKS
+        // GENERATE 102 BLOCKS
         // ==========================================
         const blockBasics = [
-            {n: 'Dirt', p: 1, i: '🟫'}, {n: 'Stone', p: 3, i: '🪨'}, {n: 'Cobblestone', p: 2, i: '🌑'},
-            {n: 'Sand', p: 2, i: '🏖️'}, {n: 'Gravel', p: 2, i: '🪨'}, {n: 'Obsidian', p: 100, i: '⬛'},
+            {n: 'Dirt Block', p: 1, i: '🟫'}, {n: 'Stone Block', p: 3, i: '🪨'}, {n: 'Cobblestone', p: 2, i: '🌑'},
+            {n: 'Sand Block', p: 2, i: '🏖️'}, {n: 'Gravel Block', p: 2, i: '🪨'}, {n: 'Obsidian', p: 100, i: '⬛'},
             {n: 'Bedrock', p: 999999, i: '🕳️'}, {n: 'Coal Block', p: 90, i: '⬛'},
             {n: 'Iron Block', p: 450, i: '⬜'}, {n: 'Gold Block', p: 1800, i: '🟨'},
             {n: 'Diamond Block', p: 9000, i: '💠'}, {n: 'Emerald Block', p: 4500, i: '🟩'},
             {n: 'Netherite Block', p: 225000, i: '🔲'}, {n: 'Slime Block', p: 300, i: '🟩'},
             {n: 'Honey Block', p: 350, i: '🍯'}, {n: 'Magma Block', p: 80, i: '🌋'},
             {n: 'Soul Sand', p: 90, i: '👻'}, {n: 'Glowstone', p: 150, i: '💡'},
-            {n: 'Sea Lantern', p: 200, i: '🏮'}, {n: 'Sponge', p: 50, i: '🧽'}
+            {n: 'Sea Lantern', p: 200, i: '🏮'}, {n: 'Sponge', p: 50, i: '🧽'},
+            {n: 'End Stone', p: 25, i: '🌕'}, {n: 'Purpur Block', p: 40, i: '🟪'},
+            {n: 'Basalt', p: 15, i: '🪨'}, {n: 'Blackstone', p: 15, i: '⬛'},
+            {n: 'Prismarine', p: 120, i: '🌊'}, {n: 'Netherrack', p: 2, i: '🟥'}
         ];
-        blockBasics.forEach(b => addEntity(b.n, b.p, b.i, 'block')); // 20
+        blockBasics.forEach(b => addEntity(b.n, b.p, b.i)); // 26 Basic/Ore Blocks
 
         const woods = ['Oak', 'Spruce', 'Birch', 'Jungle', 'Acacia', 'Dark Oak'];
         woods.forEach(w => {
-            addEntity(`${w} Log`, 5, '🪵', 'block');
-            addEntity(`${w} Planks`, 1, '🟫', 'block');
-            addEntity(`${w} Leaves`, 2, '🌿', 'block');
-        }); // 18
+            addEntity(`${w} Log`, 5, '🪵');
+            addEntity(`${w} Planks`, 1, '🟫');
+            addEntity(`${w} Leaves`, 2, '🌿');
+        }); // 18 Wood Blocks
 
         const colors = ['White', 'Light Gray', 'Gray', 'Black', 'Brown', 'Red', 'Orange', 'Yellow', 'Lime', 'Green', 'Cyan', 'Light Blue', 'Blue', 'Purple', 'Magenta', 'Pink'];
         colors.forEach(c => {
-            addEntity(`${c} Wool`, 10, '🐑', 'block');
-            addEntity(`${c} Concrete`, 15, '🧱', 'block');
-            addEntity(`${c} Glass`, 12, '🧊', 'block');
-            addEntity(`${c} Terracotta`, 14, '🏺', 'block');
-        }); // 64
-        // Total Blocks = 102
+            addEntity(`${c} Wool`, 10, '🐑');
+            addEntity(`${c} Concrete`, 15, '🧱');
+            addEntity(`${c} Glass`, 12, '🧊');
+            addEntity(`${c} Terracotta`, 14, '🏺');
+        }); // 64 Color Blocks
+        // Total Blocks = 108
 
         // ==========================================
-        // GENERATE ~100 ITEMS
+        // GENERATE 104 ITEMS
         // ==========================================
         const tiers = [
-            { t: 'Wooden', p: 10, i: '🪵' }, { t: 'Stone', p: 25, i: '🪨' },
-            { t: 'Iron', p: 150, i: '⚙️' }, { t: 'Golden', p: 500, i: '⭐' },
-            { t: 'Diamond', p: 2500, i: '💎' }, { t: 'Netherite', p: 25000, i: '🔥' }
+            { t: 'Wooden', p: 10 }, { t: 'Stone', p: 25 },
+            { t: 'Iron', p: 150 }, { t: 'Golden', p: 500 },
+            { t: 'Diamond', p: 2500 }, { t: 'Netherite', p: 25000 }
         ];
         const gear = ['Sword', 'Pickaxe', 'Axe', 'Shovel', 'Hoe', 'Helmet', 'Chestplate', 'Leggings', 'Boots'];
         tiers.forEach(tier => {
@@ -174,9 +177,9 @@
                 if(g==='Helmet') icon = '🪖'; if(g==='Chestplate') icon = '👕';
                 if(g==='Leggings') icon = '👖'; if(g==='Boots') icon = '🥾';
                 let multiplier = (g==='Chestplate'?8:g==='Leggings'?7:g==='Helmet'||g==='Boots'?4:3);
-                addEntity(`${tier.t} ${g}`, tier.p * multiplier, icon, 'item');
+                addEntity(`${tier.t} ${g}`, tier.p * multiplier, icon);
             });
-        }); // 54
+        }); // 54 Gear Items
 
         const foods = [
             {n: 'Apple', p: 5, i: '🍎'}, {n: 'Bread', p: 15, i: '🍞'},
@@ -190,7 +193,7 @@
             {n: 'Melon Slice', p: 5, i: '🍉'}, {n: 'Chorus Fruit', p: 100, i: '🍇'},
             {n: 'Spider Eye', p: 20, i: '👁️'}, {n: 'Rotten Flesh', p: 2, i: '🧟'}
         ];
-        foods.forEach(f => addEntity(f.n, f.p, f.i, 'item')); // 20
+        foods.forEach(f => addEntity(f.n, f.p, f.i)); // 20 Food Items
 
         const materials = [
             {n: 'Coal', p: 10, i: '🪨'}, {n: 'Raw Iron', p: 25, i: '🪙'},
@@ -209,7 +212,7 @@
             {n: 'Bow', p: 200, i: '🏹'}, {n: 'Arrow', p: 5, i: '↗️'},
             {n: 'Trident', p: 15000, i: '🔱'}, {n: 'Shield', p: 300, i: '🛡️'}
         ];
-        materials.forEach(m => addEntity(m.n, m.p, m.i, 'item')); // 30
+        materials.forEach(m => addEntity(m.n, m.p, m.i)); // 30 Material Items
         // Total Items = 104
 
         // ==========================================
@@ -246,11 +249,11 @@
                     <h3 class="text-sm sm:text-base font-bold text-center leading-tight line-clamp-2 h-10 w-full mb-1">${item.name}</h3>
                     <p class="text-emerald-400 font-mono font-bold mb-4">${formatShorthand(item.price)}</p>
                     
-                    <div class="flex items-center w-full gap-1 bg-slate-900/50 p-1 rounded-lg border border-slate-700/50">
+                    <div class="flex items-center w-full gap-1 bg-slate-900/80 p-1 rounded-lg border border-slate-700/50">
                         <button onclick="updateQty(${item.id}, -1)" class="ctrl-btn w-8 h-8 rounded flex items-center justify-center font-bold shrink-0">-</button>
                         <input type="number" id="input-${item.id}" value="0" min="0" 
                             class="bg-transparent text-center font-bold text-white w-full outline-none"
-                            oninput="if(this.value.length > 6) this.value = this.value.slice(0, 6); manualUpdate(${item.id}, this.value)">
+                            oninput="if(this.value.length > 7) this.value = this.value.slice(0, 7); manualUpdate(${item.id}, this.value)">
                         <button onclick="updateQty(${item.id}, 1)" class="ctrl-btn w-8 h-8 rounded flex items-center justify-center font-bold shrink-0">+</button>
                     </div>
                 `;
@@ -262,7 +265,7 @@
             let current = quantities[id] || 0;
             current += change;
             if (current < 0) current = 0;
-            if (current > 999999) current = 999999;
+            if (current > 9999999) current = 9999999;
             quantities[id] = current;
             document.getElementById(`input-${id}`).value = current;
             calculateTotal();
@@ -271,7 +274,7 @@
         function manualUpdate(id, value) {
             let num = parseInt(value);
             if (isNaN(num) || num < 0) num = 0;
-            if (num > 999999) num = 999999;
+            if (num > 9999999) num = 9999999;
             quantities[id] = num;
             document.getElementById(`input-${id}`).value = num;
             calculateTotal();
@@ -298,7 +301,7 @@
 
         function openReceipt() {
             if (totalSpent === 0) {
-                alert("Cart is empty! Add some items first.");
+                alert("Cart is empty! Add some blocks or items first.");
                 return;
             }
             buildReceipt();
@@ -354,7 +357,7 @@
             window.open(url, '_blank');
         }
 
-        // Run
+        // Run Initialization
         initGrid();
     </script>
 </body>
