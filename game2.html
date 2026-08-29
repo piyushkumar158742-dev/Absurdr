@@ -3,21 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Block Market</title>
+    <title>Block Market</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0f172a; /* Slate 900 */
+            font-family: 'Outfit', sans-serif;
+            background-color: #050505;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(16, 185, 129, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
+            background-attachment: fixed;
             color: #f8fafc;
         }
 
-        /* Custom Scrollbar for Premium Look */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        /* Sleek Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #262626; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #404040; }
 
         /* Hide Number Input Arrows */
         input[type="number"]::-webkit-inner-spin-button,
@@ -27,46 +31,81 @@
         }
         input[type="number"] { -moz-appearance: textfield; }
 
-        /* Premium Item Card Styling */
+        /* Premium Item Card */
         .item-card {
-            background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
-            border: 1px solid #334155;
-            transition: all 0.2s ease;
+            background: rgba(15, 15, 15, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid #1f1f1f;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
         .item-card:hover {
-            border-color: #10b981;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px -10px rgba(16, 185, 129, 0.15);
+            border-color: #333;
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8);
         }
 
-        .icon-2d {
-            font-size: 3.5rem;
-            line-height: 1;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
+        /* Rarity Inventory Slot System */
+        .icon-slot {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 16px auto;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.2rem;
+            background: #111;
+            border: 1px solid #222;
+            position: relative;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
             user-select: none;
         }
+        
+        /* Rarity Glows */
+        .rarity-common .icon-slot { box-shadow: inset 0 0 20px rgba(255,255,255,0.05), 0 0 15px rgba(255,255,255,0.02); border-color: #333; }
+        .rarity-uncommon .icon-slot { box-shadow: inset 0 0 25px rgba(16, 185, 129, 0.15), 0 0 15px rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); }
+        .rarity-rare .icon-slot { box-shadow: inset 0 0 25px rgba(59, 130, 246, 0.2), 0 0 20px rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.4); }
+        .rarity-epic .icon-slot { box-shadow: inset 0 0 30px rgba(168, 85, 247, 0.25), 0 0 25px rgba(168, 85, 247, 0.2); border-color: rgba(168, 85, 247, 0.5); }
+        .rarity-legendary .icon-slot { box-shadow: inset 0 0 35px rgba(245, 158, 11, 0.3), 0 0 30px rgba(245, 158, 11, 0.25); border-color: rgba(245, 158, 11, 0.6); }
+
+        .icon-slot span {
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6));
+            transform: scale(1);
+            transition: transform 0.2s;
+        }
+        .item-card:hover .icon-slot span { transform: scale(1.15) rotate(2deg); }
 
         .ctrl-btn {
-            background: #334155;
-            color: #cbd5e1;
+            background: #1a1a1a;
+            color: #a3a3a3;
+            border: 1px solid #2a2a2a;
             transition: all 0.15s;
         }
-        .ctrl-btn:hover { background: #475569; color: #fff; }
-        .ctrl-btn:active { transform: scale(0.95); }
+        .ctrl-btn:hover { background: #262626; color: #fff; border-color: #404040; }
+        .ctrl-btn:active { transform: scale(0.92); }
+
+        .price-font { font-family: 'Space Grotesk', sans-serif; }
     </style>
 </head>
-<body class="pt-20 pb-12 antialiased">
+<body class="pt-24 pb-16 antialiased">
 
-    <!-- Slim Premium Sticky Header -->
-    <header class="fixed top-0 left-0 right-0 h-16 bg-slate-900/85 backdrop-blur-md border-b border-slate-800 z-50 flex items-center justify-between px-4 sm:px-8 shadow-lg">
-        <div class="hidden sm:block font-black tracking-widest text-slate-400 text-sm uppercase">The Market</div>
+    <!-- Compact Premium Header -->
+    <header class="fixed top-0 left-0 right-0 h-16 bg-[#050505]/90 backdrop-blur-xl border-b border-[#1f1f1f] z-50 flex items-center justify-between px-4 sm:px-8">
+        <div class="hidden sm:flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
+            <span class="font-bold tracking-[0.2em] text-gray-300 text-xs uppercase">Block Market</span>
+        </div>
         
         <!-- Live Total -->
         <div class="absolute left-1/2 transform -translate-x-1/2 flex items-center">
-            <span class="text-emerald-500 font-black text-2xl sm:text-3xl tracking-tight" id="total-spent">$0</span>
+            <span class="text-white price-font font-bold text-2xl sm:text-3xl tracking-tight drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]" id="total-spent">$0</span>
         </div>
 
-        <button onclick="openReceipt()" class="bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-slate-900 font-bold py-2 px-5 rounded-lg text-sm transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)] hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] active:scale-95 flex items-center gap-2">
+        <button onclick="openReceipt()" class="bg-white text-black hover:bg-gray-200 font-bold py-2 px-6 rounded-full text-sm transition-all shadow-[0_0_15px_rgba(255,255,255,0.15)] hover:shadow-[0_0_25px_rgba(255,255,255,0.3)] active:scale-95 flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
             <span class="hidden sm:inline">Make Receipt</span>
             <span class="sm:hidden">Receipt</span>
@@ -75,40 +114,40 @@
 
     <!-- Main Grid -->
     <div class="max-w-[1600px] mx-auto px-4 sm:px-6">
-        <div id="items-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
-            <!-- Injected dynamically by JavaScript -->
+        <div id="items-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-4 sm:gap-6 items-stretch">
+            <!-- Injected dynamically -->
         </div>
     </div>
 
     <!-- Receipt Modal Overlay -->
-    <div id="receipt-modal" class="fixed inset-0 bg-black/80 z-[100] hidden items-center justify-center opacity-0 transition-opacity duration-300 backdrop-blur-sm p-4">
+    <div id="receipt-modal" class="fixed inset-0 bg-black/90 z-[100] hidden items-center justify-center opacity-0 transition-opacity duration-300 backdrop-blur-md p-4">
         
-        <div id="receipt-content" class="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-lg flex flex-col relative shadow-2xl transform scale-95 transition-transform duration-300 max-h-[90vh]">
+        <div id="receipt-content" class="bg-[#0a0a0a] border border-[#222] rounded-3xl w-full max-w-xl flex flex-col relative shadow-2xl transform scale-95 transition-transform duration-300 max-h-[90vh]">
             
-            <!-- Top Right Close (X) Icon -->
-            <button onclick="closeReceipt()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-slate-700 z-10">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            <!-- Close Button -->
+            <button onclick="closeReceipt()" class="absolute top-6 right-6 text-gray-500 hover:text-white transition-colors bg-[#111] hover:bg-[#222] p-2 rounded-full z-10 border border-[#222]">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
 
             <!-- Receipt Header -->
-            <div class="p-6 border-b border-slate-700 pt-8">
-                <h2 class="text-2xl font-black text-white uppercase tracking-wider">Official Receipt</h2>
-                <p class="text-slate-400 text-sm mt-1">Transaction Details</p>
+            <div class="p-8 border-b border-[#1f1f1f] text-center">
+                <h2 class="text-3xl font-black text-white tracking-widest uppercase">Block Market</h2>
+                <p class="text-gray-500 text-sm mt-2 font-mono uppercase tracking-widest">Official Transaction Receipt</p>
             </div>
             
             <!-- Receipt Items List -->
-            <div id="receipt-list" class="p-6 overflow-y-auto flex-1 space-y-3 font-medium text-slate-300">
+            <div id="receipt-list" class="p-8 overflow-y-auto flex-1 space-y-4 font-medium text-gray-300">
                 <!-- Rows injected here -->
             </div>
             
             <!-- Receipt Footer & Share -->
-            <div class="p-6 border-t border-slate-700 bg-slate-900/50 rounded-b-2xl">
-                <div class="flex justify-between items-center mb-6">
-                    <span class="text-lg text-slate-400 uppercase font-bold tracking-wider">Total Due</span>
-                    <span class="text-3xl font-black text-emerald-400" id="receipt-total">$0</span>
+            <div class="p-8 border-t border-[#1f1f1f] bg-[#050505] rounded-b-3xl">
+                <div class="flex justify-between items-center mb-8">
+                    <span class="text-lg text-gray-400 uppercase tracking-widest">Total Due</span>
+                    <span class="text-4xl font-black text-white price-font" id="receipt-total">$0</span>
                 </div>
                 
-                <button onclick="shareOnX()" class="w-full bg-black hover:bg-zinc-900 border border-zinc-800 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-3 transition-colors shadow-lg active:scale-[0.98]">
+                <button onclick="shareOnX()" class="w-full bg-white hover:bg-gray-200 text-black font-bold py-4 rounded-xl flex items-center justify-center gap-3 transition-transform active:scale-[0.98]">
                     <svg viewBox="0 0 24 24" class="w-5 h-5 fill-current"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                     Share on 𝕏
                 </button>
@@ -120,53 +159,66 @@
         const inventory = [];
         let idCounter = 1;
 
-        // Generate ~100 Blocks & ~100 Items Dynamically
+        // Realistic USD Pricing
+        // Common: < $50 | Uncommon: < $1000 | Rare: < $25,000 | Epic: < $1,000,000 | Legendary: > $1M
+        function getRarityClass(price) {
+            if (price >= 1000000) return 'rarity-legendary';
+            if (price >= 25000) return 'rarity-epic';
+            if (price >= 1000) return 'rarity-rare';
+            if (price >= 50) return 'rarity-uncommon';
+            return 'rarity-common';
+        }
+
         function addEntity(name, price, icon) {
-            inventory.push({ id: idCounter++, name, price, icon });
+            inventory.push({ id: idCounter++, name, price, icon, rarity: getRarityClass(price) });
         }
 
         // ==========================================
-        // GENERATE 102 BLOCKS
+        // GENERATE ~100 REALISTIC BLOCKS
         // ==========================================
         const blockBasics = [
-            {n: 'Dirt Block', p: 1, i: '🟫'}, {n: 'Stone Block', p: 3, i: '🪨'}, {n: 'Cobblestone', p: 2, i: '🌑'},
-            {n: 'Sand Block', p: 2, i: '🏖️'}, {n: 'Gravel Block', p: 2, i: '🪨'}, {n: 'Obsidian', p: 100, i: '⬛'},
-            {n: 'Bedrock', p: 999999, i: '🕳️'}, {n: 'Coal Block', p: 90, i: '⬛'},
-            {n: 'Iron Block', p: 450, i: '⬜'}, {n: 'Gold Block', p: 1800, i: '🟨'},
-            {n: 'Diamond Block', p: 9000, i: '💠'}, {n: 'Emerald Block', p: 4500, i: '🟩'},
-            {n: 'Netherite Block', p: 225000, i: '🔲'}, {n: 'Slime Block', p: 300, i: '🟩'},
-            {n: 'Honey Block', p: 350, i: '🍯'}, {n: 'Magma Block', p: 80, i: '🌋'},
-            {n: 'Soul Sand', p: 90, i: '👻'}, {n: 'Glowstone', p: 150, i: '💡'},
-            {n: 'Sea Lantern', p: 200, i: '🏮'}, {n: 'Sponge', p: 50, i: '🧽'},
-            {n: 'End Stone', p: 25, i: '🌕'}, {n: 'Purpur Block', p: 40, i: '🟪'},
-            {n: 'Basalt', p: 15, i: '🪨'}, {n: 'Blackstone', p: 15, i: '⬛'},
-            {n: 'Prismarine', p: 120, i: '🌊'}, {n: 'Netherrack', p: 2, i: '🟥'}
+            {n: 'Dirt Block', p: 1, i: '🟫'}, {n: 'Grass Block', p: 3, i: '🟩'},
+            {n: 'Cobblestone', p: 2, i: '🌑'}, {n: 'Stone Block', p: 5, i: '🪨'},
+            {n: 'Sand Block', p: 2, i: '🏖️'}, {n: 'Gravel Block', p: 2, i: '🪨'},
+            {n: 'Clay Block', p: 8, i: '🧱'}, {n: 'Bricks', p: 25, i: '🧱'},
+            {n: 'Obsidian', p: 5000, i: '⬛'}, {n: 'Bedrock', p: 1000000000, i: '🕳️'},
+            {n: 'Coal Block', p: 135, i: '⬛'}, {n: 'Iron Block', p: 1350, i: '⬜'},
+            {n: 'Gold Block', p: 13500, i: '🟨'}, {n: 'Diamond Block', p: 90000, i: '💠'},
+            {n: 'Emerald Block', p: 45000, i: '🟩'}, {n: 'Netherite Block', p: 2250000, i: '🔲'},
+            {n: 'Slime Block', p: 450, i: '🟩'}, {n: 'Honey Block', p: 500, i: '🍯'},
+            {n: 'Magma Block', p: 250, i: '🌋'}, {n: 'Soul Sand', p: 150, i: '👻'},
+            {n: 'Glowstone', p: 750, i: '💡'}, {n: 'Sea Lantern', p: 1200, i: '🏮'},
+            {n: 'Sponge', p: 800, i: '🧽'}, {n: 'Wet Sponge', p: 850, i: '🧽'},
+            {n: 'End Stone', p: 200, i: '🌕'}, {n: 'Purpur Block', p: 350, i: '🟪'},
+            {n: 'Basalt', p: 30, i: '🪨'}, {n: 'Blackstone', p: 40, i: '⬛'},
+            {n: 'Prismarine', p: 600, i: '🌊'}, {n: 'Netherrack', p: 5, i: '🟥'}
         ];
-        blockBasics.forEach(b => addEntity(b.n, b.p, b.i)); // 26 Basic/Ore Blocks
+        blockBasics.forEach(b => addEntity(b.n, b.p, b.i)); // 30
 
         const woods = ['Oak', 'Spruce', 'Birch', 'Jungle', 'Acacia', 'Dark Oak'];
         woods.forEach(w => {
-            addEntity(`${w} Log`, 5, '🪵');
-            addEntity(`${w} Planks`, 1, '🟫');
+            addEntity(`${w} Log`, 10, '🪵');
+            addEntity(`${w} Planks`, 3, '🟫');
             addEntity(`${w} Leaves`, 2, '🌿');
-        }); // 18 Wood Blocks
+        }); // 18
 
         const colors = ['White', 'Light Gray', 'Gray', 'Black', 'Brown', 'Red', 'Orange', 'Yellow', 'Lime', 'Green', 'Cyan', 'Light Blue', 'Blue', 'Purple', 'Magenta', 'Pink'];
         colors.forEach(c => {
-            addEntity(`${c} Wool`, 10, '🐑');
-            addEntity(`${c} Concrete`, 15, '🧱');
-            addEntity(`${c} Glass`, 12, '🧊');
-            addEntity(`${c} Terracotta`, 14, '🏺');
-        }); // 64 Color Blocks
-        // Total Blocks = 108
+            addEntity(`${c} Wool`, 15, '🐑');
+            addEntity(`${c} Concrete`, 25, '🧱');
+            addEntity(`${c} Glass`, 20, '🧊');
+            addEntity(`${c} Terracotta`, 35, '🏺');
+        }); // 64
+        // Total Blocks = 112
 
         // ==========================================
-        // GENERATE 104 ITEMS
+        // GENERATE ~100 REALISTIC ITEMS
         // ==========================================
+        // Tools & Weapons (Price reflects realistic material cost + labor)
         const tiers = [
-            { t: 'Wooden', p: 10 }, { t: 'Stone', p: 25 },
-            { t: 'Iron', p: 150 }, { t: 'Golden', p: 500 },
-            { t: 'Diamond', p: 2500 }, { t: 'Netherite', p: 25000 }
+            { t: 'Wooden', p: 20 }, { t: 'Stone', p: 50 },
+            { t: 'Iron', p: 450 }, { t: 'Golden', p: 4500 },
+            { t: 'Diamond', p: 30000 }, { t: 'Netherite', p: 850000 }
         ];
         const gear = ['Sword', 'Pickaxe', 'Axe', 'Shovel', 'Hoe', 'Helmet', 'Chestplate', 'Leggings', 'Boots'];
         tiers.forEach(tier => {
@@ -179,41 +231,42 @@
                 let multiplier = (g==='Chestplate'?8:g==='Leggings'?7:g==='Helmet'||g==='Boots'?4:3);
                 addEntity(`${tier.t} ${g}`, tier.p * multiplier, icon);
             });
-        }); // 54 Gear Items
+        }); // 54
 
         const foods = [
-            {n: 'Apple', p: 5, i: '🍎'}, {n: 'Bread', p: 15, i: '🍞'},
-            {n: 'Cooked Porkchop', p: 25, i: '🍖'}, {n: 'Cooked Beef', p: 25, i: '🥩'},
-            {n: 'Golden Apple', p: 500, i: '🍏'}, {n: 'Enchanted Apple', p: 10000, i: '🍎✨'},
-            {n: 'Carrot', p: 5, i: '🥕'}, {n: 'Potato', p: 5, i: '🥔'},
-            {n: 'Baked Potato', p: 15, i: '🥔🔥'}, {n: 'Cookie', p: 10, i: '🍪'},
-            {n: 'Cake', p: 150, i: '🎂'}, {n: 'Pumpkin Pie', p: 50, i: '🥧'},
-            {n: 'Mushroom Stew', p: 30, i: '🥣'}, {n: 'Suspicious Stew', p: 50, i: '🍲'},
-            {n: 'Sweet Berries', p: 5, i: '🍓'}, {n: 'Glow Berries', p: 10, i: '🟡'},
-            {n: 'Melon Slice', p: 5, i: '🍉'}, {n: 'Chorus Fruit', p: 100, i: '🍇'},
-            {n: 'Spider Eye', p: 20, i: '👁️'}, {n: 'Rotten Flesh', p: 2, i: '🧟'}
+            {n: 'Apple', p: 2, i: '🍎'}, {n: 'Bread', p: 4, i: '🍞'},
+            {n: 'Cooked Porkchop', p: 12, i: '🍖'}, {n: 'Cooked Beef (Steak)', p: 15, i: '🥩'},
+            {n: 'Golden Apple', p: 25000, i: '🍏'}, {n: 'Enchanted Golden Apple', p: 5000000, i: '🍎'},
+            {n: 'Carrot', p: 1, i: '🥕'}, {n: 'Potato', p: 1, i: '🥔'},
+            {n: 'Baked Potato', p: 3, i: '🥔'}, {n: 'Cookie', p: 2, i: '🍪'},
+            {n: 'Whole Cake', p: 25, i: '🎂'}, {n: 'Pumpkin Pie', p: 18, i: '🥧'},
+            {n: 'Mushroom Stew', p: 10, i: '🥣'}, {n: 'Suspicious Stew', p: 500, i: '🍲'},
+            {n: 'Sweet Berries', p: 2, i: '🍓'}, {n: 'Glow Berries', p: 150, i: '🟡'},
+            {n: 'Melon Slice', p: 3, i: '🍉'}, {n: 'Chorus Fruit', p: 800, i: '🍇'},
+            {n: 'Spider Eye', p: 100, i: '👁️'}, {n: 'Rotten Flesh', p: 1, i: '🧟'}
         ];
-        foods.forEach(f => addEntity(f.n, f.p, f.i)); // 20 Food Items
+        foods.forEach(f => addEntity(f.n, f.p, f.i)); // 20
 
         const materials = [
-            {n: 'Coal', p: 10, i: '🪨'}, {n: 'Raw Iron', p: 25, i: '🪙'},
-            {n: 'Iron Ingot', p: 50, i: '🔩'}, {n: 'Raw Gold', p: 100, i: '🟡'},
-            {n: 'Gold Ingot', p: 200, i: '🥇'}, {n: 'Diamond', p: 1000, i: '💎'},
-            {n: 'Emerald', p: 500, i: '🟢'}, {n: 'Netherite Scrap', p: 8000, i: '⚙️'},
-            {n: 'Netherite Ingot', p: 25000, i: '⬛✨'}, {n: 'Lapis Lazuli', p: 15, i: '🔷'},
-            {n: 'Redstone Dust', p: 30, i: '🔴'}, {n: 'Copper Ingot', p: 40, i: '🥉'},
-            {n: 'Amethyst Shard', p: 400, i: '💜'}, {n: 'Quartz', p: 80, i: '🤍'},
-            {n: 'Stick', p: 1, i: '🦯'}, {n: 'String', p: 5, i: '🧵'},
-            {n: 'Feather', p: 5, i: '🪶'}, {n: 'Gunpowder', p: 50, i: '🧨'},
-            {n: 'Leather', p: 15, i: '👞'}, {n: 'Flint', p: 10, i: '🪨'},
-            {n: 'Ender Pearl', p: 500, i: '🔮'}, {n: 'Eye of Ender', p: 1200, i: '👁️‍🗨️'},
-            {n: 'Totem of Undying', p: 25000, i: '🏺'}, {n: 'Elytra', p: 75000, i: '🦋'},
-            {n: 'Saddle', p: 1500, i: '💺'}, {n: 'Nametag', p: 1000, i: '🏷️'},
-            {n: 'Bow', p: 200, i: '🏹'}, {n: 'Arrow', p: 5, i: '↗️'},
-            {n: 'Trident', p: 15000, i: '🔱'}, {n: 'Shield', p: 300, i: '🛡️'}
+            {n: 'Piece of Coal', p: 15, i: '🪨'}, {n: 'Raw Iron', p: 100, i: '🪙'},
+            {n: 'Iron Ingot', p: 150, i: '🔩'}, {n: 'Raw Gold', p: 1000, i: '🟡'},
+            {n: 'Gold Ingot', p: 1500, i: '🥇'}, {n: 'Rough Diamond', p: 10000, i: '💎'},
+            {n: 'Flawless Emerald', p: 5000, i: '🟢'}, {n: 'Netherite Scrap', p: 50000, i: '⚙️'},
+            {n: 'Netherite Ingot', p: 250000, i: '⬛'}, {n: 'Lapis Lazuli', p: 50, i: '🔷'},
+            {n: 'Redstone Dust', p: 120, i: '🔴'}, {n: 'Copper Ingot', p: 80, i: '🥉'},
+            {n: 'Amethyst Shard', p: 1500, i: '💜'}, {n: 'Nether Quartz', p: 300, i: '🤍'},
+            {n: 'Wooden Stick', p: 1, i: '🦯'}, {n: 'Spider String', p: 10, i: '🧵'},
+            {n: 'Chicken Feather', p: 2, i: '🪶'}, {n: 'Gunpowder', p: 200, i: '🧨'},
+            {n: 'Cow Leather', p: 25, i: '👞'}, {n: 'Sharp Flint', p: 5, i: '🪨'},
+            {n: 'Ender Pearl', p: 15000, i: '🔮'}, {n: 'Eye of Ender', p: 35000, i: '👁️‍🗨️'},
+            {n: 'Totem of Undying', p: 10000000, i: '🏺'}, {n: 'Elytra Wings', p: 50000000, i: '🦋'},
+            {n: 'Leather Saddle', p: 350, i: '💺'}, {n: 'Nametag', p: 5000, i: '🏷️'},
+            {n: 'Wooden Bow', p: 150, i: '🏹'}, {n: 'Flint Arrow', p: 5, i: '↗️'},
+            {n: 'Enchanted Trident', p: 2500000, i: '🔱'}, {n: 'Wooden Shield', p: 250, i: '🛡️'},
+            {n: 'Beacon', p: 25000000, i: '🗼'}, {n: 'Dragon Egg', p: 5000000000, i: '🥚'}
         ];
-        materials.forEach(m => addEntity(m.n, m.p, m.i)); // 30 Material Items
-        // Total Items = 104
+        materials.forEach(m => addEntity(m.n, m.p, m.i)); // 32
+        // Total Items = 106
 
         // ==========================================
         // LOGIC & RENDERING
@@ -222,11 +275,7 @@
         let totalSpent = 0;
 
         function formatMoney(amount) {
-            return new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD',
-                maximumFractionDigits: 0
-            }).format(amount);
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(amount);
         }
 
         function formatShorthand(num) {
@@ -242,19 +291,23 @@
             inventory.forEach(item => {
                 quantities[item.id] = 0;
                 const card = document.createElement('div');
-                card.className = "item-card rounded-xl p-4 flex flex-col items-center justify-between min-h-[220px]";
+                // Added flex-1 and min-h so the name can wrap and take up exactly the space it needs without hiding
+                card.className = `item-card rounded-2xl p-4 sm:p-5 ${item.rarity}`;
                 
                 card.innerHTML = `
-                    <div class="icon-2d mb-3">${item.icon}</div>
-                    <h3 class="text-sm sm:text-base font-bold text-center leading-tight line-clamp-2 h-10 w-full mb-1">${item.name}</h3>
-                    <p class="text-emerald-400 font-mono font-bold mb-4">${formatShorthand(item.price)}</p>
-                    
-                    <div class="flex items-center w-full gap-1 bg-slate-900/80 p-1 rounded-lg border border-slate-700/50">
-                        <button onclick="updateQty(${item.id}, -1)" class="ctrl-btn w-8 h-8 rounded flex items-center justify-center font-bold shrink-0">-</button>
-                        <input type="number" id="input-${item.id}" value="0" min="0" 
-                            class="bg-transparent text-center font-bold text-white w-full outline-none"
-                            oninput="if(this.value.length > 7) this.value = this.value.slice(0, 7); manualUpdate(${item.id}, this.value)">
-                        <button onclick="updateQty(${item.id}, 1)" class="ctrl-btn w-8 h-8 rounded flex items-center justify-center font-bold shrink-0">+</button>
+                    <div class="icon-slot"><span>${item.icon}</span></div>
+                    <div class="flex-grow flex flex-col items-center justify-start w-full">
+                        <h3 class="text-sm sm:text-[15px] font-semibold text-center text-gray-200 leading-snug mb-3 w-full">${item.name}</h3>
+                    </div>
+                    <div class="mt-auto w-full">
+                        <p class="text-white price-font text-center font-bold text-lg mb-4 tracking-wide">${formatShorthand(item.price)}</p>
+                        <div class="flex items-center w-full gap-1 bg-black/50 p-1.5 rounded-xl border border-white/5">
+                            <button onclick="updateQty(${item.id}, -1)" class="ctrl-btn w-9 h-9 rounded-lg flex items-center justify-center font-bold shrink-0 text-xl">-</button>
+                            <input type="number" id="input-${item.id}" value="0" min="0" 
+                                class="bg-transparent text-center font-bold text-white w-full outline-none price-font text-lg"
+                                oninput="if(this.value.length > 7) this.value = this.value.slice(0, 7); manualUpdate(${item.id}, this.value)">
+                            <button onclick="updateQty(${item.id}, 1)" class="ctrl-btn w-9 h-9 rounded-lg flex items-center justify-center font-bold shrink-0 text-xl">+</button>
+                        </div>
                     </div>
                 `;
                 grid.appendChild(card);
@@ -287,7 +340,6 @@
             });
             document.getElementById('total-spent').innerText = formatShorthand(totalSpent);
             
-            // Live update receipt if it's currently open
             if (!document.getElementById('receipt-modal').classList.contains('hidden')) {
                 buildReceipt();
             }
@@ -301,14 +353,13 @@
 
         function openReceipt() {
             if (totalSpent === 0) {
-                alert("Cart is empty! Add some blocks or items first.");
+                alert("Your cart is empty. Add some items to the market first.");
                 return;
             }
             buildReceipt();
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             
-            // Animate in
             setTimeout(() => {
                 modal.classList.remove('opacity-0');
                 modalContent.classList.remove('scale-95');
@@ -336,13 +387,13 @@
                 if (qty > 0) {
                     const lineTotal = item.price * qty;
                     list.innerHTML += `
-                        <div class="flex items-center justify-between py-2 border-b border-slate-700/50 last:border-0">
-                            <div class="flex items-center gap-3 w-1/2 overflow-hidden">
-                                <span class="text-xl filter grayscale drop-shadow-md">${item.icon}</span>
-                                <span class="truncate">${item.name}</span>
+                        <div class="flex items-center justify-between py-3 border-b border-[#222] last:border-0">
+                            <div class="flex items-center gap-4 w-1/2">
+                                <span class="text-2xl filter grayscale brightness-150">${item.icon}</span>
+                                <span class="text-gray-200 leading-tight">${item.name}</span>
                             </div>
-                            <div class="w-1/6 text-right text-slate-500">x${qty}</div>
-                            <div class="w-1/3 text-right font-mono text-emerald-400 font-bold">${formatShorthand(lineTotal)}</div>
+                            <div class="w-1/6 text-right text-gray-500 font-bold">x${qty}</div>
+                            <div class="w-1/3 text-right price-font text-white font-bold tracking-wide">${formatShorthand(lineTotal)}</div>
                         </div>
                     `;
                 }
@@ -352,12 +403,12 @@
         }
 
         function shareOnX() {
-            const text = `I just spent ${formatMoney(totalSpent)} on Premium Blocks & Items! 💸 Can you beat my high score?`;
+            const text = `I just spent ${formatMoney(totalSpent)} on the Block Market! 💸 Try to beat my high score.`;
             const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
             window.open(url, '_blank');
         }
 
-        // Run Initialization
+        // Run
         initGrid();
     </script>
 </body>
