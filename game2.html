@@ -3,83 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Block Market</title>
+    <title>Premium Block Market</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'VT323', monospace;
-            background-color: #1d1d1d;
-            background-image: radial-gradient(#333 1px, transparent 1px);
-            background-size: 32px 32px;
-            color: #ffffff;
-            margin: 0;
-            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* Slate 900 */
+            color: #f8fafc;
         }
 
-        /* UI Styling */
-        .mc-slot {
-            background-color: #8b8b8b;
-            border: 4px solid;
-            border-top-color: #e5e5e5;
-            border-left-color: #e5e5e5;
-            border-bottom-color: #373737;
-            border-right-color: #373737;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
-        }
+        /* Custom Scrollbar for Premium Look */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
-        .mc-button {
-            background-color: #c6c6c6;
-            border: 4px solid;
-            border-top-color: #ffffff;
-            border-left-color: #ffffff;
-            border-bottom-color: #555555;
-            border-right-color: #555555;
-            color: #222;
-            transition: all 0.05s ease;
-            text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
-            cursor: pointer;
-        }
-        
-        .mc-button:active {
-            border-top-color: #555555;
-            border-left-color: #555555;
-            border-bottom-color: #ffffff;
-            border-right-color: #ffffff;
-            background-color: #a0a0a0;
-        }
-
-        .mc-button-green {
-            background-color: #3db83d;
-            border-top-color: #55ff55;
-            border-left-color: #55ff55;
-            border-bottom-color: #1a6b1a;
-            border-right-color: #1a6b1a;
-            color: white;
-            text-shadow: 2px 2px 0px rgba(0,0,0,0.5);
-        }
-
-        .mc-button-green:active {
-            border-top-color: #1a6b1a;
-            border-left-color: #1a6b1a;
-            border-bottom-color: #55ff55;
-            border-right-color: #55ff55;
-            background-color: #2e8f2e;
-        }
-
-        .mc-input {
-            background-color: #1e1e1e;
-            border: 4px solid;
-            border-top-color: #000000;
-            border-left-color: #000000;
-            border-bottom-color: #555555;
-            border-right-color: #555555;
-            color: #fff;
-            width: 100%;
-            min-width: 0; /* Prevents flex flex-grow breakout */
-        }
-
-        /* Hide number arrows */
+        /* Hide Number Input Arrows */
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button {
             -webkit-appearance: none;
@@ -87,278 +27,231 @@
         }
         input[type="number"] { -moz-appearance: textfield; }
 
-        .mc-text-shadow {
-            text-shadow: 2px 2px 0px #3f3f3f;
+        /* Item Card Styling */
+        .item-card {
+            background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #334155;
+            transition: all 0.2s ease;
+        }
+        .item-card:hover {
+            border-color: #10b981;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px rgba(16, 185, 129, 0.15);
         }
 
-        .receipt-bg {
-            background-color: #f6e5b4;
-            color: #000;
-            border: 4px solid #4a3525;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+        .icon-2d {
+            font-size: 3rem;
+            line-height: 1;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
+            user-select: none;
         }
 
-        .sticky-header {
-            background: linear-gradient(180deg, #444 0%, #222 100%);
-            border-bottom: 4px solid #111;
+        .ctrl-btn {
+            background: #334155;
+            color: #cbd5e1;
+            transition: all 0.15s;
         }
-
-        /* -------------------------------------
-           CSS ART 3D CUBE (NO IMAGE ICONS)
-           ------------------------------------- */
-        .cube-wrapper {
-            width: 60px;
-            height: 70px;
-            position: relative;
-            margin: 0 auto 15px auto;
-            transform: scale(1.1);
-        }
-        .cube {
-            width: 40px;
-            height: 40px;
-            position: absolute;
-            top: 15px;
-            left: 10px;
-            transform-style: preserve-3d;
-            transform: rotateX(-30deg) rotateY(45deg);
-        }
-        .face {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-        }
-        .top-face { transform: rotateX(90deg) translateZ(20px); }
-        .front-face { transform: translateZ(20px); }
-        .right-face { transform: rotateY(90deg) translateZ(20px); }
-        
-        .cube-texture {
-            width: 100%;
-            height: 100%;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
-            /* Procedural pixelation overlay */
-            background-image: 
-                linear-gradient(45deg, rgba(0,0,0,0.05) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.05) 75%),
-                linear-gradient(45deg, rgba(0,0,0,0.05) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.05) 75%);
-            background-size: 4px 4px;
-            background-position: 0 0, 2px 2px;
-        }
-        
-        /* Highlight overlay to give block edges depth */
-        .front-face .cube-texture { box-shadow: inset 2px -2px 4px rgba(0,0,0,0.3); }
-        .right-face .cube-texture { box-shadow: inset -2px -2px 4px rgba(0,0,0,0.4); }
-        .top-face .cube-texture { box-shadow: inset 2px 2px 4px rgba(255,255,255,0.2); }
+        .ctrl-btn:hover { background: #475569; color: #fff; }
+        .ctrl-btn:active { transform: scale(0.95); }
     </style>
 </head>
-<body class="pb-20">
+<body class="pt-20 pb-12 antialiased">
 
-    <!-- Top Branding -->
-    <nav class="bg-black py-4 px-6 text-3xl text-center text-gray-300 tracking-widest border-b-4 border-gray-700 mc-text-shadow">
-        THE BLOCK MARKET
-    </nav>
-
-    <!-- Sticky Header -->
-    <div class="sticky-header text-center py-6 sticky top-0 z-50 shadow-2xl flex flex-col items-center">
-        <h2 class="text-2xl text-gray-400 mb-1">EMERALDS SPENT</h2>
-        <div class="text-5xl sm:text-7xl font-bold text-[#55ff55] mc-text-shadow flex items-center justify-center gap-4 mb-4" id="total-spent">
-            <span class="text-4xl">🟢</span> 0
+    <!-- Slim Premium Sticky Header -->
+    <header class="fixed top-0 left-0 right-0 h-16 bg-slate-900/80 backdrop-blur-md border-b border-slate-800 z-50 flex items-center justify-between px-4 sm:px-8">
+        <div class="hidden sm:block font-black tracking-widest text-slate-400 text-sm uppercase">Marketplace</div>
+        
+        <!-- Live Total -->
+        <div class="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-2">
+            <span class="text-emerald-500 font-black text-2xl sm:text-3xl tracking-tight" id="total-spent">$0</span>
         </div>
-        <button onclick="generateReceipt()" class="mc-button mc-button-green font-bold text-2xl py-2 px-8 tracking-widest">
-            MAKE RECEIPT
+
+        <button onclick="openReceipt()" class="bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-slate-900 font-bold py-2 px-5 rounded-lg text-sm transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)] hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] active:scale-95 flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            <span class="hidden sm:inline">Make Receipt</span>
+            <span class="sm:hidden">Receipt</span>
         </button>
+    </header>
+
+    <!-- Main Grid -->
+    <div class="max-w-[1600px] mx-auto px-4 sm:px-6">
+        <div id="items-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+            <!-- Injected dynamically -->
+        </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="max-w-[1400px] mx-auto px-4 py-10">
+    <!-- Receipt Modal Overlay -->
+    <div id="receipt-modal" class="fixed inset-0 bg-black/80 z-[100] hidden items-center justify-center opacity-0 transition-opacity duration-300 backdrop-blur-sm p-4">
         
-        <!-- Items Grid -->
-        <div id="items-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            <!-- Injected by JS -->
-        </div>
-
-        <!-- Receipt Section -->
-        <div id="receipt-container" class="mt-16 receipt-bg max-w-3xl mx-auto py-10 px-6 sm:px-16 hidden">
-            <h2 class="text-4xl font-bold text-center mb-8 border-b-4 border-dotted border-gray-800 pb-4">TRADE RECEIPT</h2>
+        <div id="receipt-content" class="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-lg flex flex-col relative shadow-2xl transform scale-95 transition-transform duration-300 max-h-[90vh]">
             
-            <div id="receipt-items" class="flex flex-col gap-2 mb-6 text-xl sm:text-2xl overflow-hidden">
-                <!-- Receipt rows -->
+            <!-- Top Right Close (X) Icon -->
+            <button onclick="closeReceipt()" class="absolute top-5 right-5 text-slate-400 hover:text-white transition-colors p-1 rounded-md hover:bg-slate-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+
+            <!-- Receipt Header -->
+            <div class="p-6 border-b border-slate-700">
+                <h2 class="text-xl sm:text-2xl font-black text-white uppercase tracking-wider">Official Receipt</h2>
+                <p class="text-slate-400 text-sm mt-1">Transaction Details</p>
             </div>
             
-            <div class="flex justify-between border-t-4 border-black pt-4 font-bold text-3xl mt-6">
-                <span>TOTAL:</span>
-                <span id="receipt-total" class="text-green-800 flex items-center gap-2 truncate pl-2">🟢 0</span>
+            <!-- Receipt Items List -->
+            <div id="receipt-list" class="p-6 overflow-y-auto flex-1 space-y-3 font-medium text-slate-300">
+                <!-- Rows injected here -->
+            </div>
+            
+            <!-- Receipt Footer & Share -->
+            <div class="p-6 border-t border-slate-700 bg-slate-900/50 rounded-b-2xl">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="text-lg text-slate-400 uppercase font-bold tracking-wider">Total Due</span>
+                    <span class="text-3xl font-black text-emerald-400" id="receipt-total">$0</span>
+                </div>
+                
+                <button onclick="shareOnX()" class="w-full bg-black hover:bg-zinc-900 border border-zinc-800 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-3 transition-colors shadow-lg active:scale-[0.98]">
+                    <svg viewBox="0 0 24 24" class="w-5 h-5 fill-current"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    Share on 𝕏
+                </button>
             </div>
         </div>
     </div>
 
     <script>
-        // Generating 120+ Custom CSS Blocks
-        const items = [];
+        const inventory = [];
         let idCounter = 1;
 
-        // Helper to register blocks dynamically with calculated prices
-        function addBlock(name, price, topHex, frontHex, rightHex, opacity = 1) {
-            items.push({ id: idCounter++, name, price, top: topHex, front: frontHex, right: rightHex, opacity });
+        // Generate 100 Blocks & 100 Items Programmatically to save space
+        function addEntity(name, price, icon, type) {
+            inventory.push({ id: idCounter++, name, price, icon, type });
         }
 
         // ==========================================
-        // 1. Natural Blocks
+        // GENERATE ~100 BLOCKS
         // ==========================================
-        addBlock("Dirt Block", 1, "#866043", "#714f35", "#5c402a");
-        addBlock("Grass Block", 2, "#659b40", "#714f35", "#5c402a");
-        addBlock("Cobblestone", 2, "#6c6c6c", "#5b5b5b", "#4a4a4a");
-        addBlock("Stone Block", 3, "#7d7d7d", "#6c6c6c", "#5b5b5b");
-        addBlock("Sand", 2, "#dbd3a0", "#c2bb8d", "#a8a27a");
-        addBlock("Gravel", 2, "#827f7f", "#6e6b6b", "#595757");
-        addBlock("Bedrock", 9999999, "#3a3a3a", "#292929", "#1a1a1a");
-        addBlock("Obsidian", 100, "#201830", "#151020", "#0d0a14");
-        addBlock("Glass Block", 5, "#c2e1e3", "#a9c6c8", "#90abad", 0.5);
-        addBlock("Leaves Block", 1, "#4a7428", "#3a5c1e", "#2a4515", 0.9);
-        addBlock("Sponge Block", 50, "#d1c93a", "#b5ad2c", "#969022");
-        addBlock("Slime Block", 300, "#73c944", "#5eb033", "#4a9622", 0.7);
-        addBlock("Honey Block", 350, "#f4a21a", "#db8f11", "#c27c09", 0.8);
-        addBlock("Magma Block", 80, "#8f3414", "#75280e", "#5c1e09");
-        addBlock("Soul Sand", 90, "#544033", "#423228", "#33261f");
-        addBlock("Glowstone", 150, "#cca445", "#b38f3a", "#96772e");
-        addBlock("Sea Lantern", 200, "#d1e8e8", "#b6d1d1", "#9cbaba");
-        addBlock("Ice Block", 10, "#8eb5db", "#799bc2", "#6584a8", 0.6);
-        addBlock("Snow Block", 4, "#ffffff", "#e0e0e0", "#c4c4c4");
-        addBlock("Clay Block", 12, "#a0a6b3", "#898e99", "#727782");
-
-        // ==========================================
-        // 2. Ores & Precious Blocks (Prices Calculated: Ingot Price * 9)
-        // ==========================================
-        // Iron Ingot = 50 -> Block = 450
-        addBlock("Iron Block", 450, "#e5e5e5", "#cecece", "#b7b7b7");
-        // Gold Ingot = 200 -> Block = 1800
-        addBlock("Gold Block", 1800, "#fbee51", "#e4d848", "#ccc03f");
-        // Diamond = 1000 -> Block = 9000
-        addBlock("Diamond Block", 9000, "#70ffeb", "#5be5d3", "#47ccba");
-        // Emerald = 500 -> Block = 4500
-        addBlock("Emerald Block", 4500, "#41f574", "#32de62", "#25c752");
-        // Netherite = 25000 -> Block = 225000
-        addBlock("Netherite Block", 225000, "#443f41", "#363234", "#282526");
-        addBlock("Coal Block", 90, "#161616", "#101010", "#0a0a0a");
-        addBlock("Redstone Block", 270, "#a41600", "#8a1100", "#700d00");
-        addBlock("Lapis Block", 135, "#1d4493", "#163678", "#0f285c");
-        addBlock("Amethyst Block", 1600, "#8a66a7", "#75568f", "#5f4577");
-        addBlock("Copper Block", 360, "#c16b47", "#a65b3c", "#8c4b30");
-        addBlock("Quartz Block", 320, "#eeebe6", "#d1cdca", "#b5b1ad");
-        addBlock("Ancient Debris", 5000, "#5e4337", "#4a342a", "#38261e");
-        addBlock("Bone Block", 40, "#e3ded1", "#c9c4b7", "#ada799");
-        addBlock("Raw Iron Block", 225, "#d8af93", "#c29c82", "#a8866f");
-        addBlock("Raw Gold Block", 900, "#f4c633", "#d6ac29", "#b89320");
-        addBlock("Raw Copper Block", 180, "#c87652", "#af6545", "#965538");
-
-        // ==========================================
-        // 3. Wood Types (Logs & Planks)
-        // ==========================================
-        const woods = [
-            { n: "Oak", logT: "#b38f55", logS: "#4d3d24", p: "#b38f55" },
-            { n: "Birch", logT: "#c8b47a", logS: "#e1e0db", p: "#d5c38c" },
-            { n: "Spruce", logT: "#725330", logS: "#352413", p: "#725330" },
-            { n: "Jungle", logT: "#9c6a46", logS: "#533f27", p: "#a2704b" },
-            { n: "Acacia", logT: "#a85c32", logS: "#5c554e", p: "#a65c32" },
-            { n: "Dark Oak", logT: "#432b13", logS: "#271b0d", p: "#432b13" }
+        const blockBasics = [
+            {n: 'Dirt', p: 1, i: '🟫'}, {n: 'Stone', p: 3, i: '🪨'}, {n: 'Cobblestone', p: 2, i: '🌑'},
+            {n: 'Sand', p: 2, i: '🏖️'}, {n: 'Gravel', p: 2, i: '🪨'}, {n: 'Obsidian', p: 100, i: '⬛'},
+            {n: 'Bedrock', p: 999999, i: '🕳️'}, {n: 'Coal Block', p: 90, i: '⬛'},
+            {n: 'Iron Block', p: 450, i: '⬜'}, {n: 'Gold Block', p: 1800, i: '🟨'},
+            {n: 'Diamond Block', p: 9000, i: '💠'}, {n: 'Emerald Block', p: 4500, i: '🟩'},
+            {n: 'Netherite Block', p: 225000, i: '🔲'}, {n: 'Slime Block', p: 300, i: '🟩'},
+            {n: 'Honey Block', p: 350, i: '🍯'}, {n: 'Magma Block', p: 80, i: '🌋'},
+            {n: 'Soul Sand', p: 90, i: '👻'}, {n: 'Glowstone', p: 150, i: '💡'},
+            {n: 'Sea Lantern', p: 200, i: '🏮'}, {n: 'Sponge', p: 50, i: '🧽'}
         ];
+        blockBasics.forEach(b => addEntity(b.n, b.p, b.i, 'block')); // 20
+
+        const woods = ['Oak', 'Spruce', 'Birch', 'Jungle', 'Acacia', 'Dark Oak'];
         woods.forEach(w => {
-            // Logs = 4
-            addBlock(w.n + " Log", 4, w.logT, w.logS, w.logS);
-            // Planks = 1
-            addBlock(w.n + " Plank", 1, w.p, adjustColor(w.p, -20), adjustColor(w.p, -40));
-        });
+            addEntity(`${w} Log`, 5, '🪵', 'block');
+            addEntity(`${w} Planks`, 1, '🟫', 'block');
+            addEntity(`${w} Leaves`, 2, '🌿', 'block');
+        }); // 18
+
+        const colors = ['White', 'Light Gray', 'Gray', 'Black', 'Brown', 'Red', 'Orange', 'Yellow', 'Lime', 'Green', 'Cyan', 'Light Blue', 'Blue', 'Purple', 'Magenta', 'Pink'];
+        colors.forEach(c => {
+            addEntity(`${c} Wool`, 10, '🐑', 'block');
+            addEntity(`${c} Concrete`, 15, '🧱', 'block');
+            addEntity(`${c} Glass`, 12, '🧊', 'block');
+            addEntity(`${c} Terracotta`, 14, '🏺', 'block');
+        }); // 64
+        // Total Blocks = 102
 
         // ==========================================
-        // 4. Colored Blocks Generator (Wool, Concrete, Glass)
+        // GENERATE ~100 ITEMS
         // ==========================================
-        const colors = [
-            { name: "White", hex: "#e4e4e4" }, { name: "Orange", hex: "#ea7e35" },
-            { name: "Magenta", hex: "#be49c9" }, { name: "Light Blue", hex: "#6387d2" },
-            { name: "Yellow", hex: "#f1af15" }, { name: "Lime", hex: "#7abc2f" },
-            { name: "Pink", hex: "#e98cac" }, { name: "Gray", hex: "#424242" },
-            { name: "Light Gray", hex: "#8e8e86" }, { name: "Cyan", hex: "#16878c" },
-            { name: "Purple", hex: "#7a2aac" }, { name: "Blue", hex: "#35399d" },
-            { name: "Brown", hex: "#724728" }, { name: "Green", hex: "#546d1b" },
-            { name: "Red", hex: "#a12722" }, { name: "Black", hex: "#141519" }
+        const tiers = [
+            { t: 'Wooden', p: 10, i: '🪵' }, { t: 'Stone', p: 25, i: '🪨' },
+            { t: 'Iron', p: 150, i: '⚙️' }, { t: 'Golden', p: 500, i: '⭐' },
+            { t: 'Diamond', p: 2500, i: '💎' }, { t: 'Netherite', p: 25000, i: '🔥' }
         ];
+        const gear = ['Sword', 'Pickaxe', 'Axe', 'Shovel', 'Hoe', 'Helmet', 'Chestplate', 'Leggings', 'Boots'];
+        tiers.forEach(tier => {
+            gear.forEach(g => {
+                let icon = '🗡️';
+                if(g==='Pickaxe') icon = '⛏️'; if(g==='Axe') icon = '🪓';
+                if(g==='Shovel') icon = '🥄'; if(g==='Hoe') icon = '🦯';
+                if(g==='Helmet') icon = '🪖'; if(g==='Chestplate') icon = '👕';
+                if(g==='Leggings') icon = '👖'; if(g==='Boots') icon = '🥾';
+                let multiplier = (g==='Chestplate'?8:g==='Leggings'?7:g==='Helmet'||g==='Boots'?4:3);
+                addEntity(`${tier.t} ${g}`, tier.p * multiplier, icon, 'item');
+            });
+        }); // 54
 
-        // Add Wools (Price 15)
-        colors.forEach(c => addBlock(c.name + " Wool", 15, c.hex, adjustColor(c.hex, -15), adjustColor(c.hex, -30)));
-        // Add Concretes (Price 20)
-        colors.forEach(c => addBlock(c.name + " Concrete", 20, c.hex, adjustColor(c.hex, -20), adjustColor(c.hex, -40)));
-        // Add Stained Glass (Price 8)
-        colors.forEach(c => addBlock(c.name + " Glass", 8, c.hex, adjustColor(c.hex, -15), adjustColor(c.hex, -30), 0.6));
-        
-        // Add a few technical blocks
-        addBlock("TNT Block", 500, "#c23a2a", "#d73b2a", "#b82e1e");
-        addBlock("Bookshelf", 120, "#b38f55", "#8c2020", "#2c6c30"); // abstract representation
-        addBlock("End Stone", 10, "#dfdf9f", "#c4c489", "#a8a873");
-        addBlock("Purpur Block", 25, "#a573a5", "#8f608f", "#784d78");
+        const foods = [
+            {n: 'Apple', p: 5, i: '🍎'}, {n: 'Bread', p: 15, i: '🍞'},
+            {n: 'Cooked Porkchop', p: 25, i: '🍖'}, {n: 'Cooked Beef', p: 25, i: '🥩'},
+            {n: 'Golden Apple', p: 500, i: '🍏'}, {n: 'Enchanted Apple', p: 10000, i: '🍎✨'},
+            {n: 'Carrot', p: 5, i: '🥕'}, {n: 'Potato', p: 5, i: '🥔'},
+            {n: 'Baked Potato', p: 15, i: '🥔🔥'}, {n: 'Cookie', p: 10, i: '🍪'},
+            {n: 'Cake', p: 150, i: '🎂'}, {n: 'Pumpkin Pie', p: 50, i: '🥧'},
+            {n: 'Mushroom Stew', p: 30, i: '🥣'}, {n: 'Suspicious Stew', p: 50, i: '🍲'},
+            {n: 'Sweet Berries', p: 5, i: '🍓'}, {n: 'Glow Berries', p: 10, i: '🟡'},
+            {n: 'Melon Slice', p: 5, i: '🍉'}, {n: 'Chorus Fruit', p: 100, i: '🍇'},
+            {n: 'Spider Eye', p: 20, i: '👁️'}, {n: 'Rotten Flesh', p: 2, i: '🧟'}
+        ];
+        foods.forEach(f => addEntity(f.n, f.p, f.i, 'item')); // 20
 
-        // Simple helper to darken hex colors for block shading
-        function adjustColor(color, amount) {
-            return '#' + color.replace(/^#/, '').replace(/../g, color => ('0'+Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)).substr(-2));
-        }
+        const materials = [
+            {n: 'Coal', p: 10, i: '🪨'}, {n: 'Raw Iron', p: 25, i: '🪙'},
+            {n: 'Iron Ingot', p: 50, i: '🔩'}, {n: 'Raw Gold', p: 100, i: '🟡'},
+            {n: 'Gold Ingot', p: 200, i: '🥇'}, {n: 'Diamond', p: 1000, i: '💎'},
+            {n: 'Emerald', p: 500, i: '🟢'}, {n: 'Netherite Scrap', p: 8000, i: '⚙️'},
+            {n: 'Netherite Ingot', p: 25000, i: '⬛✨'}, {n: 'Lapis Lazuli', p: 15, i: '🔷'},
+            {n: 'Redstone Dust', p: 30, i: '🔴'}, {n: 'Copper Ingot', p: 40, i: '🥉'},
+            {n: 'Amethyst Shard', p: 400, i: '💜'}, {n: 'Quartz', p: 80, i: '🤍'},
+            {n: 'Stick', p: 1, i: '🦯'}, {n: 'String', p: 5, i: '🧵'},
+            {n: 'Feather', p: 5, i: '🪶'}, {n: 'Gunpowder', p: 50, i: '🧨'},
+            {n: 'Leather', p: 15, i: '👞'}, {n: 'Flint', p: 10, i: '🪨'},
+            {n: 'Ender Pearl', p: 500, i: '🔮'}, {n: 'Eye of Ender', p: 1200, i: '👁️‍🗨️'},
+            {n: 'Totem of Undying', p: 25000, i: '🏺'}, {n: 'Elytra', p: 75000, i: '🦋'},
+            {n: 'Saddle', p: 1500, i: '💺'}, {n: 'Nametag', p: 1000, i: '🏷️'},
+            {n: 'Bow', p: 200, i: '🏹'}, {n: 'Arrow', p: 5, i: '↗️'},
+            {n: 'Trident', p: 15000, i: '🔱'}, {n: 'Shield', p: 300, i: '🛡️'}
+        ];
+        materials.forEach(m => addEntity(m.n, m.p, m.i, 'item')); // 30
+        // Total Items = 104
 
-        let quantities = {};
+        // ==========================================
+        // LOGIC & RENDERING
+        // ==========================================
+        const quantities = {};
         let totalSpent = 0;
 
-        function formatAbbreviated(num) {
-            if (num >= 1e12) return (num / 1e12).toFixed(1).replace(/\.0$/, '') + 'T';
-            if (num >= 1e9) return (num / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
-            if (num >= 1e6) return (num / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
-            if (num >= 1e3) return (num / 1e3).toFixed(num % 1000 === 0 ? 0 : 1).replace(/\.0$/, '') + 'K';
-            return num;
+        function formatMoney(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                maximumFractionDigits: 0
+            }).format(amount);
         }
 
-        function formatNumber(num) {
-            return new Intl.NumberFormat('en-US').format(num);
+        function formatShorthand(num) {
+            if (num >= 1e12) return '$' + (num / 1e12).toFixed(1).replace(/\.0$/, '') + 'T';
+            if (num >= 1e9) return '$' + (num / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
+            if (num >= 1e6) return '$' + (num / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+            if (num >= 1e3) return '$' + (num / 1e3).toFixed(num % 1000 === 0 ? 0 : 1).replace(/\.0$/, '') + 'K';
+            return '$' + num;
         }
 
-        function renderGrid() {
+        function initGrid() {
             const grid = document.getElementById('items-grid');
-            
-            items.forEach(item => {
+            inventory.forEach(item => {
                 quantities[item.id] = 0;
                 const card = document.createElement('div');
-                card.className = "mc-slot p-3 flex flex-col items-center justify-between min-w-0";
+                card.className = "item-card rounded-xl p-4 flex flex-col items-center justify-between min-h-[220px]";
                 
-                // CSS Art Generation
-                const blockHTML = `
-                    <div class="cube-wrapper">
-                        <div class="cube" style="opacity: ${item.opacity};">
-                            <div class="face top-face" style="background-color: ${item.top};">
-                                <div class="cube-texture"></div>
-                            </div>
-                            <div class="face front-face" style="background-color: ${item.front};">
-                                <div class="cube-texture"></div>
-                            </div>
-                            <div class="face right-face" style="background-color: ${item.right};">
-                                <div class="cube-texture"></div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-
                 card.innerHTML = `
-                    ${blockHTML}
-                    <h3 class="text-lg text-white mt-2 text-center leading-tight mc-text-shadow line-clamp-2 h-12 flex items-center justify-center w-full px-1 break-words">${item.name}</h3>
-                    <p class="text-[#55ff55] text-xl mc-text-shadow mb-3">🟢 ${formatAbbreviated(item.price)}</p>
+                    <div class="icon-2d mb-3">${item.icon}</div>
+                    <h3 class="text-sm sm:text-base font-bold text-center leading-tight line-clamp-2 h-10 w-full mb-1">${item.name}</h3>
+                    <p class="text-emerald-400 font-mono font-bold mb-4">${formatShorthand(item.price)}</p>
                     
-                    <div class="flex items-center gap-1 w-full mt-auto">
-                        <button onclick="updateQty(${item.id}, -1)" class="mc-button text-xl py-1 px-2 text-center select-none shrink-0">
-                            -
-                        </button>
-                        
-                        <!-- maxlength logic applied via JS oninput to prevent breaking layout -->
-                        <div class="flex-1 min-w-0">
-                            <input type="number" id="input-${item.id}" value="0" min="0" 
-                                class="mc-input text-center text-xl py-1 outline-none"
-                                oninput="if(this.value.length > 7) this.value = this.value.slice(0, 7); manualUpdate(${item.id}, this.value)">
-                        </div>
-                        
-                        <button onclick="updateQty(${item.id}, 1)" class="mc-button text-xl py-1 px-2 text-center select-none shrink-0">
-                            +
-                        </button>
+                    <div class="flex items-center w-full gap-1 bg-slate-900/50 p-1 rounded-lg border border-slate-700/50">
+                        <button onclick="updateQty(${item.id}, -1)" class="ctrl-btn w-8 h-8 rounded flex items-center justify-center font-bold shrink-0">-</button>
+                        <input type="number" id="input-${item.id}" value="0" min="0" 
+                            class="bg-transparent text-center font-bold text-white w-full outline-none"
+                            oninput="if(this.value.length > 6) this.value = this.value.slice(0, 6); manualUpdate(${item.id}, this.value)">
+                        <button onclick="updateQty(${item.id}, 1)" class="ctrl-btn w-8 h-8 rounded flex items-center justify-center font-bold shrink-0">+</button>
                     </div>
                 `;
                 grid.appendChild(card);
@@ -369,8 +262,7 @@
             let current = quantities[id] || 0;
             current += change;
             if (current < 0) current = 0;
-            if (current > 9999999) current = 9999999;
-            
+            if (current > 999999) current = 999999;
             quantities[id] = current;
             document.getElementById(`input-${id}`).value = current;
             calculateTotal();
@@ -379,8 +271,7 @@
         function manualUpdate(id, value) {
             let num = parseInt(value);
             if (isNaN(num) || num < 0) num = 0;
-            if (num > 9999999) num = 9999999; // Hard cap so numbers fit
-            
+            if (num > 999999) num = 999999;
             quantities[id] = num;
             document.getElementById(`input-${id}`).value = num;
             calculateTotal();
@@ -388,53 +279,83 @@
 
         function calculateTotal() {
             totalSpent = 0;
-            items.forEach(item => {
+            inventory.forEach(item => {
                 totalSpent += (item.price * (quantities[item.id] || 0));
             });
+            document.getElementById('total-spent').innerText = formatShorthand(totalSpent);
             
-            document.getElementById('total-spent').innerHTML = `<span class="text-4xl sm:text-6xl">🟢</span> ${formatNumber(totalSpent)}`;
-            
-            // Only update receipt silently if it's already visible
-            if (!document.getElementById('receipt-container').classList.contains('hidden')) {
-                updateReceiptHTML();
+            // Live update receipt if it's currently open
+            if (!document.getElementById('receipt-modal').classList.contains('hidden')) {
+                buildReceipt();
             }
         }
 
-        function generateReceipt() {
-            const container = document.getElementById('receipt-container');
+        // ==========================================
+        // MODAL & RECEIPT LOGIC
+        // ==========================================
+        const modal = document.getElementById('receipt-modal');
+        const modalContent = document.getElementById('receipt-content');
+
+        function openReceipt() {
             if (totalSpent === 0) {
-                alert("You need to buy some blocks first!");
+                alert("Cart is empty! Add some items first.");
                 return;
             }
+            buildReceipt();
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
             
-            container.classList.remove('hidden');
-            updateReceiptHTML();
-            container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Animate in
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95');
+                modalContent.classList.add('scale-100');
+            }, 10);
         }
 
-        function updateReceiptHTML() {
-            const receiptDiv = document.getElementById('receipt-items');
-            receiptDiv.innerHTML = '';
+        function closeReceipt() {
+            modal.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
             
-            items.forEach(item => {
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        function buildReceipt() {
+            const list = document.getElementById('receipt-list');
+            list.innerHTML = '';
+            
+            inventory.forEach(item => {
                 const qty = quantities[item.id];
                 if (qty > 0) {
-                    const itemTotal = item.price * qty;
-                    receiptDiv.innerHTML += `
-                        <div class="flex justify-between items-center py-1 border-b border-dashed border-gray-400 last:border-0">
-                            <div class="w-[45%] text-left pr-2 truncate" title="${item.name}">${item.name}</div>
-                            <div class="w-[20%] text-left shrink-0">x${formatAbbreviated(qty)}</div>
-                            <div class="w-[35%] text-right font-bold text-green-900 truncate">🟢 ${formatAbbreviated(itemTotal)}</div>
+                    const lineTotal = item.price * qty;
+                    list.innerHTML += `
+                        <div class="flex items-center justify-between py-2 border-b border-slate-700/50 last:border-0">
+                            <div class="flex items-center gap-3 w-1/2 overflow-hidden">
+                                <span class="text-xl filter grayscale drop-shadow-md">${item.icon}</span>
+                                <span class="truncate">${item.name}</span>
+                            </div>
+                            <div class="w-1/6 text-right text-slate-500">x${qty}</div>
+                            <div class="w-1/3 text-right font-mono text-emerald-400 font-bold">${formatShorthand(lineTotal)}</div>
                         </div>
                     `;
                 }
             });
             
-            document.getElementById('receipt-total').innerHTML = `🟢 ${formatNumber(totalSpent)}`;
+            document.getElementById('receipt-total').innerText = formatMoney(totalSpent);
         }
 
-        // Initialize App
-        renderGrid();
+        function shareOnX() {
+            const text = `I just spent ${formatMoney(totalSpent)} on Premium Blocks & Items! 💸 Can you beat my high score?`;
+            const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+            window.open(url, '_blank');
+        }
+
+        // Run
+        initGrid();
     </script>
 </body>
 </html>
