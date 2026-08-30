@@ -17,8 +17,8 @@
             font-family: 'Outfit', sans-serif;
             background-color: var(--bg-base);
             background-image: 
-                radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.03) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.03) 0%, transparent 40%),
+                radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.04) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.04) 0%, transparent 40%),
                 linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
             background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
@@ -127,7 +127,7 @@
         
         <!-- Live Total -->
         <div class="flex-1 flex justify-center items-center">
-            <span class="price-font font-bold text-3xl sm:text-4xl tracking-tight gradient-text drop-shadow-[0_2px_15px_rgba(16,185,129,0.2)]" id="total-spent">$0</span>
+            <span class="price-font font-bold text-3xl sm:text-4xl tracking-tight gradient-text drop-shadow-[0_2px_15px_rgba(16,185,129,0.2)]" id="total-spent">$0.00</span>
         </div>
 
         <!-- Receipt Button -->
@@ -139,7 +139,7 @@
         </div>
     </header>
 
-    <!-- Main Grid (Responsive: 2 mobile, 3 large mobile, 4 tablet, 5 desktop) -->
+    <!-- Main Grid (Responsive: 2 mobile, 3 large mobile, 4 tablet, exactly 5 desktop) -->
     <div class="max-w-[1400px] mx-auto px-3 sm:px-6">
         <div id="items-grid" class="grid grid-cols-2 min-[500px]:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-5 items-stretch">
             <!-- Injected dynamically -->
@@ -171,7 +171,7 @@
             <div class="p-6 sm:p-8 border-t border-[#1f1f1f] bg-[#050505] rounded-b-3xl">
                 <div class="flex justify-between items-center mb-6 sm:mb-8">
                     <span class="text-base sm:text-lg text-gray-400 uppercase tracking-widest">Total Due</span>
-                    <span class="text-3xl sm:text-4xl font-black text-white price-font" id="receipt-total">$0</span>
+                    <span class="text-3xl sm:text-4xl font-black text-white price-font" id="receipt-total">$0.00</span>
                 </div>
                 
                 <button onclick="shareOnX()" class="w-full bg-white hover:bg-gray-200 text-black font-bold py-3.5 sm:py-4 rounded-xl flex items-center justify-center gap-3 transition-transform active:scale-[0.98]">
@@ -200,65 +200,131 @@
         }
 
         // ==========================================
-        // EXACTLY 100 CURATED ITEMS (50 BLOCKS, 50 ITEMS)
+        // ALL 100 EXACT ITEMS FROM YOUR PROVIDED IMAGES
         // ==========================================
-        const curatedBlocks = [
-            {n: 'Dirt Block', p: 1, i: '🟫'}, {n: 'Grass Block', p: 3, i: '🟩'},
-            {n: 'Cobblestone', p: 2, i: '🌑'}, {n: 'Stone Block', p: 5, i: '🪨'},
-            {n: 'Sand Block', p: 2, i: '🏖️'}, {n: 'Gravel Block', p: 2, i: '🪨'},
-            {n: 'Clay Block', p: 8, i: '🧱'}, {n: 'Bricks', p: 25, i: '🧱'},
-            {n: 'Oak Log', p: 10, i: '🪵'}, {n: 'Oak Planks', p: 3, i: '🟫'},
-            {n: 'Oak Leaves', p: 2, i: '🌿'}, {n: 'Spruce Log', p: 12, i: '🪵'},
-            {n: 'Birch Log', p: 12, i: '🪵'}, {n: 'Jungle Log', p: 12, i: '🪵'},
-            {n: 'Glass Block', p: 20, i: '🧊'}, {n: 'Black Stained Glass', p: 25, i: '⬛'},
-            {n: 'White Wool', p: 15, i: '🐑'}, {n: 'Black Wool', p: 15, i: '🐑'},
-            {n: 'Red Wool', p: 15, i: '🟥'}, {n: 'Blue Wool', p: 15, i: '🟦'},
-            {n: 'Green Wool', p: 15, i: '🟩'}, {n: 'White Concrete', p: 25, i: '⬜'},
-            {n: 'Black Concrete', p: 25, i: '⬛'}, {n: 'TNT Block', p: 500, i: '🧨'},
-            {n: 'Bookshelf', p: 150, i: '📚'}, {n: 'Crafting Table', p: 50, i: '🛠️'},
-            {n: 'Furnace', p: 60, i: '🔥'}, {n: 'Chest', p: 40, i: '📦'},
-            {n: 'Ender Chest', p: 15000, i: '👁️‍🗨️'}, {n: 'Sponge', p: 800, i: '🧽'},
-            {n: 'Slime Block', p: 450, i: '🟩'}, {n: 'Honey Block', p: 500, i: '🍯'},
-            {n: 'Magma Block', p: 250, i: '🌋'}, {n: 'Soul Sand', p: 150, i: '👻'},
-            {n: 'Glowstone', p: 750, i: '💡'}, {n: 'Sea Lantern', p: 1200, i: '🏮'},
-            {n: 'Basalt', p: 30, i: '🪨'}, {n: 'Blackstone', p: 40, i: '⬛'},
-            {n: 'Prismarine', p: 600, i: '🌊'}, {n: 'Netherrack', p: 5, i: '🟥'},
-            {n: 'End Stone', p: 200, i: '🌕'}, {n: 'Purpur Block', p: 350, i: '🟪'},
-            {n: 'Coal Block', p: 135, i: '⬛'}, {n: 'Iron Block', p: 1350, i: '⬜'},
-            {n: 'Gold Block', p: 13500, i: '🟨'}, {n: 'Diamond Block', p: 90000, i: '💠'},
-            {n: 'Emerald Block', p: 45000, i: '🟩'}, {n: 'Netherite Block', p: 2250000, i: '🔲'},
-            {n: 'Obsidian', p: 5000, i: '⬛'}, {n: 'Bedrock', p: 1000000000, i: '🕳️'}
+        const exactData = [
+            // Image 1
+            {n: "Dirt Block", p: 2, i: "🟫"},
+            {n: "Grass Block", p: 4, i: "🟩"},
+            {n: "Cobblestone", p: 3, i: "🌑"},
+            {n: "Stone Block", p: 7, i: "🪨"},
+            {n: "Sand Block", p: 3, i: "🏖️"},
+            {n: "Gravel Block", p: 3, i: "🪨"},
+            {n: "Clay Block", p: 12, i: "🧱"},
+            {n: "Bricks", p: 30, i: "🧱"},
+            {n: "Oak Log", p: 15, i: "🪵"},
+            {n: "Oak Planks", p: 5, i: "🟫"},
+            
+            // Image 2
+            {n: "Oak Leaves", p: 5, i: "🌿"},
+            {n: "Spruce Log", p: 25, i: "🪵"},
+            {n: "Birch Log", p: 25, i: "🪵"},
+            {n: "Jungle Log", p: 25, i: "🪵"},
+            {n: "Glass Block", p: 40, i: "🧊"},
+            {n: "Black Stained Glass", p: 50, i: "⬛"},
+            {n: "White Wool", p: 20, i: "🐑"},
+            {n: "Black Wool", p: 20, i: "🐑"},
+            {n: "Red Wool", p: 20, i: "🟥"},
+            {n: "Blue Wool", p: 20, i: "🟦"},
+            
+            // Image 3
+            {n: "Green Wool", p: 120, i: "🟩"},
+            {n: "White Concrete", p: 180, i: "⬜"},
+            {n: "Black Concrete", p: 180, i: "⬛"},
+            {n: "TNT Block", p: 850, i: "🧨"},
+            {n: "Bookshelf", p: 220, i: "📚"},
+            {n: "Crafting Table", p: 75, i: "🛠️"},
+            {n: "Furnace", p: 90, i: "🔥"},
+            {n: "Chest", p: 60, i: "📦"},
+            {n: "Ender Chest", p: 18000, i: "👁️‍🗨️"},
+            {n: "Sponge", p: 1000, i: "🧽"},
+            
+            // Image 4
+            {n: "Wooden Pickaxe", p: 30, i: "⛏️"},
+            {n: "Stone Sword", p: 80, i: "🗡️"},
+            {n: "Iron Pickaxe", p: 250, i: "⛏️"},
+            {n: "Iron Sword", p: 400, i: "🗡️"},
+            {n: "Golden Axe", p: 1200, i: "🪓"},
+            {n: "Diamond Pickaxe", p: 5000, i: "⛏️"},
+            {n: "Diamond Sword", p: 6000, i: "🗡️"},
+            {n: "Netherite Sword", p: 12000, i: "🗡️"},
+            {n: "Netherite Pickaxe", p: 11000, i: "⛏️"},
+            {n: "Diamond Helmet", p: 2000, i: "🪖"},
+            
+            // Image 5
+            {n: "Slime Block", p: 2500, i: "🟩"},
+            {n: "Honey Block", p: 4000, i: "🍯"},
+            {n: "Magma Block", p: 1200, i: "🌋"},
+            {n: "Soul Sand", p: 300, i: "👻"},
+            {n: "Glowstone", p: 1500, i: "💡"},
+            {n: "Sea Lantern", p: 2000, i: "🏮"},
+            {n: "Basalt", p: 80, i: "🪨"},
+            {n: "Blackstone", p: 100, i: "⬛"},
+            {n: "Prismarine", p: 1800, i: "🌊"},
+            {n: "Netherrack", p: 10, i: "🟥"},
+            
+            // Image 6
+            {n: "End Stone", p: 2500, i: "🌕"},
+            {n: "Purpur Block", p: 25000, i: "🟪"},
+            {n: "Coal Block", p: 1200, i: "⬛"},
+            {n: "Iron Block", p: 4500, i: "⬜"},
+            {n: "Gold Block", p: 22000000, i: "🟨"},
+            {n: "Diamond Block", p: 140000000, i: "💠"},
+            {n: "Emerald Block", p: 35000000, i: "🟩"},
+            {n: "Netherite Block", p: 65000000, i: "🔲"},
+            {n: "Obsidian", p: 1000000, i: "⬛"},
+            {n: "Bedrock", p: 50000000, i: "🕳️"},
+            
+            // Image 7
+            {n: "Diamond Chestplate", p: 240, i: "👕"},
+            {n: "Diamond Leggings", p: 210, i: "👖"},
+            {n: "Diamond Boots", p: 120, i: "🥾"},
+            {n: "Netherite Chestplate", p: 6800000, i: "👕"},
+            {n: "Apple", p: 0.50, i: "🍎"},
+            {n: "Bread", p: 1.00, i: "🍞"},
+            {n: "Cooked Beef (Steak)", p: 5.00, i: "🥩"},
+            {n: "Golden Apple", p: 15.00, i: "🍏"},
+            {n: "Enchanted Golden Apple", p: 1200, i: "🍎"},
+            {n: "Carrot", p: 0.30, i: "🥕"},
+            
+            // Image 8
+            {n: "Potato", p: 0.05, i: "🥔"},
+            {n: "Cake", p: 12.00, i: "🎂"},
+            {n: "Suspicious Stew", p: 120.00, i: "🍲"},
+            {n: "Sweet Berries", p: 0.80, i: "🍓"},
+            {n: "Chorus Fruit", p: 150.00, i: "🍇"},
+            {n: "Piece of Coal", p: 8.00, i: "🪨"},
+            {n: "Iron Ingot", p: 80.00, i: "🔩"},
+            {n: "Gold Ingot", p: 650.00, i: "🥇"},
+            {n: "Rough Diamond", p: 2800.00, i: "💎"},
+            {n: "Flawless Emerald", p: 1200.00, i: "🟢"},
+            
+            // Image 9
+            {n: "Netherite Ingot", p: 250000, i: "⬛"},
+            {n: "Lapis Lazuli", p: 50, i: "🔷"},
+            {n: "Redstone Dust", p: 120, i: "🔴"},
+            {n: "Copper Ingot", p: 80, i: "🥉"},
+            {n: "Amethyst Shard", p: 1500, i: "💜"},
+            {n: "Nether Quartz", p: 300, i: "🤍"},
+            {n: "Wooden Stick", p: 1, i: "🦯"},
+            {n: "Spider String", p: 10, i: "🧵"},
+            {n: "Gunpowder", p: 200, i: "🧨"},
+            {n: "Cow Leather", p: 25, i: "👞"},
+            
+            // Image 10
+            {n: "Ender Pearl", p: 15000, i: "🔮"},
+            {n: "Eye of Ender", p: 35000, i: "👁️‍🗨️"},
+            {n: "Totem of Undying", p: 10000000, i: "🏺"},
+            {n: "Elytra Wings", p: 50000000, i: "🦋"},
+            {n: "Leather Saddle", p: 350, i: "💺"},
+            {n: "Nametag", p: 5000, i: "🏷️"},
+            {n: "Wooden Bow", p: 150, i: "🏹"},
+            {n: "Flint Arrow", p: 5, i: "↗️"},
+            {n: "Enchanted Trident", p: 2500000, i: "🔱"},
+            {n: "Wooden Shield", p: 250, i: "🛡️"}
         ];
-        curatedBlocks.forEach(b => addEntity(b.n, b.p, b.i));
 
-        const curatedItems = [
-            {n: 'Wooden Pickaxe', p: 20, i: '⛏️'}, {n: 'Stone Sword', p: 50, i: '🗡️'},
-            {n: 'Iron Pickaxe', p: 450, i: '⛏️'}, {n: 'Iron Sword', p: 450, i: '🗡️'},
-            {n: 'Golden Axe', p: 4500, i: '🪓'}, {n: 'Diamond Pickaxe', p: 30000, i: '⛏️'},
-            {n: 'Diamond Sword', p: 30000, i: '🗡️'}, {n: 'Netherite Sword', p: 850000, i: '🗡️'},
-            {n: 'Netherite Pickaxe', p: 850000, i: '⛏️'}, {n: 'Diamond Helmet', p: 120000, i: '🪖'},
-            {n: 'Diamond Chestplate', p: 240000, i: '👕'}, {n: 'Diamond Leggings', p: 210000, i: '👖'},
-            {n: 'Diamond Boots', p: 120000, i: '🥾'}, {n: 'Netherite Chestplate', p: 6800000, i: '👕'},
-            {n: 'Apple', p: 2, i: '🍎'}, {n: 'Bread', p: 4, i: '🍞'},
-            {n: 'Cooked Beef (Steak)', p: 15, i: '🥩'}, {n: 'Golden Apple', p: 25000, i: '🍏'},
-            {n: 'Enchanted Golden Apple', p: 5000000, i: '🍎'}, {n: 'Carrot', p: 1, i: '🥕'},
-            {n: 'Potato', p: 1, i: '🥔'}, {n: 'Cake', p: 25, i: '🎂'},
-            {n: 'Suspicious Stew', p: 500, i: '🍲'}, {n: 'Sweet Berries', p: 2, i: '🍓'},
-            {n: 'Chorus Fruit', p: 800, i: '🍇'}, {n: 'Piece of Coal', p: 15, i: '🪨'},
-            {n: 'Iron Ingot', p: 150, i: '🔩'}, {n: 'Gold Ingot', p: 1500, i: '🥇'},
-            {n: 'Rough Diamond', p: 10000, i: '💎'}, {n: 'Flawless Emerald', p: 5000, i: '🟢'},
-            {n: 'Netherite Ingot', p: 250000, i: '⬛'}, {n: 'Lapis Lazuli', p: 50, i: '🔷'},
-            {n: 'Redstone Dust', p: 120, i: '🔴'}, {n: 'Copper Ingot', p: 80, i: '🥉'},
-            {n: 'Amethyst Shard', p: 1500, i: '💜'}, {n: 'Nether Quartz', p: 300, i: '🤍'},
-            {n: 'Wooden Stick', p: 1, i: '🦯'}, {n: 'Spider String', p: 10, i: '🧵'},
-            {n: 'Gunpowder', p: 200, i: '🧨'}, {n: 'Cow Leather', p: 25, i: '👞'},
-            {n: 'Ender Pearl', p: 15000, i: '🔮'}, {n: 'Eye of Ender', p: 35000, i: '👁️‍🗨️'},
-            {n: 'Totem of Undying', p: 10000000, i: '🏺'}, {n: 'Elytra Wings', p: 50000000, i: '🦋'},
-            {n: 'Leather Saddle', p: 350, i: '💺'}, {n: 'Nametag', p: 5000, i: '🏷️'},
-            {n: 'Wooden Bow', p: 150, i: '🏹'}, {n: 'Flint Arrow', p: 5, i: '↗️'},
-            {n: 'Enchanted Trident', p: 2500000, i: '🔱'}, {n: 'Wooden Shield', p: 250, i: '🛡️'}
-        ];
-        curatedItems.forEach(m => addEntity(m.n, m.p, m.i));
+        exactData.forEach(b => addEntity(b.n, b.p, b.i));
 
         // ==========================================
         // UI & LOGIC
@@ -267,14 +333,20 @@
         let totalSpent = 0;
 
         function formatMoney(amount) {
-            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(amount);
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount);
         }
 
+        // Accurately format large numbers and small decimals properly
         function formatShorthand(num) {
             if (num >= 1e12) return '$' + (num / 1e12).toFixed(1).replace(/\.0$/, '') + 'T';
             if (num >= 1e9) return '$' + (num / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
             if (num >= 1e6) return '$' + (num / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
             if (num >= 1e3) return '$' + (num / 1e3).toFixed(num % 1000 === 0 ? 0 : 1).replace(/\.0$/, '') + 'K';
+            
+            // Keep decimals for items under a dollar or those with cents
+            if (num > 0 && num < 1) return '$' + num.toFixed(2);
+            if (num % 1 !== 0) return '$' + num.toFixed(2);
+            
             return '$' + num;
         }
 
@@ -408,7 +480,7 @@
             window.open(url, '_blank');
         }
 
-        // Run
+        // Run Initialization
         initGrid();
     </script>
 </body>
