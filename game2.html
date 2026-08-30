@@ -58,28 +58,31 @@
         }
 
         .icon-slot {
-            width: 76px;
-            height: 76px;
-            margin: 0 auto 16px auto;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #0a0a0a;
-            border: 1px solid #222;
-            position: relative;
-            user-select: none;
-            transition: all 0.3s ease;
-        }
-        @media (min-width: 640px) { .icon-slot { width: 84px; height: 84px; } }
-        
-        .pixel-canvas {
-            width: 64px;
-            height: 64px;
-            image-rendering: pixelated;
-            filter: drop-shadow(0 6px 8px rgba(0,0,0,0.7));
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
+    width: 84px;
+    height: 84px;
+    margin: 0 auto 16px auto;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 50% 35%, #171717 0%, #090909 75%);
+    border: 1px solid #222;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), inset 0 -8px 14px rgba(0,0,0,0.45);
+    position: relative;
+    user-select: none;
+    transition: all 0.3s ease;
+}
+@media (min-width: 640px) {
+    .icon-slot { width: 92px; height: 92px; }
+}
+
+.pixel-canvas {
+    width: 70px;
+    height: 70px;
+    image-rendering: pixelated; /* Ensures sharp pixels */
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.8));
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
         .item-card:hover .pixel-canvas { transform: scale(1.15) translateY(-2px); }
 
         .rarity-common .icon-slot { box-shadow: inset 0 0 15px rgba(255,255,255,0.03); border-color: #2a2a2a; }
