@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Block Market</title>
+    <title>Block Market | Pixel Perfect</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <style>
@@ -17,10 +17,10 @@
             font-family: 'Outfit', sans-serif;
             background-color: var(--bg-base);
             background-image: 
-                radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.04) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.04) 0%, transparent 40%),
-                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+                radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.03) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.03) 0%, transparent 40%),
+                linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
             background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
             background-attachment: fixed;
             color: #f8fafc;
@@ -39,7 +39,6 @@
         }
         input[type="number"] { -moz-appearance: textfield; }
 
-        /* Premium Item Card */
         .item-card {
             background: var(--card-bg);
             backdrop-filter: blur(12px);
@@ -58,10 +57,9 @@
             background: rgba(24, 24, 24, 0.85);
         }
 
-        /* Pixel Art Canvas Container */
         .icon-slot {
-            width: 72px;
-            height: 72px;
+            width: 76px;
+            height: 76px;
             margin: 0 auto 16px auto;
             border-radius: 14px;
             display: flex;
@@ -73,20 +71,17 @@
             user-select: none;
             transition: all 0.3s ease;
         }
-        @media (min-width: 640px) {
-            .icon-slot { width: 80px; height: 80px; }
-        }
+        @media (min-width: 640px) { .icon-slot { width: 84px; height: 84px; } }
         
         .pixel-canvas {
-            width: 56px;
-            height: 56px;
-            image-rendering: pixelated; /* Ensures sharp pixels */
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.8));
-            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            width: 64px;
+            height: 64px;
+            image-rendering: pixelated;
+            filter: drop-shadow(0 6px 8px rgba(0,0,0,0.7));
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        .item-card:hover .pixel-canvas { transform: scale(1.15) rotate(3deg); }
+        .item-card:hover .pixel-canvas { transform: scale(1.15) translateY(-2px); }
 
-        /* Subtle Rarity Glows */
         .rarity-common .icon-slot { box-shadow: inset 0 0 15px rgba(255,255,255,0.03); border-color: #2a2a2a; }
         .rarity-uncommon .icon-slot { box-shadow: inset 0 0 20px rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.25); }
         .rarity-rare .icon-slot { box-shadow: inset 0 0 20px rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.35); }
@@ -103,7 +98,6 @@
         .ctrl-btn:active { transform: scale(0.9); background: rgba(255, 255, 255, 0.25); }
 
         .price-font { font-family: 'Space Grotesk', sans-serif; }
-        
         .gradient-text {
             background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
             -webkit-background-clip: text;
@@ -115,7 +109,7 @@
 <body class="pt-28 pb-16 antialiased">
 
     <!-- Premium Header -->
-    <header class="fixed top-0 left-0 right-0 h-[80px] bg-[#030303]/80 backdrop-blur-xl border-b border-white/10 z-50 flex items-center justify-between px-4 sm:px-8 shadow-2xl">
+    <header class="fixed top-0 left-0 right-0 h-[80px] bg-[#030303]/85 backdrop-blur-xl border-b border-white/10 z-50 flex items-center justify-between px-4 sm:px-8 shadow-2xl">
         <div class="flex items-center gap-3 w-1/4">
             <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse hidden sm:block shadow-[0_0_10px_#10b981]"></div>
             <span class="font-black tracking-widest text-white text-sm sm:text-xl uppercase drop-shadow-md hidden sm:block">Block Market</span>
@@ -173,206 +167,109 @@
 
     <script>
         // ==========================================
-        // 1. PIXEL ART ENGINE (Matrices & Palettes)
-        // ==========================================
-        
-        // 14x14 Grids for pixel-by-pixel rendering. 0 = blank, 1-4 = palette colors
-        const blockMap = [
-            "00000011000000", "00000122100000", "00001222210000", "00012222221000",
-            "00122222222100", "01222222222210", "12222222222221", "13333334444441",
-            "13333334444441", "01333334444410", "00133334444100", "00013334441000",
-            "00001334410000", "00000111100000"
-        ];
-        const swordMap = [
-            "00000000000111", "00000000001231", "00000000012211", "00000000122100",
-            "00000001221000", "00000012210000", "00000122100000", "00001221000000",
-            "00012210000000", "01111111000000", "12314412100000", "13144441210000",
-            "11144411100000", "00011100000000"
-        ];
-        const pickMap = [
-            "00001111110000", "00012222221100", "00123333332210", "01231111113210",
-            "01310000014110", "12100000141000", "11000001410000", "00000014100000",
-            "00000141000000", "00001410000000", "00014100000000", "00141000000000",
-            "01410000000000", "01100000000000"
-        ];
-        const axeMap = [
-            "00001111000000", "00012222100000", "00123333210000", "01233332210000",
-            "01331112210000", "01310014110000", "01100014100000", "00000141000000",
-            "00001410000000", "00014100000000", "00141000000000", "01410000000000",
-            "14100000000000", "11000000000000"
-        ];
-        const chestMap = [
-            "00000000000000", "01110000111000", "12221111222100", "12332222332100",
-            "12333333332100", "12233333322100", "01223333221000", "01223333221000",
-            "01223333221000", "01222222221000", "01222222221000", "00111111110000",
-            "00000000000000", "00000000000000"
-        ];
-        const legMap = [
-            "00000000000000", "00111111111000", "01222222222100", "01233333332100",
-            "01233111332100", "01231000132100", "01221000122100", "01221000122100",
-            "01221000122100", "01221000122100", "01111000111100", "00000000000000",
-            "00000000000000", "00000000000000"
-        ];
-        const bootMap = [
-            "00000000000000", "00000000000000", "01111000111100", "12222101222210",
-            "12332101233210", "12332101233210", "12332101233210", "12222101222210",
-            "11111101111110", "00000000000000", "00000000000000", "00000000000000",
-            "00000000000000", "00000000000000"
-        ];
-        const helmMap = [
-            "00000000000000", "00011111110000", "00122222221000", "01233333332100",
-            "01233333332100", "01233333332100", "01221111122100", "01210000012100",
-            "01100000001100", "00000000000000", "00000000000000", "00000000000000",
-            "00000000000000", "00000000000000"
-        ];
-        const ingotMap = [
-            "00000000000000", "00000000000000", "00000000000000", "00000111111000",
-            "00011222222110", "00122333333221", "01233333333321", "01222222222221",
-            "00111111111110", "00000000000000", "00000000000000", "00000000000000",
-            "00000000000000", "00000000000000"
-        ];
-        const gemMap = [
-            "00000000000000", "00000111100000", "00001222210000", "00012333321000",
-            "00123333332100", "00123333332100", "01223333332210", "01222333322210",
-            "00122222222100", "00012222221000", "00001122110000", "00000011000000",
-            "00000000000000", "00000000000000"
-        ];
-        const foodMap = [
-            "00000001000000", "00000014100000", "00000141000000", "00001111100000",
-            "00112222211000", "01223333322100", "12233333332210", "12333333333210",
-            "12333333333210", "12233333332210", "01223333322100", "00112222211000",
-            "00001111100000", "00000000000000"
-        ];
-        const bowMap = [
-            "00000000110000", "00000001211000", "00000012101100", "00000121000100",
-            "00001210000100", "00012100000100", "00121000001100", "01210000011000",
-            "12100000110000", "11100001100000", "01110011000000", "00111110000000",
-            "00011100000000", "00000000000000"
-        ];
-
-        // Maps name logic to the correct pixel grid
-        function getMap(name) {
-            name = name.toLowerCase();
-            if(name.includes('block') || name.includes('log') || name.includes('plank') || name.includes('leaves') || name.includes('glass') || name.includes('wool') || name.includes('concrete') || name.includes('tnt') || name.includes('table') || name.includes('furnace') || (name.includes('chest') && !name.includes('plate')) || name.includes('sponge') || name.includes('sand') || name.includes('gravel') || name.includes('clay') || name.includes('bricks') || (name.includes('stone') && !name.includes('sword') && !name.includes('pick')) || name.includes('basalt') || name.includes('prismarine') || name.includes('netherrack') || name.includes('obsidian') || name.includes('bedrock') || name.includes('cobble')) return blockMap;
-            if(name.includes('sword')) return swordMap;
-            if(name.includes('pickaxe')) return pickMap;
-            if(name.includes('axe')) return axeMap;
-            if(name.includes('helmet')) return helmMap;
-            if(name.includes('chestplate')) return chestMap;
-            if(name.includes('leggings')) return legMap;
-            if(name.includes('boots')) return bootMap;
-            if(name.includes('ingot') || name.includes('coal') || name.includes('leather') || name.includes('string')) return ingotMap;
-            if((name.includes('diamond') && !name.includes('sword') && !name.includes('pick')) || name.includes('emerald') || name.includes('lapis') || name.includes('amethyst') || name.includes('redstone') || name.includes('pearl') || name.includes('eye') || name.includes('quartz')) return gemMap;
-            if(name.includes('bow')) return bowMap;
-            return foodMap;
-        }
-
-        // Color Palettes (Outline, Base/Top, Shade/Left, Highlight/Right/Handle)
-        const palettes = {
-            dirt: ['#321', '#854', '#643', '#532'],
-            grass: ['#321', '#5a3', '#643', '#532'],
-            stone: ['#222', '#aaa', '#888', '#666'],
-            cobble: ['#111', '#999', '#777', '#555'],
-            sand: ['#664', '#edb', '#cba', '#a98'],
-            clay: ['#556', '#aab', '#889', '#667'],
-            brick: ['#422', '#c55', '#a44', '#833'],
-            oak: ['#321', '#a74', '#532', '#421'],
-            plank: ['#431', '#d95', '#b74', '#953'],
-            leaves: ['#131', '#4a2', '#381', '#261'],
-            spruce: ['#210', '#753', '#421', '#310'],
-            birch: ['#333', '#eee', '#ddd', '#ccc'],
-            jungle: ['#421', '#964', '#642', '#531'],
-            glass: ['#fff', '#eff', '#cdd', '#acc'],
-            black_glass: ['#111', '#444', '#333', '#222'],
-            white_wool: ['#ccc', '#fff', '#eee', '#ddd'],
-            black_wool: ['#000', '#333', '#222', '#111'],
-            red_wool: ['#500', '#f33', '#d22', '#b11'],
-            blue_wool: ['#005', '#33f', '#22d', '#11b'],
-            green_wool: ['#050', '#3f3', '#2d2', '#1b1'],
-            tnt: ['#111', '#f33', '#eee', '#d33'],
-            book: ['#321', '#a85', '#d43', '#35c'],
-            craft: ['#210', '#b74', '#953', '#742'],
-            furnace: ['#111', '#888', '#666', '#444'],
-            chest: ['#210', '#d83', '#a62', '#841'],
-            echest: ['#102', '#314', '#203', '#102'],
-            sponge: ['#881', '#ee3', '#cc2', '#aa1'],
-            wood_tool: ['#210', '#963', '#742', '#531'],
-            stone_tool: ['#111', '#aaa', '#888', '#531'],
-            iron_tool: ['#333', '#fff', '#ccc', '#531'],
-            gold_tool: ['#541', '#ff5', '#da2', '#531'],
-            diamond_tool: ['#145', '#5ff', '#3cc', '#531'],
-            netherite_tool: ['#000', '#555', '#444', '#531'],
-            slime: ['#151', '#5f5', '#4d4', '#3b3'],
-            honey: ['#840', '#fa0', '#d80', '#b60'],
-            magma: ['#300', '#f50', '#c30', '#910'],
-            soul: ['#322', '#643', '#532', '#421'],
-            glow: ['#962', '#fe5', '#dc3', '#ba2'],
-            sea: ['#144', '#aff', '#8cc', '#6aa'],
-            basalt: ['#111', '#666', '#555', '#444'],
-            blackstone: ['#000', '#333', '#222', '#111'],
-            prism: ['#155', '#5aa', '#488', '#366'],
-            netherrack: ['#411', '#933', '#722', '#511'],
-            end: ['#664', '#eed', '#ccb', '#aa9'],
-            purpur: ['#636', '#c8c', '#a6a', '#848'],
-            coal: ['#000', '#444', '#333', '#222'],
-            iron_block: ['#555', '#fff', '#ddd', '#bbb'],
-            gold_block: ['#861', '#ff4', '#ec2', '#ca1'],
-            diamond_block: ['#277', '#6ff', '#4dd', '#3bb'],
-            emerald_block: ['#172', '#4f6', '#3d4', '#2b3'],
-            netherite_block: ['#111', '#444', '#333', '#222'],
-            obsidian: ['#102', '#426', '#315', '#204'],
-            bedrock: ['#000', '#444', '#333', '#222'],
-            apple: ['#300', '#f33', '#f66', '#2a2'],
-            bread: ['#531', '#d94', '#fba', '#b72'],
-            steak: ['#421', '#942', '#b53', '#731'],
-            gapple: ['#641', '#fc3', '#ff6', '#da2'],
-            egapple: ['#616', '#f5f', '#faff', '#d3d'],
-            carrot: ['#420', '#f82', '#fa4', '#3a2'],
-            potato: ['#542', '#da6', '#fc8', '#b84'],
-            cake: ['#421', '#fff', '#fcc', '#d33'],
-            stew: ['#321', '#952', '#b63', '#a42'],
-            berries: ['#300', '#e22', '#f55', '#262'],
-            chorus: ['#425', '#a6a', '#c8c', '#848'],
-            ingot_iron: ['#444', '#ddd', '#fff', '#bbb'],
-            ingot_gold: ['#751', '#ec2', '#ff5', '#ca1'],
-            ingot_netherite: ['#111', '#444', '#555', '#333'],
-            gem_diamond: ['#156', '#4ee', '#7ff', '#2cc'],
-            gem_emerald: ['#152', '#4d4', '#6f6', '#2b2'],
-            gem_lapis: ['#126', '#35c', '#57f', '#24a'],
-            gem_amethyst: ['#426', '#a5c', '#c7f', '#83a'],
-            dust_redstone: ['#500', '#e22', '#f55', '#c11'],
-            ingot_copper: ['#632', '#d75', '#f97', '#b53'],
-            quartz: ['#666', '#eee', '#fff', '#ccc'],
-            stick: ['#321', '#853', '#a74', '#642'],
-            string: ['#555', '#eee', '#fff', '#ccc'],
-            gunpowder: ['#111', '#666', '#888', '#444'],
-            leather: ['#521', '#c63', '#e85', '#a42'],
-            pearl: ['#144', '#2aa', '#4cc', '#188'],
-            eye: ['#141', '#4e4', '#6f6', '#2a2'],
-            totem: ['#541', '#eb2', '#fd4', '#c91'],
-            elytra: ['#223', '#889', '#aab', '#667'],
-            saddle: ['#311', '#a42', '#c53', '#831'],
-            nametag: ['#332', '#eed', '#fff', '#ccb'],
-            bow: ['#321', '#963', '#b85', '#ccc'],
-            arrow: ['#222', '#fff', '#853', '#a75'],
-            trident: ['#144', '#3cc', '#5ee', '#2aa'],
-            shield: ['#222', '#853', '#a74', '#ccc']
-        };
-
-        // ==========================================
-        // 2. DATA IMPORT (Exact 100 items from prompt tables)
+        // 1. EXACT DATA IMPORT (100 Items from Prompts)
         // ==========================================
         const rawData = [
-            ["Dirt Block", 2, "dirt"], ["Grass Block", 4, "grass"], ["Cobblestone", 3, "cobble"], ["Stone Block", 7, "stone"], ["Sand Block", 3, "sand"], ["Gravel Block", 3, "stone"], ["Clay Block", 12, "clay"], ["Bricks", 30, "brick"], ["Oak Log", 15, "oak"], ["Oak Planks", 5, "plank"],
-            ["Oak Leaves", 5, "leaves"], ["Spruce Log", 25, "spruce"], ["Birch Log", 25, "birch"], ["Jungle Log", 25, "jungle"], ["Glass Block", 40, "glass"], ["Black Stained Glass", 50, "black_glass"], ["White Wool", 20, "white_wool"], ["Black Wool", 20, "black_wool"], ["Red Wool", 20, "red_wool"], ["Blue Wool", 20, "blue_wool"],
-            ["Green Wool", 120, "green_wool"], ["White Concrete", 180, "white_wool"], ["Black Concrete", 180, "black_wool"], ["TNT Block", 850, "tnt"], ["Bookshelf", 220, "book"], ["Crafting Table", 75, "craft"], ["Furnace", 90, "furnace"], ["Chest", 60, "chest"], ["Ender Chest", 18000, "echest"], ["Sponge", 1000, "sponge"],
-            ["Wooden Pickaxe", 30, "wood_tool"], ["Stone Sword", 80, "stone_tool"], ["Iron Pickaxe", 250, "iron_tool"], ["Iron Sword", 400, "iron_tool"], ["Golden Axe", 1200, "gold_tool"], ["Diamond Pickaxe", 5000, "diamond_tool"], ["Diamond Sword", 6000, "diamond_tool"], ["Netherite Sword", 12000, "netherite_tool"], ["Netherite Pickaxe", 11000, "netherite_tool"], ["Diamond Helmet", 2000, "diamond_tool"],
-            ["Slime Block", 2500, "slime"], ["Honey Block", 4000, "honey"], ["Magma Block", 1200, "magma"], ["Soul Sand", 300, "soul"], ["Glowstone", 1500, "glow"], ["Sea Lantern", 2000, "sea"], ["Basalt", 80, "basalt"], ["Blackstone", 100, "blackstone"], ["Prismarine", 1800, "prism"], ["Netherrack", 10, "netherrack"],
-            ["End Stone", 2500, "end"], ["Purpur Block", 25000, "purpur"], ["Coal Block", 1200, "coal"], ["Iron Block", 4500, "iron_block"], ["Gold Block", 22000000, "gold_block"], ["Diamond Block", 140000000, "diamond_block"], ["Emerald Block", 35000000, "emerald_block"], ["Netherite Block", 65000000, "netherite_block"], ["Obsidian", 1000000, "obsidian"], ["Bedrock", 50000000, "bedrock"],
-            ["Diamond Chestplate", 240.00, "diamond_tool"], ["Diamond Leggings", 210.00, "diamond_tool"], ["Diamond Boots", 120.00, "diamond_tool"], ["Netherite Chestplate", 6800000.00, "netherite_tool"], ["Apple", 0.50, "apple"], ["Bread", 1.00, "bread"], ["Cooked Beef (Steak)", 5.00, "steak"], ["Golden Apple", 15.00, "gapple"], ["Enchanted Golden Apple", 1200.00, "egapple"], ["Carrot", 0.30, "carrot"],
-            ["Potato", 0.05, "potato"], ["Cake", 12.00, "cake"], ["Suspicious Stew", 120.00, "stew"], ["Sweet Berries", 0.80, "berries"], ["Chorus Fruit", 150.00, "chorus"], ["Piece of Coal", 8.00, "coal"], ["Iron Ingot", 80.00, "ingot_iron"], ["Gold Ingot", 650.00, "ingot_gold"], ["Rough Diamond", 2800.00, "gem_diamond"], ["Flawless Emerald", 1200.00, "gem_emerald"],
-            ["Netherite Ingot", 250000, "ingot_netherite"], ["Lapis Lazuli", 50, "gem_lapis"], ["Redstone Dust", 120, "dust_redstone"], ["Copper Ingot", 80, "ingot_copper"], ["Amethyst Shard", 1500, "gem_amethyst"], ["Nether Quartz", 300, "quartz"], ["Wooden Stick", 1, "stick"], ["Spider String", 10, "string"], ["Gunpowder", 200, "gunpowder"], ["Cow Leather", 25, "leather"],
-            ["Ender Pearl", 15000, "pearl"], ["Eye of Ender", 35000, "eye"], ["Totem of Undying", 10000000, "totem"], ["Elytra Wings", 50000000, "elytra"], ["Leather Saddle", 350, "saddle"], ["Nametag", 5000, "nametag"], ["Wooden Bow", 150, "bow"], ["Flint Arrow", 5, "arrow"], ["Enchanted Trident", 2500000, "trident"], ["Wooden Shield", 250, "shield"]
+            ["Dirt Block", 2, "block", ['#714f35', '#5c402a', '#473223', 'dirt']], 
+            ["Grass Block", 4, "block", ['#599834', '#5c402a', '#473223', 'grass']], 
+            ["Cobblestone", 3, "block", ['#7A7A7A', '#636363', '#505050', 'cobble']], 
+            ["Stone Block", 7, "block", ['#7D7D7D', '#6E6E6E', '#5E5E5E', 'solid']], 
+            ["Sand Block", 3, "block", ['#DBD3A0', '#CDBF86', '#B9AB72', 'dirt']], 
+            ["Gravel Block", 3, "block", ['#847E7F', '#6B6768', '#555253', 'cobble']], 
+            ["Clay Block", 12, "block", ['#A8654A', '#90553D', '#764430', 'solid']], 
+            ["Bricks", 30, "block", ['#964A35', '#7D3B28', '#632D1E', 'bricks']], 
+            ["Oak Log", 15, "block", ['#A68453', '#5B472B', '#463520', 'log']], 
+            ["Oak Planks", 5, "block", ['#A48352', '#8E7044', '#785D36', 'planks']],
+            ["Oak Leaves", 5, "block", ['#486A25', '#35511A', '#253911', 'leaves']], 
+            ["Spruce Log", 25, "block", ['#755E3D', '#3A2613', '#291A0D', 'log']], 
+            ["Birch Log", 25, "block", ['#C3B37B', '#E6E5DF', '#CBCAC4', 'log']], 
+            ["Jungle Log", 25, "block", ['#A47A50', '#584428', '#46351F', 'log']], 
+            ["Glass Block", 40, "block", ['#E5F2F5', '#C4E1E6', '#A1D1D8', 'glass']], 
+            ["Black Stained Glass", 50, "block", ['#1E1E1E', '#141414', '#0A0A0A', 'glass']], 
+            ["White Wool", 20, "block", ['#E7E7E7', '#CBCBCB', '#AFAFAF', 'wool']], 
+            ["Black Wool", 20, "block", ['#141519', '#0F1013', '#0A0A0C', 'wool']], 
+            ["Red Wool", 20, "block", ['#A12722', '#841F1B', '#661714', 'wool']], 
+            ["Blue Wool", 20, "block", ['#35399D', '#2B2E81', '#202364', 'wool']],
+            ["Green Wool", 120, "block", ['#546D1B', '#425715', '#31400F', 'wool']], 
+            ["White Concrete", 180, "block", ['#CFD3D6', '#B8BCBE', '#A0A3A5', 'solid']], 
+            ["Black Concrete", 180, "block", ['#080A0F', '#06080C', '#040508', 'solid']], 
+            ["TNT Block", 850, "block", ['#D13535', '#E3E3E3', '#E3E3E3', 'tnt']], 
+            ["Bookshelf", 220, "block", ['#A48352', '#5B472B', '#463520', 'bookshelf']], 
+            ["Crafting Table", 75, "block", ['#905D3B', '#A48352', '#8E7044', 'crafting']], 
+            ["Furnace", 90, "block", ['#666666', '#555555', '#444444', 'furnace']], 
+            ["Chest", 60, "block", ['#C1882C', '#C1882C', '#C1882C', 'chest']], 
+            ["Ender Chest", 18000, "block", ['#111A1B', '#111A1B', '#111A1B', 'echest']], 
+            ["Sponge", 1000, "block", ['#C3C03F', '#AFA932', '#999326', 'sponge']],
+            ["Wooden Pickaxe", 30, "item", ['pickaxe', '#221100', '#A48352', '#C9A36A', '#5B472B']], 
+            ["Stone Sword", 80, "item", ['sword', '#111', '#7A7A7A', '#9A9A9A', '#5B472B']], 
+            ["Iron Pickaxe", 250, "item", ['pickaxe', '#333', '#DCDCDC', '#FFFFFF', '#5B472B']], 
+            ["Iron Sword", 400, "item", ['sword', '#333', '#DCDCDC', '#FFFFFF', '#5B472B']], 
+            ["Golden Axe", 1200, "item", ['axe', '#640', '#F9DE48', '#FFEE77', '#5B472B']], 
+            ["Diamond Pickaxe", 5000, "item", ['pickaxe', '#044', '#4CD8C9', '#60EADB', '#5B472B']], 
+            ["Diamond Sword", 6000, "item", ['sword', '#044', '#4CD8C9', '#60EADB', '#5B472B']], 
+            ["Netherite Sword", 12000, "item", ['sword', '#000', '#363233', '#4A4546', '#292526']], 
+            ["Netherite Pickaxe", 11000, "item", ['pickaxe', '#000', '#363233', '#4A4546', '#292526']], 
+            ["Diamond Helmet", 2000, "item", ['helmet', '#044', '#4CD8C9', '#60EADB', '#4CD8C9']],
+            ["Slime Block", 2500, "block", ['#6EB950', '#5CA241', '#488431', 'slime']], 
+            ["Honey Block", 4000, "block", ['#F4A526', '#DE931C', '#C88111', 'solid']], 
+            ["Magma Block", 1200, "block", ['#8A3816', '#742C0F', '#5D2109', 'magma']], 
+            ["Soul Sand", 300, "block", ['#534032', '#443327', '#36281D', 'dirt']], 
+            ["Glowstone", 1500, "block", ['#B78A36', '#A1772C', '#8B6521', 'cobble']], 
+            ["Sea Lantern", 2000, "block", ['#ACCECB', '#96BBBA', '#82A7A6', 'lantern']], 
+            ["Basalt", 80, "block", ['#4E4F54', '#2F2F32', '#2F2F32', 'log']], 
+            ["Blackstone", 100, "block", ['#2A2429', '#1E1A1E', '#141114', 'cobble']], 
+            ["Prismarine", 1800, "block", ['#60978E', '#4F7F77', '#3E6760', 'bricks']], 
+            ["Netherrack", 10, "block", ['#642929', '#532020', '#421818', 'cobble']],
+            ["End Stone", 2500, "block", ['#DFE49C', '#CCD28A', '#B7BE76', 'cobble']], 
+            ["Purpur Block", 25000, "block", ['#A97AA9', '#956695', '#805380', 'solid']], 
+            ["Coal Block", 1200, "block", ['#101010', '#0B0B0B', '#050505', 'solid']], 
+            ["Iron Block", 4500, "block", ['#DCDCDC', '#C8C8C8', '#B2B2B2', 'solid']], 
+            ["Gold Block", 22000000, "block", ['#F9DE48', '#E7C934', '#D3B322', 'solid']], 
+            ["Diamond Block", 140000000, "block", ['#60EADB', '#4CD8C9', '#3AC4B5', 'solid']], 
+            ["Emerald Block", 35000000, "block", ['#3FF06B', '#2CDA59', '#1AC447', 'solid']], 
+            ["Netherite Block", 65000000, "block", ['#423F40', '#363233', '#292526', 'solid']], 
+            ["Obsidian", 1000000, "block", ['#15101E', '#0E0A15', '#08050D', 'cobble']], 
+            ["Bedrock", 50000000, "block", ['#4F4F4F', '#3C3C3C', '#2A2A2A', 'cobble']],
+            ["Diamond Chestplate", 240, "item", ['chestplate', '#044', '#4CD8C9', '#60EADB', '#4CD8C9']], 
+            ["Diamond Leggings", 210, "item", ['leggings', '#044', '#4CD8C9', '#60EADB', '#4CD8C9']], 
+            ["Diamond Boots", 120, "item", ['boots', '#044', '#4CD8C9', '#60EADB', '#4CD8C9']], 
+            ["Netherite Chestplate", 6800000, "item", ['chestplate', '#000', '#363233', '#4A4546', '#292526']], 
+            ["Apple", 0.50, "item", ['apple', '#300', '#E00', '#F66', '#420']], 
+            ["Bread", 1.00, "item", ['bread', '#531', '#D94', '#FBA', '#B72']], 
+            ["Cooked Beef (Steak)", 5.00, "item", ['steak', '#421', '#942', '#B53', '#731']], 
+            ["Golden Apple", 15.00, "item", ['apple', '#641', '#FC3', '#FF6', '#DA2']], 
+            ["Enchanted Golden Apple", 1200, "item", ['apple', '#616', '#F5F', '#FAFF', '#D3D']], 
+            ["Carrot", 0.30, "item", ['carrot', '#420', '#F82', '#FA4', '#3A2']],
+            ["Potato", 0.05, "item", ['potato', '#542', '#DA6', '#FC8', '#B84']], 
+            ["Cake", 12.00, "item", ['cake', '#421', '#FFF', '#FCC', '#D33']], 
+            ["Suspicious Stew", 120.00, "item", ['stew', '#321', '#952', '#B63', '#A42']], 
+            ["Sweet Berries", 0.80, "item", ['berries', '#300', '#E22', '#F55', '#262']], 
+            ["Chorus Fruit", 150.00, "item", ['chorus', '#425', '#A6A', '#C8C', '#848']], 
+            ["Piece of Coal", 8.00, "item", ['coal', '#000', '#444', '#222', '#111']], 
+            ["Iron Ingot", 80.00, "item", ['ingot', '#444', '#DDD', '#FFF', '#BBB']], 
+            ["Gold Ingot", 650.00, "item", ['ingot', '#751', '#EC2', '#FF5', '#CA1']], 
+            ["Rough Diamond", 2800.00, "item", ['gem', '#156', '#4EE', '#7FF', '#2CC']], 
+            ["Flawless Emerald", 1200.00, "item", ['gem', '#152', '#4D4', '#6F6', '#2B2']],
+            ["Netherite Ingot", 250000, "item", ['ingot', '#111', '#444', '#555', '#333']], 
+            ["Lapis Lazuli", 50, "item", ['gem', '#126', '#35C', '#57F', '#24A']], 
+            ["Redstone Dust", 120, "item", ['dust', '#500', '#E22', '#F55', '#C11']], 
+            ["Copper Ingot", 80, "item", ['ingot', '#632', '#D75', '#F97', '#B53']], 
+            ["Amethyst Shard", 1500, "item", ['gem', '#426', '#A5C', '#C7F', '#83A']], 
+            ["Nether Quartz", 300, "item", ['gem', '#666', '#EEE', '#FFF', '#CCC']], 
+            ["Wooden Stick", 1, "item", ['stick', '#321', '#853', '#A74', '#642']], 
+            ["Spider String", 10, "item", ['string', '#555', '#EEE', '#FFF', '#CCC']], 
+            ["Gunpowder", 200, "item", ['dust', '#111', '#666', '#888', '#444']], 
+            ["Cow Leather", 25, "item", ['leather', '#521', '#C63', '#E85', '#A42']],
+            ["Ender Pearl", 15000, "item", ['pearl', '#144', '#2AA', '#4CC', '#188']], 
+            ["Eye of Ender", 35000, "item", ['eye', '#141', '#4E4', '#6F6', '#2A2']], 
+            ["Totem of Undying", 10000000, "item", ['totem', '#541', '#EB2', '#FD4', '#C91']], 
+            ["Elytra Wings", 50000000, "item", ['elytra', '#223', '#889', '#AAB', '#667']], 
+            ["Leather Saddle", 350, "item", ['saddle', '#311', '#A42', '#C53', '#831']], 
+            ["Nametag", 5000, "item", ['nametag', '#332', '#EED', '#FFF', '#CCB']], 
+            ["Wooden Bow", 150, "item", ['bow', '#321', '#963', '#B85', '#CCC']], 
+            ["Flint Arrow", 5, "item", ['arrow', '#222', '#FFF', '#853', '#A75']], 
+            ["Enchanted Trident", 2500000, "item", ['trident', '#144', '#3CC', '#5EE', '#2AA']], 
+            ["Wooden Shield", 250, "item", ['shield', '#222', '#853', '#A74', '#CCC']]
         ];
 
         const inventory = [];
@@ -387,29 +284,146 @@
         }
 
         rawData.forEach(b => {
-            inventory.push({ id: idCounter++, name: b[0], price: b[1], palette: b[2], rarity: getRarityClass(b[1]) });
+            inventory.push({ id: idCounter++, name: b[0], price: b[1], type: b[2], data: b[3], rarity: getRarityClass(b[1]) });
         });
 
         // ==========================================
-        // 3. UI & LOGIC
+        // 2. PIXEL ART TEMPLATES
         // ==========================================
-        const quantities = {};
-        let totalSpent = 0;
+        const sprites = {
+            'sword':      "0000000000000011,0000000000000131,0000000000001321,0000000000013210,0000000000132100,0000000001321000,0000000013210000,0000000132100000,0000001321000000,0000013210000000,0001112111000000,0014411144100000,0014101014100000,0001015101000000,0000155510000000,0000011100000000",
+            'pickaxe':    "0000111111100000,0001333333311000,0013222222233100,0132111111123100,0121000000141100,0110000000141000,0000000001410000,0000000014100000,0000000141000000,0000001410000000,0000014100000000,0000141000000000,0001410000000000,0014100000000000,0141000000000000,0110000000000000",
+            'axe':        "0001111100000000,0013333310000000,0132222331000000,0132111231000000,0121001411000000,0110001410000000,0000014100000000,0000141000000000,0001410000000000,0014100000000000,0141000000000000,1410000000000000,1100000000000000,0000000000000000,0000000000000000,0000000000000000",
+            'helmet':     "0000000000000000,0001111111111000,0012333333332100,0123222222223210,0132222222222310,0132221111222310,0132210000122310,0132100000012310,0121000000001210,0110000000000110,0000000000000000,0000000000000000,0000000000000000,0000000000000000,0000000000000000,0000000000000000",
+            'chestplate': "0000000000000000,0001100000011000,0012210000122100,0132221111222310,0132222222222310,0132222222222310,0132222222222310,0013222222223100,0013222222223100,0013222222223100,0001322222231000,0001322222231000,0001111111110000,0000000000000000,0000000000000000,0000000000000000",
+            'leggings':   "0000000000000000,0011111111111100,0132222222222310,0132222222222310,0132221111222310,0132210000122310,0132100000012310,0132100000012310,0132100000012310,0132100000012310,0132100000012310,0122100000012210,0111100000011110,0000000000000000,0000000000000000,0000000000000000",
+            'boots':      "0000000000000000,0000000000000000,0000000000000000,0000000000000000,0011110000111100,0132231001322310,0132231001322310,0132231001322310,0132231001322310,0122221001222210,0111111001111110,0000000000000000,0000000000000000,0000000000000000,0000000000000000,0000000000000000",
+            'apple':      "0000000000000000,0000000000000000,0000000440000000,0000004500000000,0000114111000000,0001221333100000,0012222333310000,0012222233310000,0012222222210000,0012222222210000,0001222222100000,0000112211000000,0000001100000000,0000000000000000,0000000000000000,0000000000000000",
+            'carrot':     "0000000000044000,0000000000454400,0000000004554000,0000000011440000,0000000133100000,0000001233310000,0000012233310000,0000122233210000,0001222332100000,0012223321000000,0012222210000000,0001222100000000,0000111000000000,0000000000000000,0000000000000000,0000000000000000",
+            'potato':     "0000000000000000,0000000000000000,0000000000000000,0000011111000000,0001123332110000,0012223343321000,0123433333332100,0133333333342100,0133333433332100,0012333333221000,0001122221100000,0000011110000000,0000000000000000,0000000000000000,0000000000000000,0000000000000000",
+            'ingot':      "0000000000000000,0000000000000000,0000000000000000,0000000000000000,0000001111100000,0000112223311000,0011222223331000,0122222223331000,0122222233310000,0011111111100000,0000000000000000,0000000000000000,0000000000000000,0000000000000000,0000000000000000,0000000000000000",
+            'gem':        "0000000000000000,0000000111000000,0000011343110000,0000133444331000,0001334444433100,0001333444333100,0000133343331000,0000011333110000,0000000111000000,0000000000000000,0000000000000000,0000000000000000,0000000000000000,0000000000000000,0000000000000000,0000000000000000",
+            'pearl':      "0000000000000000,0000001110000000,0000112331100000,0001233443210000,0012344554321000,0012445554321000,0012345544321000,0001233443210000,0000112321100000,0000001110000000,0000000000000000,0000000000000000,0000000000000000,0000000000000000,0000000000000000,0000000000000000",
+            'eye':        "0000000000000000,0000001110000000,0000113431100000,0001344544310000,0013455155431000,0013451215431000,0013455155431000,0001344544310000,0000113431100000,0000001110000000,0000000000000000,0000000000000000,0000000000000000,0000000000000000,0000000000000000,0000000000000000",
+            'dust':       "0000000000000000,0000000000000000,0000000000000000,0000000100000000,0000011310000000,0000133431100000,0001344443310000,0013344443310000,0001133331100000,0000011110000000,0000000000000000,0000000000000000,0000000000000000,0000000000000000,0000000000000000,0000000000000000",
+            'stick':      "0000000000000110,0000000000001321,0000000000013210,0000000000132100,0000000001321000,0000000013210000,0000000132100000,0000001321000000,0000013210000000,0000132100000000,0001321000000000,0013210000000000,0132100000000000,0121000000000000,0110000000000000,0000000000000000",
+            'string':     "0000000000000000,0000000000000000,0000000000000000,0000000011100000,0000000143210000,0000001431110000,0000014310000000,0000143110000000,0011431421000000,0144311432100000,0131101321000000,0011000110000000,0000000000000000,0000000000000000,0000000000000000,0000000000000000",
+            'leather':    "0000000000000000,0000011001100000,0000143113210000,0001443333210000,0014443332221000,0014433333221000,0014433333221000,0001433333210000,0014433333221000,0014433333221000,0001431132210000,0000110011100000,0000000000000000,0000000000000000,0000000000000000,0000000000000000",
+            'bow':        "0000000000110000,0000000001321000,0000000013211000,0000000132101000,0000001321001000,0000013210001000,0000132100001000,0001321000001000,0013210000010000,0132100000100000,0121000001000000,0110000010000000,0011001100000000,0001110000000000,0000000000000000,0000000000000000",
+            'arrow':      "0000000000001100,0000000000013310,0000000000013100,0000000000121000,0000000001210000,0000000012100000,0000000121000000,0000001210000000,0000012100000000,0000121000000000,0001210000000000,0014100000000000,0154100000000000,0145100000000000,0011000000000000,0000000000000000",
+            'shield':     "0000000000000000,0001111111111000,0012444444443100,0014223223224100,0014223223224100,0014223223224100,0014223223224100,0014223223224100,0014223223224100,0014223223224100,0014223223224100,0001444444441000,0000111111110000,0000000000000000,0000000000000000,0000000000000000",
+            'bread':      "0000000000000000,0000000000000000,0000000000000000,0000000000011100,0000000001134210,0000000113443210,0000011344432100,0001134444321000,0013444443210000,0014444432100000,0012222221000000,0001111110000000,0000000000000000,0000000000000000,0000000000000000,0000000000000000",
+            'steak':      "0000000000000000,0000000000000000,0000000001110000,0000000014441000,0000001143421000,0000114342210000,0011434222100000,0143422221000000,0144222210000000,0012222100000000,0001111000000000,0000000000000000,0000000000000000,0000000000000000,0000000000000000,0000000000000000",
+            'berries':    "0000000000000000,0000000000000000,0000000000000000,0000000040000000,0000004444000000,0000041141100000,0000012313210000,0000012212210000,0000411111100000,0004411440000000,0041141231000000,0012311221000000,0012211110000000,0001100000000000,0000000000000000,0000000000000000",
+            'cake':       "0000000000000000,0000000000000000,0000000000000000,0000000000000000,0000111111110000,0001222222221000,0012422242222100,0122224222242210,0122222222222210,0133333333333310,0133333333333310,0011111111111100,0000000000000000,0000000000000000,0000000000000000,0000000000000000",
+            'stew':       "0000000000000000,0000000000000000,0000000000000000,0000000000000000,0000000000000000,0000111111110000,0001444444441000,0014434244244100,0122222222222210,0133333333333310,0013333333333100,0001111111111000,0000000000000000,0000000000000000,0000000000000000,0000000000000000",
+            'chorus':     "0000000000000000,0000000000000000,0000000440000000,0000004400000000,0000114111000000,0001321332100000,0013322333210000,0013322233210000,0013322222210000,0013322222210000,0001332222100000,0000113321000000,0000001110000000,0000000000000000,0000000000000000,0000000000000000",
+            'coal':       "0000000000000000,0000000000000000,0000000000000000,0000000111000000,0000011432100000,0000143332210000,0001443322221000,0014433322221000,0014333222221000,0001332222210000,0000112221100000,0000001110000000,0000000000000000,0000000000000000,0000000000000000,0000000000000000",
+            'totem':      "0000000000000000,0000001111000000,0000013442100000,0000134444210000,0001131441211000,0014134444213100,0014131441213100,0012134444212100,0001113442111000,0000013442100000,0000011321100000,0000001111000000,0000000000000000,0000000000000000,0000000000000000,0000000000000000",
+            'elytra':     "0000000000000000,0000000000000000,0000011001100000,0000132112410000,0001332112441000,0001332112441000,0013322112244100,0013322112244100,0013321001244100,0013221001224100,0001210000121000,0001100000011000,0000000000000000,0000000000000000,0000000000000000,0000000000000000",
+            'trident':    "0000000111000000,0000001321000000,0000001321110000,0000111321321000,0001321321210000,0001211321100000,0000111321000000,0000001210000000,0000012100000000,0000121000000000,0001210000000000,0012100000000000,0121000000000000,0110000000000000,0000000000000000,0000000000000000"
+        };
+        // End of Sprites
 
-        function formatMoney(amount) {
-            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount);
+        // Voxel Rendering Engine for Blocks
+        function drawIsoBlock(ctx, colors, texType) {
+            const size = 16;
+            const s = 2; // scale for 64x64 canvas
+            const cx = 32;
+            const cy = 20;
+
+            const cTop = colors[0];
+            const cLeft = colors[1];
+            const cRight = colors[2];
+
+            // Helper to draw slightly altered pixels for texture
+            function shade(col, amt) {
+                let useHash = col.startsWith('#');
+                col = col.replace(/^#/, '');
+                if(col.length === 3) col = col[0]+col[0]+col[1]+col[1]+col[2]+col[2];
+                let num = parseInt(col,16);
+                let r = (num >> 16) + amt;
+                let b = ((num >> 8) & 0x00FF) + amt;
+                let g = (num & 0x0000FF) + amt;
+                let newColor = (g | (b << 8) | (r << 16)).toString(16);
+                while(newColor.length<6) newColor = "0"+newColor;
+                return (useHash?"#":"") + newColor;
+            }
+
+            function drawFace(face, color) {
+                for(let u=0; u<size; u++) {
+                    for(let v=0; v<size; v++) {
+                        let finalColor = color;
+                        
+                        // Procedural texturing based on type
+                        if(texType === 'dirt' || texType === 'cobble' || texType === 'solid') {
+                            if(Math.random() > 0.5) finalColor = shade(color, texType==='cobble' ? (Math.random()>0.5?15:-15) : (Math.random()>0.5?8:-8));
+                        } else if (texType === 'grass') {
+                            if (face !== 'top' && v < 3 + Math.random()*2) finalColor = '#599834'; // Grass rim
+                            else if (face !== 'top' && Math.random() > 0.5) finalColor = shade(color, 8);
+                        } else if (texType === 'log') {
+                            if(face === 'top') {
+                                if(u===0||v===0||u===15||v===15) finalColor = shade(color, -20);
+                                else if(u>2&&v>2&&u<13&&v<13) finalColor = shade(color, 15);
+                            } else {
+                                if(u%3===0) finalColor = shade(color, -10);
+                            }
+                        } else if (texType === 'planks') {
+                            if(u%4===0 || v%4===0) finalColor = shade(color, -15);
+                        } else if (texType === 'bricks') {
+                            if(u%4===0 || (v%8===0)) finalColor = '#dddddd'; // mortar
+                        } else if (texType === 'tnt') {
+                            if(face !== 'top') {
+                                if(u>4 && u<11) finalColor = '#ffffff';
+                                if(u>6 && u<9) finalColor = '#000000'; // TNT label
+                            } else {
+                                if(Math.random()>0.7) finalColor = shade(color, 15);
+                            }
+                        }
+
+                        let x, y, z;
+                        if(face === 'top') { x=u; y=v; z=size; }
+                        if(face === 'left') { x=size; y=u; z=v; }
+                        if(face === 'right') { x=u; y=size; z=v; }
+
+                        const sx = cx + (x - y) * 1.732 * (s/2);
+                        const sy = cy + (x + y) * (s/2) - z * s;
+
+                        ctx.fillStyle = finalColor;
+                        if(face === 'top') {
+                            ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx+1.732*(s/2), sy+(s/2)); ctx.lineTo(sx, sy+s); ctx.lineTo(sx-1.732*(s/2), sy+(s/2)); ctx.fill();
+                        } else if (face === 'left') {
+                            ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx-1.732*(s/2), sy-(s/2)); ctx.lineTo(sx-1.732*(s/2), sy-(s/2)+s); ctx.lineTo(sx, sy+s); ctx.fill();
+                        } else {
+                            ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx+1.732*(s/2), sy-(s/2)); ctx.lineTo(sx+1.732*(s/2), sy-(s/2)+s); ctx.lineTo(sx, sy+s); ctx.fill();
+                        }
+                    }
+                }
+            }
+            
+            drawFace('top', cTop);
+            drawFace('left', cLeft);
+            drawFace('right', cRight);
         }
 
-        function formatShorthand(num) {
-            if (num >= 1e12) return '$' + (num / 1e12).toFixed(1).replace(/\.0$/, '') + 'T';
-            if (num >= 1e9) return '$' + (num / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
-            if (num >= 1e6) return '$' + (num / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
-            if (num >= 1e3) return '$' + (num / 1e3).toFixed(num % 1000 === 0 ? 0 : 1).replace(/\.0$/, '') + 'K';
-            if (num > 0 && num < 1) return '$' + num.toFixed(2);
-            if (num % 1 !== 0) return '$' + num.toFixed(2);
-            return '$' + num;
+        function drawItemSprite(ctx, template, palette, scale) {
+            const data = sprites[template];
+            if(!data) return;
+            const rows = data.split(',');
+            for(let y=0; y<16; y++) {
+                for(let x=0; x<16; x++) {
+                    const char = rows[y][x];
+                    if(char !== '0') {
+                        ctx.fillStyle = palette[parseInt(char)];
+                        ctx.fillRect(x*scale, y*scale, scale, scale);
+                    }
+                }
+            }
         }
 
+        // ==========================================
+        // 3. UI RENDER ENGINE
+        // ==========================================
         function initGrid() {
             const grid = document.getElementById('items-grid');
             inventory.forEach(item => {
@@ -418,9 +432,9 @@
                 card.className = `item-card rounded-[20px] p-4 sm:p-5 ${item.rarity}`;
                 
                 card.innerHTML = `
-                    <div class="icon-slot"><canvas id="canvas-${item.id}" width="56" height="56" class="pixel-canvas"></canvas></div>
+                    <div class="icon-slot"><canvas id="canvas-${item.id}" width="64" height="64" class="pixel-canvas"></canvas></div>
                     <div class="flex-grow flex flex-col items-center justify-start w-full">
-                        <h3 class="text-sm sm:text-base font-semibold text-center text-gray-200 leading-snug mb-2 w-full">${item.name}</h3>
+                        <h3 class="text-sm sm:text-[15px] font-semibold text-center text-gray-200 leading-snug mb-2 w-full">${item.name}</h3>
                     </div>
                     <div class="mt-auto w-full pt-1">
                         <p class="text-white price-font text-center font-bold text-base sm:text-lg mb-3 tracking-wide opacity-90">${formatShorthand(item.price)}</p>
@@ -436,36 +450,26 @@
                 grid.appendChild(card);
             });
             
-            // Draw pixel art onto all canvas elements
-            setTimeout(drawAllPixelArt, 100);
-        }
-
-        function drawAllPixelArt() {
-            inventory.forEach(item => {
-                const canvas = document.getElementById(`canvas-${item.id}`);
-                const ctx = canvas.getContext('2d');
-                const map = getMap(item.name);
-                const colors = palettes[item.palette];
-                const size = 4; // 14x14 grid * 4px = 56px canvas
-                
-                for(let y=0; y<14; y++) {
-                    for(let x=0; x<14; x++) {
-                        const val = map[y][x];
-                        if(val !== '0') {
-                            ctx.fillStyle = colors[parseInt(val)-1];
-                            ctx.fillRect(x*size, y*size, size, size);
-                            
-                            // Procedural Minecraft-style texture noise for blocks
-                            if(map === blockMap && val !== '1') {
-                                if(Math.random() > 0.6) {
-                                    ctx.fillStyle = Math.random() > 0.5 ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)';
-                                    ctx.fillRect(x*size, y*size, size, size);
-                                }
+            // Stagger drawing to prevent lag
+            setTimeout(() => {
+                let idx = 0;
+                function drawNextBatch() {
+                    for(let i=0; i<5 && idx<inventory.length; i++, idx++) {
+                        const item = inventory[idx];
+                        const canvas = document.getElementById(`canvas-${item.id}`);
+                        if(canvas) {
+                            const ctx = canvas.getContext('2d');
+                            if(item.type === 'block') {
+                                drawIsoBlock(ctx, item.data, item.data[3]);
+                            } else {
+                                drawItemSprite(ctx, item.data[0], item.data, 4);
                             }
                         }
                     }
+                    if(idx < inventory.length) requestAnimationFrame(drawNextBatch);
                 }
-            });
+                drawNextBatch();
+            }, 100);
         }
 
         function updateQty(id, change) {
@@ -496,7 +500,7 @@
             inventory.forEach(item => {
                 totalSpent += (item.price * (quantities[item.id] || 0));
             });
-            document.getElementById('total-spent').innerText = formatShorthand(totalSpent) === '$0' ? '$0.00' : formatShorthand(totalSpent);
+            document.getElementById('total-spent').innerText = totalSpent === 0 ? '$0.00' : formatShorthand(totalSpent);
             
             if (!document.getElementById('receipt-modal').classList.contains('hidden')) {
                 buildReceipt();
@@ -504,7 +508,7 @@
         }
 
         // ==========================================
-        // 4. MODAL & RECEIPT
+        // 4. RECEIPT
         // ==========================================
         const modal = document.getElementById('receipt-modal');
         const modalContent = document.getElementById('receipt-content');
@@ -544,12 +548,11 @@
                 const qty = quantities[item.id];
                 if (qty > 0) {
                     const lineTotal = item.price * qty;
-                    // Redraw canvas for receipt
-                    const canvasId = `receipt-canvas-${item.id}`;
+                    const cId = `rcpt-canvas-${item.id}`;
                     list.innerHTML += `
                         <div class="flex items-center justify-between py-3 border-b border-[#222] last:border-0">
                             <div class="flex items-center gap-3 sm:gap-4 w-1/2">
-                                <canvas id="${canvasId}" width="28" height="28" style="image-rendering: pixelated;" class="filter grayscale brightness-150"></canvas>
+                                <canvas id="${cId}" width="32" height="32" class="filter grayscale brightness-150" style="image-rendering:pixelated;"></canvas>
                                 <span class="text-gray-200 leading-tight truncate">${item.name}</span>
                             </div>
                             <div class="w-1/6 text-right text-gray-500 font-bold">x${qty}</div>
@@ -557,28 +560,18 @@
                         </div>
                     `;
                     
-                    // Draw tiny receipt version
+                    // Draw Mini version for receipt
                     setTimeout(() => {
-                        const rCanvas = document.getElementById(canvasId);
+                        const rCanvas = document.getElementById(cId);
                         if(rCanvas) {
                             const ctx = rCanvas.getContext('2d');
-                            const map = getMap(item.name);
-                            const colors = palettes[item.palette];
-                            const size = 2; // 14*2 = 28px
-                            for(let y=0; y<14; y++) {
-                                for(let x=0; x<14; x++) {
-                                    const val = map[y][x];
-                                    if(val !== '0') {
-                                        ctx.fillStyle = colors[parseInt(val)-1];
-                                        ctx.fillRect(x*size, y*size, size, size);
-                                    }
-                                }
-                            }
+                            ctx.scale(0.5, 0.5); // scale down 64->32
+                            if(item.type === 'block') drawIsoBlock(ctx, item.data, item.data[3]);
+                            else drawItemSprite(ctx, item.data[0], item.data, 4);
                         }
-                    }, 10);
+                    }, 50);
                 }
             });
-            
             document.getElementById('receipt-total').innerText = formatMoney(totalSpent);
         }
 
@@ -588,7 +581,6 @@
             window.open(url, '_blank');
         }
 
-        // Run
         initGrid();
     </script>
 </body>
