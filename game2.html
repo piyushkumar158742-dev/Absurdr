@@ -432,8 +432,7 @@
             inventory.forEach(item => {
                 quantities[item.id] = 0;
                 const card = document.createElement('div');
-                card.className = `item-card rounded-[20px] p-4 sm:p-5 ${item.rarity}`;
-                
+                card.className = `item-card rounded-[22px] p-4 sm:p-5 ${item.rarity}`;                
                 card.innerHTML = `
                 <div class="icon-slot"><canvas id="canvas-${item.id}" width="70" height="70" class="pixel-canvas"></canvas></div>                    <div class="flex-grow flex flex-col items-center justify-start w-full">
                         <h3 class="text-sm sm:text-[15px] font-semibold text-center text-gray-200 leading-snug mb-2 w-full">${item.name}</h3>
