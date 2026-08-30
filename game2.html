@@ -27,13 +27,11 @@
             overflow-x: hidden;
         }
 
-        /* Sleek Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #000; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #555; }
 
-        /* Hide Number Input Arrows */
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button {
             -webkit-appearance: none;
@@ -60,7 +58,7 @@
             background: rgba(24, 24, 24, 0.85);
         }
 
-        /* Rarity Inventory Slot System */
+        /* Pixel Art Canvas Container */
         .icon-slot {
             width: 72px;
             height: 72px;
@@ -69,7 +67,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.8rem;
             background: #0a0a0a;
             border: 1px solid #222;
             position: relative;
@@ -77,9 +74,18 @@
             transition: all 0.3s ease;
         }
         @media (min-width: 640px) {
-            .icon-slot { width: 80px; height: 80px; font-size: 3.2rem; }
+            .icon-slot { width: 80px; height: 80px; }
         }
         
+        .pixel-canvas {
+            width: 56px;
+            height: 56px;
+            image-rendering: pixelated; /* Ensures sharp pixels */
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.8));
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .item-card:hover .pixel-canvas { transform: scale(1.15) rotate(3deg); }
+
         /* Subtle Rarity Glows */
         .rarity-common .icon-slot { box-shadow: inset 0 0 15px rgba(255,255,255,0.03); border-color: #2a2a2a; }
         .rarity-uncommon .icon-slot { box-shadow: inset 0 0 20px rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.25); }
@@ -87,14 +93,6 @@
         .rarity-epic .icon-slot { box-shadow: inset 0 0 25px rgba(168, 85, 247, 0.2); border-color: rgba(168, 85, 247, 0.45); }
         .rarity-legendary .icon-slot { box-shadow: inset 0 0 30px rgba(245, 158, 11, 0.25); border-color: rgba(245, 158, 11, 0.5); }
 
-        .icon-slot span {
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.8));
-            transform: scale(1);
-            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .item-card:hover .icon-slot span { transform: scale(1.15) rotate(3deg); }
-
-        /* Button Controls */
         .ctrl-btn {
             background: rgba(255, 255, 255, 0.05);
             color: #a3a3a3;
@@ -118,19 +116,15 @@
 
     <!-- Premium Header -->
     <header class="fixed top-0 left-0 right-0 h-[80px] bg-[#030303]/80 backdrop-blur-xl border-b border-white/10 z-50 flex items-center justify-between px-4 sm:px-8 shadow-2xl">
-        
-        <!-- Brand Name -->
         <div class="flex items-center gap-3 w-1/4">
             <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse hidden sm:block shadow-[0_0_10px_#10b981]"></div>
             <span class="font-black tracking-widest text-white text-sm sm:text-xl uppercase drop-shadow-md hidden sm:block">Block Market</span>
         </div>
         
-        <!-- Live Total -->
         <div class="flex-1 flex justify-center items-center">
             <span class="price-font font-bold text-3xl sm:text-4xl tracking-tight gradient-text drop-shadow-[0_2px_15px_rgba(16,185,129,0.2)]" id="total-spent">$0.00</span>
         </div>
 
-        <!-- Receipt Button -->
         <div class="w-1/4 flex justify-end">
             <button onclick="openReceipt()" class="bg-white text-black hover:bg-gray-200 font-bold py-2.5 px-5 sm:px-7 rounded-full text-sm transition-all shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:shadow-[0_0_25px_rgba(255,255,255,0.25)] active:scale-95 flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
@@ -139,7 +133,7 @@
         </div>
     </header>
 
-    <!-- Main Grid (Responsive: 2 mobile, 3 large mobile, 4 tablet, exactly 5 desktop) -->
+    <!-- Main Grid (Exactly 5 columns on desktop) -->
     <div class="max-w-[1400px] mx-auto px-3 sm:px-6">
         <div id="items-grid" class="grid grid-cols-2 min-[500px]:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-5 items-stretch">
             <!-- Injected dynamically -->
@@ -148,26 +142,21 @@
 
     <!-- Receipt Modal Overlay -->
     <div id="receipt-modal" class="fixed inset-0 bg-black/80 z-[100] hidden items-center justify-center opacity-0 transition-opacity duration-300 backdrop-blur-md p-4">
-        
         <div id="receipt-content" class="bg-[#0a0a0a] border border-[#222] rounded-3xl w-full max-w-xl flex flex-col relative shadow-2xl transform scale-95 transition-transform duration-300 max-h-[90vh]">
             
-            <!-- Close Button -->
             <button onclick="closeReceipt()" class="absolute top-6 right-6 text-gray-500 hover:text-white transition-colors bg-[#111] hover:bg-[#222] p-2 rounded-full z-10 border border-[#222]">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
 
-            <!-- Receipt Header -->
             <div class="p-6 sm:p-8 border-b border-[#1f1f1f] text-center">
                 <h2 class="text-2xl sm:text-3xl font-black text-white tracking-widest uppercase">Block Market</h2>
                 <p class="text-gray-500 text-xs sm:text-sm mt-2 font-mono uppercase tracking-widest">Official Transaction Receipt</p>
             </div>
             
-            <!-- Receipt Items List -->
             <div id="receipt-list" class="p-6 sm:p-8 overflow-y-auto flex-1 space-y-3 font-medium text-gray-300 text-sm sm:text-base">
                 <!-- Rows injected here -->
             </div>
             
-            <!-- Receipt Footer & Share -->
             <div class="p-6 sm:p-8 border-t border-[#1f1f1f] bg-[#050505] rounded-b-3xl">
                 <div class="flex justify-between items-center mb-6 sm:mb-8">
                     <span class="text-base sm:text-lg text-gray-400 uppercase tracking-widest">Total Due</span>
@@ -183,10 +172,212 @@
     </div>
 
     <script>
+        // ==========================================
+        // 1. PIXEL ART ENGINE (Matrices & Palettes)
+        // ==========================================
+        
+        // 14x14 Grids for pixel-by-pixel rendering. 0 = blank, 1-4 = palette colors
+        const blockMap = [
+            "00000011000000", "00000122100000", "00001222210000", "00012222221000",
+            "00122222222100", "01222222222210", "12222222222221", "13333334444441",
+            "13333334444441", "01333334444410", "00133334444100", "00013334441000",
+            "00001334410000", "00000111100000"
+        ];
+        const swordMap = [
+            "00000000000111", "00000000001231", "00000000012211", "00000000122100",
+            "00000001221000", "00000012210000", "00000122100000", "00001221000000",
+            "00012210000000", "01111111000000", "12314412100000", "13144441210000",
+            "11144411100000", "00011100000000"
+        ];
+        const pickMap = [
+            "00001111110000", "00012222221100", "00123333332210", "01231111113210",
+            "01310000014110", "12100000141000", "11000001410000", "00000014100000",
+            "00000141000000", "00001410000000", "00014100000000", "00141000000000",
+            "01410000000000", "01100000000000"
+        ];
+        const axeMap = [
+            "00001111000000", "00012222100000", "00123333210000", "01233332210000",
+            "01331112210000", "01310014110000", "01100014100000", "00000141000000",
+            "00001410000000", "00014100000000", "00141000000000", "01410000000000",
+            "14100000000000", "11000000000000"
+        ];
+        const chestMap = [
+            "00000000000000", "01110000111000", "12221111222100", "12332222332100",
+            "12333333332100", "12233333322100", "01223333221000", "01223333221000",
+            "01223333221000", "01222222221000", "01222222221000", "00111111110000",
+            "00000000000000", "00000000000000"
+        ];
+        const legMap = [
+            "00000000000000", "00111111111000", "01222222222100", "01233333332100",
+            "01233111332100", "01231000132100", "01221000122100", "01221000122100",
+            "01221000122100", "01221000122100", "01111000111100", "00000000000000",
+            "00000000000000", "00000000000000"
+        ];
+        const bootMap = [
+            "00000000000000", "00000000000000", "01111000111100", "12222101222210",
+            "12332101233210", "12332101233210", "12332101233210", "12222101222210",
+            "11111101111110", "00000000000000", "00000000000000", "00000000000000",
+            "00000000000000", "00000000000000"
+        ];
+        const helmMap = [
+            "00000000000000", "00011111110000", "00122222221000", "01233333332100",
+            "01233333332100", "01233333332100", "01221111122100", "01210000012100",
+            "01100000001100", "00000000000000", "00000000000000", "00000000000000",
+            "00000000000000", "00000000000000"
+        ];
+        const ingotMap = [
+            "00000000000000", "00000000000000", "00000000000000", "00000111111000",
+            "00011222222110", "00122333333221", "01233333333321", "01222222222221",
+            "00111111111110", "00000000000000", "00000000000000", "00000000000000",
+            "00000000000000", "00000000000000"
+        ];
+        const gemMap = [
+            "00000000000000", "00000111100000", "00001222210000", "00012333321000",
+            "00123333332100", "00123333332100", "01223333332210", "01222333322210",
+            "00122222222100", "00012222221000", "00001122110000", "00000011000000",
+            "00000000000000", "00000000000000"
+        ];
+        const foodMap = [
+            "00000001000000", "00000014100000", "00000141000000", "00001111100000",
+            "00112222211000", "01223333322100", "12233333332210", "12333333333210",
+            "12333333333210", "12233333332210", "01223333322100", "00112222211000",
+            "00001111100000", "00000000000000"
+        ];
+        const bowMap = [
+            "00000000110000", "00000001211000", "00000012101100", "00000121000100",
+            "00001210000100", "00012100000100", "00121000001100", "01210000011000",
+            "12100000110000", "11100001100000", "01110011000000", "00111110000000",
+            "00011100000000", "00000000000000"
+        ];
+
+        // Maps name logic to the correct pixel grid
+        function getMap(name) {
+            name = name.toLowerCase();
+            if(name.includes('block') || name.includes('log') || name.includes('plank') || name.includes('leaves') || name.includes('glass') || name.includes('wool') || name.includes('concrete') || name.includes('tnt') || name.includes('table') || name.includes('furnace') || (name.includes('chest') && !name.includes('plate')) || name.includes('sponge') || name.includes('sand') || name.includes('gravel') || name.includes('clay') || name.includes('bricks') || (name.includes('stone') && !name.includes('sword') && !name.includes('pick')) || name.includes('basalt') || name.includes('prismarine') || name.includes('netherrack') || name.includes('obsidian') || name.includes('bedrock') || name.includes('cobble')) return blockMap;
+            if(name.includes('sword')) return swordMap;
+            if(name.includes('pickaxe')) return pickMap;
+            if(name.includes('axe')) return axeMap;
+            if(name.includes('helmet')) return helmMap;
+            if(name.includes('chestplate')) return chestMap;
+            if(name.includes('leggings')) return legMap;
+            if(name.includes('boots')) return bootMap;
+            if(name.includes('ingot') || name.includes('coal') || name.includes('leather') || name.includes('string')) return ingotMap;
+            if((name.includes('diamond') && !name.includes('sword') && !name.includes('pick')) || name.includes('emerald') || name.includes('lapis') || name.includes('amethyst') || name.includes('redstone') || name.includes('pearl') || name.includes('eye') || name.includes('quartz')) return gemMap;
+            if(name.includes('bow')) return bowMap;
+            return foodMap;
+        }
+
+        // Color Palettes (Outline, Base/Top, Shade/Left, Highlight/Right/Handle)
+        const palettes = {
+            dirt: ['#321', '#854', '#643', '#532'],
+            grass: ['#321', '#5a3', '#643', '#532'],
+            stone: ['#222', '#aaa', '#888', '#666'],
+            cobble: ['#111', '#999', '#777', '#555'],
+            sand: ['#664', '#edb', '#cba', '#a98'],
+            clay: ['#556', '#aab', '#889', '#667'],
+            brick: ['#422', '#c55', '#a44', '#833'],
+            oak: ['#321', '#a74', '#532', '#421'],
+            plank: ['#431', '#d95', '#b74', '#953'],
+            leaves: ['#131', '#4a2', '#381', '#261'],
+            spruce: ['#210', '#753', '#421', '#310'],
+            birch: ['#333', '#eee', '#ddd', '#ccc'],
+            jungle: ['#421', '#964', '#642', '#531'],
+            glass: ['#fff', '#eff', '#cdd', '#acc'],
+            black_glass: ['#111', '#444', '#333', '#222'],
+            white_wool: ['#ccc', '#fff', '#eee', '#ddd'],
+            black_wool: ['#000', '#333', '#222', '#111'],
+            red_wool: ['#500', '#f33', '#d22', '#b11'],
+            blue_wool: ['#005', '#33f', '#22d', '#11b'],
+            green_wool: ['#050', '#3f3', '#2d2', '#1b1'],
+            tnt: ['#111', '#f33', '#eee', '#d33'],
+            book: ['#321', '#a85', '#d43', '#35c'],
+            craft: ['#210', '#b74', '#953', '#742'],
+            furnace: ['#111', '#888', '#666', '#444'],
+            chest: ['#210', '#d83', '#a62', '#841'],
+            echest: ['#102', '#314', '#203', '#102'],
+            sponge: ['#881', '#ee3', '#cc2', '#aa1'],
+            wood_tool: ['#210', '#963', '#742', '#531'],
+            stone_tool: ['#111', '#aaa', '#888', '#531'],
+            iron_tool: ['#333', '#fff', '#ccc', '#531'],
+            gold_tool: ['#541', '#ff5', '#da2', '#531'],
+            diamond_tool: ['#145', '#5ff', '#3cc', '#531'],
+            netherite_tool: ['#000', '#555', '#444', '#531'],
+            slime: ['#151', '#5f5', '#4d4', '#3b3'],
+            honey: ['#840', '#fa0', '#d80', '#b60'],
+            magma: ['#300', '#f50', '#c30', '#910'],
+            soul: ['#322', '#643', '#532', '#421'],
+            glow: ['#962', '#fe5', '#dc3', '#ba2'],
+            sea: ['#144', '#aff', '#8cc', '#6aa'],
+            basalt: ['#111', '#666', '#555', '#444'],
+            blackstone: ['#000', '#333', '#222', '#111'],
+            prism: ['#155', '#5aa', '#488', '#366'],
+            netherrack: ['#411', '#933', '#722', '#511'],
+            end: ['#664', '#eed', '#ccb', '#aa9'],
+            purpur: ['#636', '#c8c', '#a6a', '#848'],
+            coal: ['#000', '#444', '#333', '#222'],
+            iron_block: ['#555', '#fff', '#ddd', '#bbb'],
+            gold_block: ['#861', '#ff4', '#ec2', '#ca1'],
+            diamond_block: ['#277', '#6ff', '#4dd', '#3bb'],
+            emerald_block: ['#172', '#4f6', '#3d4', '#2b3'],
+            netherite_block: ['#111', '#444', '#333', '#222'],
+            obsidian: ['#102', '#426', '#315', '#204'],
+            bedrock: ['#000', '#444', '#333', '#222'],
+            apple: ['#300', '#f33', '#f66', '#2a2'],
+            bread: ['#531', '#d94', '#fba', '#b72'],
+            steak: ['#421', '#942', '#b53', '#731'],
+            gapple: ['#641', '#fc3', '#ff6', '#da2'],
+            egapple: ['#616', '#f5f', '#faff', '#d3d'],
+            carrot: ['#420', '#f82', '#fa4', '#3a2'],
+            potato: ['#542', '#da6', '#fc8', '#b84'],
+            cake: ['#421', '#fff', '#fcc', '#d33'],
+            stew: ['#321', '#952', '#b63', '#a42'],
+            berries: ['#300', '#e22', '#f55', '#262'],
+            chorus: ['#425', '#a6a', '#c8c', '#848'],
+            ingot_iron: ['#444', '#ddd', '#fff', '#bbb'],
+            ingot_gold: ['#751', '#ec2', '#ff5', '#ca1'],
+            ingot_netherite: ['#111', '#444', '#555', '#333'],
+            gem_diamond: ['#156', '#4ee', '#7ff', '#2cc'],
+            gem_emerald: ['#152', '#4d4', '#6f6', '#2b2'],
+            gem_lapis: ['#126', '#35c', '#57f', '#24a'],
+            gem_amethyst: ['#426', '#a5c', '#c7f', '#83a'],
+            dust_redstone: ['#500', '#e22', '#f55', '#c11'],
+            ingot_copper: ['#632', '#d75', '#f97', '#b53'],
+            quartz: ['#666', '#eee', '#fff', '#ccc'],
+            stick: ['#321', '#853', '#a74', '#642'],
+            string: ['#555', '#eee', '#fff', '#ccc'],
+            gunpowder: ['#111', '#666', '#888', '#444'],
+            leather: ['#521', '#c63', '#e85', '#a42'],
+            pearl: ['#144', '#2aa', '#4cc', '#188'],
+            eye: ['#141', '#4e4', '#6f6', '#2a2'],
+            totem: ['#541', '#eb2', '#fd4', '#c91'],
+            elytra: ['#223', '#889', '#aab', '#667'],
+            saddle: ['#311', '#a42', '#c53', '#831'],
+            nametag: ['#332', '#eed', '#fff', '#ccb'],
+            bow: ['#321', '#963', '#b85', '#ccc'],
+            arrow: ['#222', '#fff', '#853', '#a75'],
+            trident: ['#144', '#3cc', '#5ee', '#2aa'],
+            shield: ['#222', '#853', '#a74', '#ccc']
+        };
+
+        // ==========================================
+        // 2. DATA IMPORT (Exact 100 items from prompt tables)
+        // ==========================================
+        const rawData = [
+            ["Dirt Block", 2, "dirt"], ["Grass Block", 4, "grass"], ["Cobblestone", 3, "cobble"], ["Stone Block", 7, "stone"], ["Sand Block", 3, "sand"], ["Gravel Block", 3, "stone"], ["Clay Block", 12, "clay"], ["Bricks", 30, "brick"], ["Oak Log", 15, "oak"], ["Oak Planks", 5, "plank"],
+            ["Oak Leaves", 5, "leaves"], ["Spruce Log", 25, "spruce"], ["Birch Log", 25, "birch"], ["Jungle Log", 25, "jungle"], ["Glass Block", 40, "glass"], ["Black Stained Glass", 50, "black_glass"], ["White Wool", 20, "white_wool"], ["Black Wool", 20, "black_wool"], ["Red Wool", 20, "red_wool"], ["Blue Wool", 20, "blue_wool"],
+            ["Green Wool", 120, "green_wool"], ["White Concrete", 180, "white_wool"], ["Black Concrete", 180, "black_wool"], ["TNT Block", 850, "tnt"], ["Bookshelf", 220, "book"], ["Crafting Table", 75, "craft"], ["Furnace", 90, "furnace"], ["Chest", 60, "chest"], ["Ender Chest", 18000, "echest"], ["Sponge", 1000, "sponge"],
+            ["Wooden Pickaxe", 30, "wood_tool"], ["Stone Sword", 80, "stone_tool"], ["Iron Pickaxe", 250, "iron_tool"], ["Iron Sword", 400, "iron_tool"], ["Golden Axe", 1200, "gold_tool"], ["Diamond Pickaxe", 5000, "diamond_tool"], ["Diamond Sword", 6000, "diamond_tool"], ["Netherite Sword", 12000, "netherite_tool"], ["Netherite Pickaxe", 11000, "netherite_tool"], ["Diamond Helmet", 2000, "diamond_tool"],
+            ["Slime Block", 2500, "slime"], ["Honey Block", 4000, "honey"], ["Magma Block", 1200, "magma"], ["Soul Sand", 300, "soul"], ["Glowstone", 1500, "glow"], ["Sea Lantern", 2000, "sea"], ["Basalt", 80, "basalt"], ["Blackstone", 100, "blackstone"], ["Prismarine", 1800, "prism"], ["Netherrack", 10, "netherrack"],
+            ["End Stone", 2500, "end"], ["Purpur Block", 25000, "purpur"], ["Coal Block", 1200, "coal"], ["Iron Block", 4500, "iron_block"], ["Gold Block", 22000000, "gold_block"], ["Diamond Block", 140000000, "diamond_block"], ["Emerald Block", 35000000, "emerald_block"], ["Netherite Block", 65000000, "netherite_block"], ["Obsidian", 1000000, "obsidian"], ["Bedrock", 50000000, "bedrock"],
+            ["Diamond Chestplate", 240.00, "diamond_tool"], ["Diamond Leggings", 210.00, "diamond_tool"], ["Diamond Boots", 120.00, "diamond_tool"], ["Netherite Chestplate", 6800000.00, "netherite_tool"], ["Apple", 0.50, "apple"], ["Bread", 1.00, "bread"], ["Cooked Beef (Steak)", 5.00, "steak"], ["Golden Apple", 15.00, "gapple"], ["Enchanted Golden Apple", 1200.00, "egapple"], ["Carrot", 0.30, "carrot"],
+            ["Potato", 0.05, "potato"], ["Cake", 12.00, "cake"], ["Suspicious Stew", 120.00, "stew"], ["Sweet Berries", 0.80, "berries"], ["Chorus Fruit", 150.00, "chorus"], ["Piece of Coal", 8.00, "coal"], ["Iron Ingot", 80.00, "ingot_iron"], ["Gold Ingot", 650.00, "ingot_gold"], ["Rough Diamond", 2800.00, "gem_diamond"], ["Flawless Emerald", 1200.00, "gem_emerald"],
+            ["Netherite Ingot", 250000, "ingot_netherite"], ["Lapis Lazuli", 50, "gem_lapis"], ["Redstone Dust", 120, "dust_redstone"], ["Copper Ingot", 80, "ingot_copper"], ["Amethyst Shard", 1500, "gem_amethyst"], ["Nether Quartz", 300, "quartz"], ["Wooden Stick", 1, "stick"], ["Spider String", 10, "string"], ["Gunpowder", 200, "gunpowder"], ["Cow Leather", 25, "leather"],
+            ["Ender Pearl", 15000, "pearl"], ["Eye of Ender", 35000, "eye"], ["Totem of Undying", 10000000, "totem"], ["Elytra Wings", 50000000, "elytra"], ["Leather Saddle", 350, "saddle"], ["Nametag", 5000, "nametag"], ["Wooden Bow", 150, "bow"], ["Flint Arrow", 5, "arrow"], ["Enchanted Trident", 2500000, "trident"], ["Wooden Shield", 250, "shield"]
+        ];
+
         const inventory = [];
         let idCounter = 1;
 
-        // Realistic USD Pricing & Rarity Glow Mapping
         function getRarityClass(price) {
             if (price >= 1000000) return 'rarity-legendary';
             if (price >= 25000) return 'rarity-epic';
@@ -195,139 +386,12 @@
             return 'rarity-common';
         }
 
-        function addEntity(name, price, icon) {
-            inventory.push({ id: idCounter++, name, price, icon, rarity: getRarityClass(price) });
-        }
+        rawData.forEach(b => {
+            inventory.push({ id: idCounter++, name: b[0], price: b[1], palette: b[2], rarity: getRarityClass(b[1]) });
+        });
 
         // ==========================================
-        // ALL 100 EXACT ITEMS FROM YOUR PROVIDED IMAGES
-        // ==========================================
-        const exactData = [
-            // Image 1
-            {n: "Dirt Block", p: 2, i: "🟫"},
-            {n: "Grass Block", p: 4, i: "🟩"},
-            {n: "Cobblestone", p: 3, i: "🌑"},
-            {n: "Stone Block", p: 7, i: "🪨"},
-            {n: "Sand Block", p: 3, i: "🏖️"},
-            {n: "Gravel Block", p: 3, i: "🪨"},
-            {n: "Clay Block", p: 12, i: "🧱"},
-            {n: "Bricks", p: 30, i: "🧱"},
-            {n: "Oak Log", p: 15, i: "🪵"},
-            {n: "Oak Planks", p: 5, i: "🟫"},
-            
-            // Image 2
-            {n: "Oak Leaves", p: 5, i: "🌿"},
-            {n: "Spruce Log", p: 25, i: "🪵"},
-            {n: "Birch Log", p: 25, i: "🪵"},
-            {n: "Jungle Log", p: 25, i: "🪵"},
-            {n: "Glass Block", p: 40, i: "🧊"},
-            {n: "Black Stained Glass", p: 50, i: "⬛"},
-            {n: "White Wool", p: 20, i: "🐑"},
-            {n: "Black Wool", p: 20, i: "🐑"},
-            {n: "Red Wool", p: 20, i: "🟥"},
-            {n: "Blue Wool", p: 20, i: "🟦"},
-            
-            // Image 3
-            {n: "Green Wool", p: 120, i: "🟩"},
-            {n: "White Concrete", p: 180, i: "⬜"},
-            {n: "Black Concrete", p: 180, i: "⬛"},
-            {n: "TNT Block", p: 850, i: "🧨"},
-            {n: "Bookshelf", p: 220, i: "📚"},
-            {n: "Crafting Table", p: 75, i: "🛠️"},
-            {n: "Furnace", p: 90, i: "🔥"},
-            {n: "Chest", p: 60, i: "📦"},
-            {n: "Ender Chest", p: 18000, i: "👁️‍🗨️"},
-            {n: "Sponge", p: 1000, i: "🧽"},
-            
-            // Image 4
-            {n: "Wooden Pickaxe", p: 30, i: "⛏️"},
-            {n: "Stone Sword", p: 80, i: "🗡️"},
-            {n: "Iron Pickaxe", p: 250, i: "⛏️"},
-            {n: "Iron Sword", p: 400, i: "🗡️"},
-            {n: "Golden Axe", p: 1200, i: "🪓"},
-            {n: "Diamond Pickaxe", p: 5000, i: "⛏️"},
-            {n: "Diamond Sword", p: 6000, i: "🗡️"},
-            {n: "Netherite Sword", p: 12000, i: "🗡️"},
-            {n: "Netherite Pickaxe", p: 11000, i: "⛏️"},
-            {n: "Diamond Helmet", p: 2000, i: "🪖"},
-            
-            // Image 5
-            {n: "Slime Block", p: 2500, i: "🟩"},
-            {n: "Honey Block", p: 4000, i: "🍯"},
-            {n: "Magma Block", p: 1200, i: "🌋"},
-            {n: "Soul Sand", p: 300, i: "👻"},
-            {n: "Glowstone", p: 1500, i: "💡"},
-            {n: "Sea Lantern", p: 2000, i: "🏮"},
-            {n: "Basalt", p: 80, i: "🪨"},
-            {n: "Blackstone", p: 100, i: "⬛"},
-            {n: "Prismarine", p: 1800, i: "🌊"},
-            {n: "Netherrack", p: 10, i: "🟥"},
-            
-            // Image 6
-            {n: "End Stone", p: 2500, i: "🌕"},
-            {n: "Purpur Block", p: 25000, i: "🟪"},
-            {n: "Coal Block", p: 1200, i: "⬛"},
-            {n: "Iron Block", p: 4500, i: "⬜"},
-            {n: "Gold Block", p: 22000000, i: "🟨"},
-            {n: "Diamond Block", p: 140000000, i: "💠"},
-            {n: "Emerald Block", p: 35000000, i: "🟩"},
-            {n: "Netherite Block", p: 65000000, i: "🔲"},
-            {n: "Obsidian", p: 1000000, i: "⬛"},
-            {n: "Bedrock", p: 50000000, i: "🕳️"},
-            
-            // Image 7
-            {n: "Diamond Chestplate", p: 240, i: "👕"},
-            {n: "Diamond Leggings", p: 210, i: "👖"},
-            {n: "Diamond Boots", p: 120, i: "🥾"},
-            {n: "Netherite Chestplate", p: 6800000, i: "👕"},
-            {n: "Apple", p: 0.50, i: "🍎"},
-            {n: "Bread", p: 1.00, i: "🍞"},
-            {n: "Cooked Beef (Steak)", p: 5.00, i: "🥩"},
-            {n: "Golden Apple", p: 15.00, i: "🍏"},
-            {n: "Enchanted Golden Apple", p: 1200, i: "🍎"},
-            {n: "Carrot", p: 0.30, i: "🥕"},
-            
-            // Image 8
-            {n: "Potato", p: 0.05, i: "🥔"},
-            {n: "Cake", p: 12.00, i: "🎂"},
-            {n: "Suspicious Stew", p: 120.00, i: "🍲"},
-            {n: "Sweet Berries", p: 0.80, i: "🍓"},
-            {n: "Chorus Fruit", p: 150.00, i: "🍇"},
-            {n: "Piece of Coal", p: 8.00, i: "🪨"},
-            {n: "Iron Ingot", p: 80.00, i: "🔩"},
-            {n: "Gold Ingot", p: 650.00, i: "🥇"},
-            {n: "Rough Diamond", p: 2800.00, i: "💎"},
-            {n: "Flawless Emerald", p: 1200.00, i: "🟢"},
-            
-            // Image 9
-            {n: "Netherite Ingot", p: 250000, i: "⬛"},
-            {n: "Lapis Lazuli", p: 50, i: "🔷"},
-            {n: "Redstone Dust", p: 120, i: "🔴"},
-            {n: "Copper Ingot", p: 80, i: "🥉"},
-            {n: "Amethyst Shard", p: 1500, i: "💜"},
-            {n: "Nether Quartz", p: 300, i: "🤍"},
-            {n: "Wooden Stick", p: 1, i: "🦯"},
-            {n: "Spider String", p: 10, i: "🧵"},
-            {n: "Gunpowder", p: 200, i: "🧨"},
-            {n: "Cow Leather", p: 25, i: "👞"},
-            
-            // Image 10
-            {n: "Ender Pearl", p: 15000, i: "🔮"},
-            {n: "Eye of Ender", p: 35000, i: "👁️‍🗨️"},
-            {n: "Totem of Undying", p: 10000000, i: "🏺"},
-            {n: "Elytra Wings", p: 50000000, i: "🦋"},
-            {n: "Leather Saddle", p: 350, i: "💺"},
-            {n: "Nametag", p: 5000, i: "🏷️"},
-            {n: "Wooden Bow", p: 150, i: "🏹"},
-            {n: "Flint Arrow", p: 5, i: "↗️"},
-            {n: "Enchanted Trident", p: 2500000, i: "🔱"},
-            {n: "Wooden Shield", p: 250, i: "🛡️"}
-        ];
-
-        exactData.forEach(b => addEntity(b.n, b.p, b.i));
-
-        // ==========================================
-        // UI & LOGIC
+        // 3. UI & LOGIC
         // ==========================================
         const quantities = {};
         let totalSpent = 0;
@@ -336,17 +400,13 @@
             return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount);
         }
 
-        // Accurately format large numbers and small decimals properly
         function formatShorthand(num) {
             if (num >= 1e12) return '$' + (num / 1e12).toFixed(1).replace(/\.0$/, '') + 'T';
             if (num >= 1e9) return '$' + (num / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
             if (num >= 1e6) return '$' + (num / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
             if (num >= 1e3) return '$' + (num / 1e3).toFixed(num % 1000 === 0 ? 0 : 1).replace(/\.0$/, '') + 'K';
-            
-            // Keep decimals for items under a dollar or those with cents
             if (num > 0 && num < 1) return '$' + num.toFixed(2);
             if (num % 1 !== 0) return '$' + num.toFixed(2);
-            
             return '$' + num;
         }
 
@@ -358,25 +418,53 @@
                 card.className = `item-card rounded-[20px] p-4 sm:p-5 ${item.rarity}`;
                 
                 card.innerHTML = `
-                    <div class="icon-slot"><span>${item.icon}</span></div>
+                    <div class="icon-slot"><canvas id="canvas-${item.id}" width="56" height="56" class="pixel-canvas"></canvas></div>
                     <div class="flex-grow flex flex-col items-center justify-start w-full">
                         <h3 class="text-sm sm:text-base font-semibold text-center text-gray-200 leading-snug mb-2 w-full">${item.name}</h3>
                     </div>
                     <div class="mt-auto w-full pt-1">
                         <p class="text-white price-font text-center font-bold text-base sm:text-lg mb-3 tracking-wide opacity-90">${formatShorthand(item.price)}</p>
-                        
                         <div class="flex items-center justify-between w-full gap-1 sm:gap-2 bg-black/60 p-1 rounded-xl border border-white/10">
                             <button onclick="updateQty(${item.id}, -1)" class="ctrl-btn w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center font-bold shrink-0 text-lg transition-transform select-none">-</button>
-                            
                             <input type="number" id="input-${item.id}" value="0" min="0" 
                                 class="bg-transparent text-center font-bold text-white w-full min-w-0 outline-none price-font text-sm sm:text-base px-0.5"
                                 oninput="if(this.value.length > 7) this.value = this.value.slice(0, 7); manualUpdate(${item.id}, this.value)">
-                            
                             <button onclick="updateQty(${item.id}, 1)" class="ctrl-btn w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center font-bold shrink-0 text-lg transition-transform select-none">+</button>
                         </div>
                     </div>
                 `;
                 grid.appendChild(card);
+            });
+            
+            // Draw pixel art onto all canvas elements
+            setTimeout(drawAllPixelArt, 100);
+        }
+
+        function drawAllPixelArt() {
+            inventory.forEach(item => {
+                const canvas = document.getElementById(`canvas-${item.id}`);
+                const ctx = canvas.getContext('2d');
+                const map = getMap(item.name);
+                const colors = palettes[item.palette];
+                const size = 4; // 14x14 grid * 4px = 56px canvas
+                
+                for(let y=0; y<14; y++) {
+                    for(let x=0; x<14; x++) {
+                        const val = map[y][x];
+                        if(val !== '0') {
+                            ctx.fillStyle = colors[parseInt(val)-1];
+                            ctx.fillRect(x*size, y*size, size, size);
+                            
+                            // Procedural Minecraft-style texture noise for blocks
+                            if(map === blockMap && val !== '1') {
+                                if(Math.random() > 0.6) {
+                                    ctx.fillStyle = Math.random() > 0.5 ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)';
+                                    ctx.fillRect(x*size, y*size, size, size);
+                                }
+                            }
+                        }
+                    }
+                }
             });
         }
 
@@ -389,10 +477,8 @@
             
             const inputEl = document.getElementById(`input-${id}`);
             inputEl.value = current;
-            
             inputEl.style.transform = 'scale(1.1)';
             setTimeout(() => inputEl.style.transform = 'scale(1)', 150);
-
             calculateTotal();
         }
 
@@ -410,7 +496,7 @@
             inventory.forEach(item => {
                 totalSpent += (item.price * (quantities[item.id] || 0));
             });
-            document.getElementById('total-spent').innerText = formatShorthand(totalSpent);
+            document.getElementById('total-spent').innerText = formatShorthand(totalSpent) === '$0' ? '$0.00' : formatShorthand(totalSpent);
             
             if (!document.getElementById('receipt-modal').classList.contains('hidden')) {
                 buildReceipt();
@@ -418,7 +504,7 @@
         }
 
         // ==========================================
-        // MODAL & RECEIPT
+        // 4. MODAL & RECEIPT
         // ==========================================
         const modal = document.getElementById('receipt-modal');
         const modalContent = document.getElementById('receipt-content');
@@ -458,16 +544,38 @@
                 const qty = quantities[item.id];
                 if (qty > 0) {
                     const lineTotal = item.price * qty;
+                    // Redraw canvas for receipt
+                    const canvasId = `receipt-canvas-${item.id}`;
                     list.innerHTML += `
                         <div class="flex items-center justify-between py-3 border-b border-[#222] last:border-0">
                             <div class="flex items-center gap-3 sm:gap-4 w-1/2">
-                                <span class="text-xl sm:text-2xl filter grayscale brightness-150">${item.icon}</span>
+                                <canvas id="${canvasId}" width="28" height="28" style="image-rendering: pixelated;" class="filter grayscale brightness-150"></canvas>
                                 <span class="text-gray-200 leading-tight truncate">${item.name}</span>
                             </div>
                             <div class="w-1/6 text-right text-gray-500 font-bold">x${qty}</div>
                             <div class="w-1/3 text-right price-font text-white font-bold tracking-wide">${formatShorthand(lineTotal)}</div>
                         </div>
                     `;
+                    
+                    // Draw tiny receipt version
+                    setTimeout(() => {
+                        const rCanvas = document.getElementById(canvasId);
+                        if(rCanvas) {
+                            const ctx = rCanvas.getContext('2d');
+                            const map = getMap(item.name);
+                            const colors = palettes[item.palette];
+                            const size = 2; // 14*2 = 28px
+                            for(let y=0; y<14; y++) {
+                                for(let x=0; x<14; x++) {
+                                    const val = map[y][x];
+                                    if(val !== '0') {
+                                        ctx.fillStyle = colors[parseInt(val)-1];
+                                        ctx.fillRect(x*size, y*size, size, size);
+                                    }
+                                }
+                            }
+                        }
+                    }, 10);
                 }
             });
             
@@ -480,7 +588,7 @@
             window.open(url, '_blank');
         }
 
-        // Run Initialization
+        // Run
         initGrid();
     </script>
 </body>
