@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Block Market — Voxel Exchange</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -38,8 +39,6 @@ body {
 ::-webkit-scrollbar-track { background: #000; }
 ::-webkit-scrollbar-thumb { background: #2a2d35; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: #3c4050; }
-input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-input[type="number"] { -moz-appearance: textfield; }
 
 .price-font { font-family: var(--font-mono); }
 .gradient-text {
@@ -84,7 +83,7 @@ input[type="number"] { -moz-appearance: textfield; }
 .item-card:hover .iso-canvas { transform: scale(1.15) rotateY(10deg); }
 
 .rarity-badge {
-  position: absolute; top: 8px; left: 8px; font-family: 'Press Start 2P', monospace; font-size: 6.5px;
+  position: absolute; top: 8px; left: 8px; font-family: 'Press Start 2P', monospace; font-size: 6px;
   padding: 4px 6px; border-radius: 5px; z-index: 2; background: rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.12);
 }
 .rarity-common .rarity-badge { color: #9aa1ad; } .rarity-common .icon-slot { box-shadow: inset 0 0 15px rgba(255,255,255,0.03); border-color: #242429; }
@@ -93,11 +92,7 @@ input[type="number"] { -moz-appearance: textfield; }
 .rarity-epic .rarity-badge { color: #b18cfb; } .rarity-epic .icon-slot { box-shadow: inset 0 0 22px rgba(177,140,251,0.2); border-color: rgba(177,140,251,0.45); }
 .rarity-legendary .rarity-badge { color: #f6b93b; } .rarity-legendary .icon-slot { box-shadow: inset 0 0 26px rgba(246,185,59,0.24); border-color: rgba(246,185,59,0.55); }
 
-.ctrl-btn { background: rgba(255,255,255,0.05); color: #a3a3a3; border: 1px solid rgba(255,255,255,0.1); transition: all 0.15s; }
-.ctrl-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
-.ctrl-btn:active { transform: scale(0.9); background: rgba(255,255,255,0.25); }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body class="pt-[90px] pb-16 antialiased">
 
@@ -120,14 +115,14 @@ input[type="number"] { -moz-appearance: textfield; }
   </div>
 </header>
 
-<!-- Main Grid: Drops to 1 column on < 450px -->
-<div class="max-w-[1400px] mx-auto px-3 sm:px-6">
+<!-- Main Grid -->
+<div class="max-w-[1500px] mx-auto px-3 sm:px-6">
   <div id="items-grid" class="grid grid-cols-1 min-[450px]:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 items-stretch"></div>
 </div>
 
 <!-- Receipt Modal -->
 <div id="receipt-modal" class="fixed inset-0 bg-black/80 z-[100] hidden items-center justify-center opacity-0 transition-opacity duration-300 backdrop-blur-md p-4">
-  <div id="receipt-content" class="bg-[#0a0a0a] border border-[#222] rounded-3xl w-full max-w-xl flex flex-col relative shadow-2xl transform scale-95 transition-transform duration-300 max-h-[90vh]">
+  <div id="receipt-content" class="bg-[#0a0a0a] border border-[#222] rounded-3xl w-full max-w-2xl flex flex-col relative shadow-2xl transform scale-95 transition-transform duration-300 max-h-[90vh]">
     <button onclick="closeReceipt()" class="absolute top-6 right-6 text-gray-500 hover:text-white transition-colors bg-[#111] hover:bg-[#222] p-2 rounded-full z-10 border border-[#222]">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
     </button>
@@ -136,15 +131,15 @@ input[type="number"] { -moz-appearance: textfield; }
       <p class="text-gray-500 text-xs sm:text-sm mt-2 font-mono uppercase tracking-widest">Official Transaction Receipt</p>
     </div>
     <div id="receipt-list" class="p-6 sm:p-8 overflow-y-auto flex-1 space-y-3 font-medium text-gray-300 text-sm sm:text-base"></div>
+    
     <div class="p-6 sm:p-8 border-t border-[#1f1f1f] bg-[#050505] rounded-b-3xl shrink-0">
-      
       <!-- REDESIGNED TOTAL DUE SECTION -->
       <div class="flex flex-col items-center justify-center bg-[#0a0a0c] border border-[#1e1e22] rounded-2xl p-4 sm:p-6 mb-6 sm:mb-8">
         <span class="text-sm text-gray-500 uppercase tracking-widest mb-1">Total Due</span>
         <span class="text-2xl sm:text-4xl font-black text-white price-font text-center break-all leading-tight w-full" id="receipt-total">$0</span>
       </div>
       
-      <div id="receipt-actions" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <button onclick="downloadPDF()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-3.5 sm:py-4 rounded-xl flex items-center justify-center gap-2 transition-transform active:scale-[0.98]">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
           Save PDF
@@ -158,57 +153,43 @@ input[type="number"] { -moz-appearance: textfield; }
   </div>
 </div>
 
-<!-- Hidden Print Container for PDF Generation -->
-<div id="print-container" class="fixed top-0 left-[-9999px] w-[800px] bg-white text-slate-900 p-12">
-  <div class="border-b-4 border-slate-900 pb-6 mb-8 flex justify-between items-end">
-    <div>
-      <h1 class="text-5xl font-black tracking-widest uppercase text-slate-900">Block Market</h1>
-      <p class="text-slate-500 uppercase tracking-widest mt-2 font-bold">Official Transaction Receipt</p>
-    </div>
-    <div class="text-right">
-      <p class="text-slate-500 font-bold uppercase text-xs">Date</p>
-      <p class="font-mono text-slate-900 font-bold" id="print-date"></p>
-      <p class="text-slate-500 font-bold uppercase text-xs mt-2">Receipt ID</p>
-      <p class="font-mono text-slate-900 font-bold" id="print-id"></p>
-    </div>
-  </div>
-  
-  <div class="flex text-slate-400 uppercase font-bold tracking-widest border-b-2 border-slate-100 pb-2 mb-4 text-sm">
-    <div class="w-1/2">Item Description</div>
-    <div class="w-1/4 text-center">Qty</div>
-    <div class="w-1/4 text-right">Subtotal</div>
-  </div>
-
-  <div id="print-list" class="flex flex-col gap-2 mb-8">
-    <!-- populated via js -->
-  </div>
-  
-  <div class="border-t-4 border-slate-900 pt-6 flex justify-between items-center">
-    <span class="text-2xl font-black uppercase tracking-widest text-slate-900">Total Due</span>
-    <span class="text-5xl font-black price-font text-slate-900" id="print-total">$0.00</span>
-  </div>
-  
-  <div class="mt-16 text-center text-slate-400 text-xs uppercase tracking-widest font-bold">
-    <p>Thank you for your business.</p>
-    <p class="mt-1">All sales are final. No refunds on blocks or items.</p>
-  </div>
-</div>
-
 <script>
 // ==========================================
-// 1. ALL 100 EXACT ITEMS
+// 1. ALL ITEMS & BLOCKS (Expanded Collection)
 // ==========================================
 const rawData = [
-  // Blocks
+  // Core Blocks
   ["Dirt Block", 2, "dirt"], ["Grass Block", 4, "grass"], ["Cobblestone", 3, "cobble"], ["Stone Block", 7, "stone"], ["Sand Block", 3, "sand"], ["Gravel Block", 3, "stone"], ["Clay Block", 12, "clay"], ["Bricks", 30, "brick"], ["Oak Log", 15, "log"], ["Oak Planks", 5, "plank"],
   ["Oak Leaves", 5, "leaves"], ["Spruce Log", 25, "spruce_log"], ["Birch Log", 25, "birch_log"], ["Jungle Log", 25, "jungle_log"], ["Glass Block", 40, "glass"], ["Black Stained Glass", 50, "black_glass"], ["White Wool", 20, "wool_white"], ["Black Wool", 20, "wool_black"], ["Red Wool", 20, "wool_red"], ["Blue Wool", 20, "wool_blue"],
   ["Green Wool", 120, "wool_green"], ["White Concrete", 180, "concrete_white"], ["Black Concrete", 180, "concrete_black"], ["TNT Block", 850, "tnt"], ["Bookshelf", 220, "bookshelf"], ["Crafting Table", 75, "crafting"], ["Furnace", 90, "furnace"], ["Chest", 60, "chest"], ["Ender Chest", 18000, "echest"], ["Sponge", 1000, "sponge"],
   ["Slime Block", 2500, "slime"], ["Honey Block", 4000, "honey"], ["Magma Block", 1200, "magma"], ["Soul Sand", 300, "soul_sand"], ["Glowstone", 1500, "glowstone"], ["Sea Lantern", 2000, "sea_lantern"], ["Basalt", 80, "basalt"], ["Blackstone", 100, "blackstone"], ["Prismarine", 1800, "prismarine"], ["Netherrack", 10, "netherrack"],
   ["End Stone", 2500, "end_stone"], ["Purpur Block", 25000, "purpur"], ["Coal Block", 1200, "coal_block"], ["Iron Block", 4500, "iron_block"], ["Gold Block", 22000000, "gold_block"], ["Diamond Block", 140000000, "diamond_block"], ["Emerald Block", 35000000, "emerald_block"], ["Netherite Block", 65000000, "netherite_block"], ["Obsidian", 1000000, "obsidian"], ["Bedrock", 50000000, "bedrock"],
   
-  // Items & Gear
-  ["Wooden Pickaxe", 30, "wood_pick"], ["Stone Sword", 80, "stone_sword"], ["Iron Pickaxe", 250, "iron_pick"], ["Iron Sword", 400, "iron_sword"], ["Golden Axe", 1200, "gold_axe"], ["Diamond Pickaxe", 5000, "diamond_pick"], ["Diamond Sword", 6000, "diamond_sword"], ["Netherite Sword", 12000, "netherite_sword"], ["Netherite Pickaxe", 11000, "netherite_pick"], ["Diamond Helmet", 2000, "diamond_helm"],
-  ["Diamond Chestplate", 240, "diamond_chest"], ["Diamond Leggings", 210, "diamond_legs"], ["Diamond Boots", 120, "diamond_boots"], ["Netherite Chestplate", 6800000, "netherite_chest"], 
+  // ALL TOOLS
+  // Wood
+  ["Wooden Sword", 10, "wood_sword"], ["Wooden Pickaxe", 15, "wood_pick"], ["Wooden Axe", 15, "wood_axe"], ["Wooden Shovel", 8, "wood_shovel"], ["Wooden Hoe", 10, "wood_hoe"],
+  // Stone
+  ["Stone Sword", 25, "stone_sword"], ["Stone Pickaxe", 35, "stone_pick"], ["Stone Axe", 35, "stone_axe"], ["Stone Shovel", 20, "stone_shovel"], ["Stone Hoe", 25, "stone_hoe"],
+  // Iron
+  ["Iron Sword", 150, "iron_sword"], ["Iron Pickaxe", 200, "iron_pick"], ["Iron Axe", 200, "iron_axe"], ["Iron Shovel", 100, "iron_shovel"], ["Iron Hoe", 150, "iron_hoe"],
+  // Gold
+  ["Golden Sword", 500, "gold_sword"], ["Golden Pickaxe", 600, "gold_pick"], ["Golden Axe", 600, "gold_axe"], ["Golden Shovel", 300, "gold_shovel"], ["Golden Hoe", 500, "gold_hoe"],
+  // Diamond
+  ["Diamond Sword", 6000, "diamond_sword"], ["Diamond Pickaxe", 5000, "diamond_pick"], ["Diamond Axe", 5500, "diamond_axe"], ["Diamond Shovel", 3000, "diamond_shovel"], ["Diamond Hoe", 4000, "diamond_hoe"],
+  // Netherite
+  ["Netherite Sword", 12000, "netherite_sword"], ["Netherite Pickaxe", 11000, "netherite_pick"], ["Netherite Axe", 11500, "netherite_axe"], ["Netherite Shovel", 8000, "netherite_shovel"], ["Netherite Hoe", 9000, "netherite_hoe"],
+  
+  // ALL ARMOR
+  // Leather
+  ["Leather Helmet", 25, "leather_helm"], ["Leather Tunic", 40, "leather_chest"], ["Leather Pants", 35, "leather_legs"], ["Leather Boots", 20, "leather_boots"],
+  // Iron
+  ["Iron Helmet", 250, "iron_helm"], ["Iron Chestplate", 400, "iron_chest"], ["Iron Leggings", 350, "iron_legs"], ["Iron Boots", 200, "iron_boots"],
+  // Gold
+  ["Golden Helmet", 800, "gold_helm"], ["Golden Chestplate", 1200, "gold_chest"], ["Golden Leggings", 1000, "gold_legs"], ["Golden Boots", 700, "gold_boots"],
+  // Diamond
+  ["Diamond Helmet", 2000, "diamond_helm"], ["Diamond Chestplate", 3200, "diamond_chest"], ["Diamond Leggings", 2800, "diamond_legs"], ["Diamond Boots", 1600, "diamond_boots"],
+  // Netherite
+  ["Netherite Helmet", 45000, "netherite_helm"], ["Netherite Chestplate", 6800000, "netherite_chest"], ["Netherite Leggings", 5500000, "netherite_legs"], ["Netherite Boots", 3000000, "netherite_boots"], 
   
   // Food & Resources
   ["Apple", 0.50, "apple"], ["Bread", 1.00, "bread"], ["Cooked Beef (Steak)", 5.00, "steak"], ["Golden Apple", 15.00, "gapple"], ["Enchanted Golden Apple", 1200.00, "egapple"], ["Carrot", 0.30, "carrot"],
@@ -226,6 +207,8 @@ const sprites = {
   sword: "0000000000000011,0000000000000131,0000000000001321,0000000000013210,0000000000132100,0000000001321000,0000000013210000,0000000132100000,0000001321000000,0000013210000000,0001112111000000,0015511155100000,0015101015100000,0001015101000000,0000155510000000,0000011100000000",
   pickaxe: "0000111111100000,0001333333311000,0013222222233100,0132111111123100,0121000000151100,0110000000151000,0000000001510000,0000000015100000,0000000151000000,0000001510000000,0000015100000000,0000151000000000,0001510000000000,0015100000000000,0151000000000000,0110000000000000",
   axe: "0001111100000000,0013333310000000,0132222331000000,0132111231000000,0121001511000000,0110001510000000,0000015100000000,0000151000000000,0001510000000000,0015100000000000,0151000000000000,1510000000000000,1100000000000000,0000000000000000,0000000000000000,0000000000000000",
+  shovel: "0000000000111100,0000000001133110,0000000011333310,0000000013333100,0000000113331100,0000001511111000,0000015100000000,0000151000000000,0001510000000000,0015100000000000,0151000000000000,1510000000000000,1100000000000000,0000000000000000,0000000000000000,0000000000000000",
+  hoe: "0000000011111000,0000000144331100,0000001443333110,0000001433111100,0000011311000000,0000011110000000,0000151000000000,0001510000000000,0015100000000000,0151000000000000,1510000000000000,1100000000000000,0000000000000000,0000000000000000,0000000000000000,0000000000000000",
   helm: "0000000000000000,0001111111111000,0012333333332100,0123222222223210,0132222222222310,0132221111222310,0132210000122310,0132100000012310,0121000000001210,0110000000000110,0000000000000000,0000000000000000,0000000000000000,0000000000000000,0000000000000000,0000000000000000",
   chest: "0000000000000000,0001100000011000,0012210000122100,0132221111222310,0132222222222310,0132222222222310,0132222222222310,0013222222223100,0013222222223100,0013222222223100,0001322222231000,0001322222231000,0001111111110000,0000000000000000,0000000000000000,0000000000000000",
   legs: "0000000000000000,0011111111111100,0132222222222310,0132222222222310,0132221111222310,0132210000122310,0132100000012310,0132100000012310,0132100000012310,0132100000012310,0132100000012310,0122100000012210,0111100000011110,0000000000000000,0000000000000000,0000000000000000",
@@ -272,8 +255,20 @@ const itemData = {
   glowstone: ['block', '#B78A36', '#A1772C', '#8B6521', 'cobble'], sea_lantern: ['block', '#ACCECB', '#96BBBA', '#82A7A6', 'lantern'], basalt: ['block', '#4E4F54', '#2F2F32', '#2F2F32', 'log'], blackstone: ['block', '#2A2429', '#1E1A1E', '#141114', 'cobble'], prismarine: ['block', '#60978E', '#4F7F77', '#3E6760', 'bricks'], netherrack: ['block', '#642929', '#532020', '#421818', 'cobble'],
   end_stone: ['block', '#DFE49C', '#CCD28A', '#B7BE76', 'cobble'], purpur: ['block', '#A97AA9', '#956695', '#805380', 'solid'], coal_block: ['block', '#101010', '#0B0B0B', '#050505', 'solid'], iron_block: ['block', '#DCDCDC', '#C8C8C8', '#B2B2B2', 'solid'], gold_block: ['block', '#F9DE48', '#E7C934', '#D3B322', 'solid'], diamond_block: ['block', '#60EADB', '#4CD8C9', '#3AC4B5', 'solid'], emerald_block: ['block', '#3FF06B', '#2CDA59', '#1AC447', 'solid'], netherite_block: ['block', '#423F40', '#363233', '#292526', 'solid'], obsidian: ['block', '#15101E', '#0E0A15', '#08050D', 'cobble'], bedrock: ['block', '#4F4F4F', '#3C3C3C', '#2A2A2A', 'cobble'],
   
-  wood_pick: ['item', 'pickaxe', '#221100', '#A48352', '#C9A36A', '#5B472B', '#5B472B'], stone_sword: ['item', 'sword', '#111', '#7A7A7A', '#9A9A9A', '#5B472B', '#5B472B'], iron_pick: ['item', 'pickaxe', '#333', '#DCDCDC', '#FFFFFF', '#5B472B', '#5B472B'], iron_sword: ['item', 'sword', '#333', '#DCDCDC', '#FFFFFF', '#5B472B', '#5B472B'], gold_axe: ['item', 'axe', '#640', '#F9DE48', '#FFEE77', '#5B472B', '#5B472B'], diamond_pick: ['item', 'pickaxe', '#044', '#4CD8C9', '#60EADB', '#5B472B', '#5B472B'], diamond_sword: ['item', 'sword', '#044', '#4CD8C9', '#60EADB', '#5B472B', '#5B472B'], netherite_sword: ['item', 'sword', '#000', '#363233', '#4A4546', '#292526', '#292526'], netherite_pick: ['item', 'pickaxe', '#000', '#363233', '#4A4546', '#292526', '#292526'],
-  diamond_helm: ['item', 'helm', '#044', '#4CD8C9', '#60EADB', '#4CD8C9', '#4CD8C9'], diamond_chest: ['item', 'chest', '#044', '#4CD8C9', '#60EADB', '#4CD8C9', '#4CD8C9'], diamond_legs: ['item', 'legs', '#044', '#4CD8C9', '#60EADB', '#4CD8C9', '#4CD8C9'], diamond_boots: ['item', 'boots', '#044', '#4CD8C9', '#60EADB', '#4CD8C9', '#4CD8C9'], netherite_chest: ['item', 'chest', '#000', '#363233', '#4A4546', '#292526', '#292526'],
+  // Tool Palettes (1: outline, 2: shade, 3: base, 4: highlight, 5: stick)
+  wood_sword: ['item', 'sword', '#210', '#742', '#963', '#531', '#5B472B'], wood_pick: ['item', 'pickaxe', '#210', '#742', '#963', '#531', '#5B472B'], wood_axe: ['item', 'axe', '#210', '#742', '#963', '#531', '#5B472B'], wood_shovel: ['item', 'shovel', '#210', '#742', '#963', '#531', '#5B472B'], wood_hoe: ['item', 'hoe', '#210', '#742', '#963', '#531', '#5B472B'],
+  stone_sword: ['item', 'sword', '#111', '#7A7A7A', '#9A9A9A', '#531', '#5B472B'], stone_pick: ['item', 'pickaxe', '#111', '#7A7A7A', '#9A9A9A', '#531', '#5B472B'], stone_axe: ['item', 'axe', '#111', '#7A7A7A', '#9A9A9A', '#531', '#5B472B'], stone_shovel: ['item', 'shovel', '#111', '#7A7A7A', '#9A9A9A', '#531', '#5B472B'], stone_hoe: ['item', 'hoe', '#111', '#7A7A7A', '#9A9A9A', '#531', '#5B472B'],
+  iron_sword: ['item', 'sword', '#333', '#DCDCDC', '#FFFFFF', '#531', '#5B472B'], iron_pick: ['item', 'pickaxe', '#333', '#DCDCDC', '#FFFFFF', '#531', '#5B472B'], iron_axe: ['item', 'axe', '#333', '#DCDCDC', '#FFFFFF', '#531', '#5B472B'], iron_shovel: ['item', 'shovel', '#333', '#DCDCDC', '#FFFFFF', '#531', '#5B472B'], iron_hoe: ['item', 'hoe', '#333', '#DCDCDC', '#FFFFFF', '#531', '#5B472B'],
+  gold_sword: ['item', 'sword', '#640', '#F9DE48', '#FFEE77', '#531', '#5B472B'], gold_pick: ['item', 'pickaxe', '#640', '#F9DE48', '#FFEE77', '#531', '#5B472B'], gold_axe: ['item', 'axe', '#640', '#F9DE48', '#FFEE77', '#531', '#5B472B'], gold_shovel: ['item', 'shovel', '#640', '#F9DE48', '#FFEE77', '#531', '#5B472B'], gold_hoe: ['item', 'hoe', '#640', '#F9DE48', '#FFEE77', '#531', '#5B472B'],
+  diamond_sword: ['item', 'sword', '#044', '#4CD8C9', '#60EADB', '#531', '#5B472B'], diamond_pick: ['item', 'pickaxe', '#044', '#4CD8C9', '#60EADB', '#531', '#5B472B'], diamond_axe: ['item', 'axe', '#044', '#4CD8C9', '#60EADB', '#531', '#5B472B'], diamond_shovel: ['item', 'shovel', '#044', '#4CD8C9', '#60EADB', '#531', '#5B472B'], diamond_hoe: ['item', 'hoe', '#044', '#4CD8C9', '#60EADB', '#531', '#5B472B'],
+  netherite_sword: ['item', 'sword', '#000', '#363233', '#4A4546', '#531', '#292526'], netherite_pick: ['item', 'pickaxe', '#000', '#363233', '#4A4546', '#531', '#292526'], netherite_axe: ['item', 'axe', '#000', '#363233', '#4A4546', '#531', '#292526'], netherite_shovel: ['item', 'shovel', '#000', '#363233', '#4A4546', '#531', '#292526'], netherite_hoe: ['item', 'hoe', '#000', '#363233', '#4A4546', '#531', '#292526'],
+  
+  // Armor Palettes (1: outline, 2: shade, 3: base, 4: highlight)
+  leather_helm: ['item', 'helm', '#521', '#a42', '#c63', '#e85', '#e85'], leather_chest: ['item', 'chest', '#521', '#a42', '#c63', '#e85', '#e85'], leather_legs: ['item', 'legs', '#521', '#a42', '#c63', '#e85', '#e85'], leather_boots: ['item', 'boots', '#521', '#a42', '#c63', '#e85', '#e85'],
+  iron_helm: ['item', 'helm', '#333', '#CCC', '#DCDCDC', '#FFF', '#FFF'], iron_chest: ['item', 'chest', '#333', '#CCC', '#DCDCDC', '#FFF', '#FFF'], iron_legs: ['item', 'legs', '#333', '#CCC', '#DCDCDC', '#FFF', '#FFF'], iron_boots: ['item', 'boots', '#333', '#CCC', '#DCDCDC', '#FFF', '#FFF'],
+  gold_helm: ['item', 'helm', '#640', '#DA2', '#F9DE48', '#FF5', '#FF5'], gold_chest: ['item', 'chest', '#640', '#DA2', '#F9DE48', '#FF5', '#FF5'], gold_legs: ['item', 'legs', '#640', '#DA2', '#F9DE48', '#FF5', '#FF5'], gold_boots: ['item', 'boots', '#640', '#DA2', '#F9DE48', '#FF5', '#FF5'],
+  diamond_helm: ['item', 'helm', '#044', '#3CC', '#4CD8C9', '#60EADB', '#60EADB'], diamond_chest: ['item', 'chest', '#044', '#3CC', '#4CD8C9', '#60EADB', '#60EADB'], diamond_legs: ['item', 'legs', '#044', '#3CC', '#4CD8C9', '#60EADB', '#60EADB'], diamond_boots: ['item', 'boots', '#044', '#3CC', '#4CD8C9', '#60EADB', '#60EADB'],
+  netherite_helm: ['item', 'helm', '#000', '#292526', '#363233', '#4A4546', '#4A4546'], netherite_chest: ['item', 'chest', '#000', '#292526', '#363233', '#4A4546', '#4A4546'], netherite_legs: ['item', 'legs', '#000', '#292526', '#363233', '#4A4546', '#4A4546'], netherite_boots: ['item', 'boots', '#000', '#292526', '#363233', '#4A4546', '#4A4546'],
   
   apple: ['item', 'apple', '#300', '#E00', '#F66', '#420', '#420'], bread: ['item', 'bread', '#531', '#D94', '#FBA', '#B72', '#B72'], steak: ['item', 'steak', '#421', '#942', '#B53', '#731', '#731'], gapple: ['item', 'apple', '#641', '#FC3', '#FF6', '#DA2', '#DA2'], egapple: ['item', 'apple', '#616', '#F5F', '#FAFF', '#D3D', '#D3D'], carrot: ['item', 'carrot', '#420', '#F82', '#FA4', '#3A2', '#3A2'], potato: ['item', 'potato', '#542', '#DA6', '#FC8', '#B84', '#B84'], cake: ['item', 'cake', '#421', '#FFF', '#FCC', '#D33', '#D33'], stew: ['item', 'stew', '#321', '#952', '#B63', '#A42', '#A42'], berries: ['item', 'berries', '#300', '#E22', '#F55', '#262', '#262'], chorus: ['item', 'chorus', '#425', '#A6A', '#C8C', '#848', '#848'],
   
@@ -319,14 +314,12 @@ function drawIsoBlock(ctx, colors, texType, sizeMultiplier = 1) {
   const s = 2.1 * sizeMultiplier;
   const cx = 32 * sizeMultiplier;
   const cy = 20 * sizeMultiplier;
-
   const [cTop, cLeft, cRight] = [colors[1], colors[2], colors[3]];
 
   function drawFace(face, color) {
     for(let u=0; u<size; u++) {
       for(let v=0; v<size; v++) {
         let finalColor = color;
-        // Texturing based on type to make it look high-quality
         if(texType === 'dirt' || texType === 'cobble' || texType === 'solid') {
           if(Math.random() > 0.5) finalColor = shade(color, texType==='cobble' ? (Math.random()>0.5?15:-15) : (Math.random()>0.5?8:-8));
         } else if (texType === 'grass') {
@@ -352,7 +345,6 @@ function drawIsoBlock(ctx, colors, texType, sizeMultiplier = 1) {
         if(face === 'top') { x=u; y=v; z=size; }
         if(face === 'left') { x=size; y=u; z=v; }
         if(face === 'right') { x=u; y=size; z=v; }
-
         const sx = cx + (x - y) * 1.732 * (s/2);
         const sy = cy + (x + y) * (s/2) - z * s;
 
@@ -375,7 +367,7 @@ function drawItemSprite(ctx, templateKey, colors, sizeMultiplier = 1) {
   if(!data) return;
   const rows = data.split(',');
   const scale = 3.6 * sizeMultiplier;
-  const offset = 3.2 * sizeMultiplier; // center offset
+  const offset = 3.2 * sizeMultiplier; 
   for(let y=0; y<16; y++) {
     for(let x=0; x<16; x++) {
       const char = rows[y][x];
@@ -409,26 +401,35 @@ function renderGrid() {
   const grid = document.getElementById('items-grid');
   grid.innerHTML = inventory.map((item, idx) => {
     const qty = quantities[item.id] || 0;
+    const displayQty = qty === 0 ? '' : qty;
     return `
     <div class="item-card rounded-[20px] p-4 sm:p-5 ${item.rarity}">
       <div class="icon-slot"><canvas id="cvs-${item.id}" width="64" height="64" class="${item.type==='block'?'iso-canvas':'pixel-canvas'}"></canvas></div>
       <div class="flex-grow flex flex-col items-center justify-start w-full">
-        <h3 class="text-sm sm:text-base font-semibold text-center text-gray-200 leading-snug mb-2 w-full">${item.name}</h3>
+        <h3 class="text-sm sm:text-[15px] font-bold text-center text-gray-200 leading-snug mb-2 w-full">${item.name}</h3>
       </div>
       <div class="mt-auto w-full pt-1">
-        <p class="text-white price-font text-center font-bold text-base sm:text-lg mb-3 tracking-wide opacity-90">${formatShorthand(item.price)}</p>
-        <div class="flex items-center justify-between w-full gap-1 sm:gap-2 bg-black/60 p-1 rounded-xl border border-white/10">
-          <button onclick="updateQty(${item.id}, -1)" class="ctrl-btn w-8 h-8 rounded-lg flex items-center justify-center font-bold shrink-0 text-lg select-none">-</button>
-          <input type="number" id="input-${item.id}" value="${qty}" min="0"
-            class="bg-transparent text-center font-bold text-white w-full min-w-0 outline-none price-font text-base px-0.5"
-            oninput="if(this.value.length > 7) this.value = this.value.slice(0, 7); manualUpdate(${item.id}, this.value)">
-          <button onclick="updateQty(${item.id}, 1)" class="ctrl-btn w-8 h-8 rounded-lg flex items-center justify-center font-bold shrink-0 text-lg select-none">+</button>
+        <p class="text-white price-font text-center font-bold text-base sm:text-lg tracking-wide opacity-90">${formatShorthand(item.price)}</p>
+        
+        <!-- REDESIGNED PREMIUM INPUT UI -->
+        <div class="flex items-center justify-between w-full bg-[#111216] p-1 rounded-xl border border-[#23252b] mt-3">
+          <button onclick="updateQty(${item.id}, -1)" class="w-8 h-8 rounded-[8px] bg-[#1d1f25] text-[#8a8d98] font-bold flex items-center justify-center hover:bg-[#282a32] hover:text-white transition-colors select-none">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M5 12h14"/></svg>
+          </button>
+          
+          <input type="text" inputmode="numeric" pattern="[0-9]*" id="input-${item.id}" value="${displayQty}" placeholder="0"
+            class="bg-transparent text-center font-bold text-white flex-1 w-0 outline-none price-font text-base tracking-wide"
+            oninput="validateInput(this, ${item.id})" onblur="handleBlur(this)">
+            
+          <button onclick="updateQty(${item.id}, 1)" class="w-8 h-8 rounded-[8px] bg-[#1d1f25] text-[#8a8d98] font-bold flex items-center justify-center hover:bg-[#282a32] hover:text-white transition-colors select-none">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
         </div>
+
       </div>
     </div>`;
   }).join('');
 
-  // Stagger drawing to avoid freezing UI
   setTimeout(() => {
     inventory.forEach((item, i) => {
       setTimeout(() => {
@@ -438,7 +439,7 @@ function renderGrid() {
           if(item.type === 'block') drawIsoBlock(ctx, item.data, item.data[4]);
           else drawItemSprite(ctx, item.data[1], item.data);
         }
-      }, i * 5);
+      }, i * 4);
     });
   }, 100);
 }
@@ -485,25 +486,29 @@ function updateQty(id, change) {
   quantities[id] = current;
   const inputEl = document.getElementById(`input-${id}`);
   if(inputEl) {
-    inputEl.value = current;
-    inputEl.style.transform = 'scale(1.1)';
+    inputEl.value = current === 0 ? '' : current;
+    inputEl.style.transform = 'scale(1.15)';
     setTimeout(()=>inputEl.style.transform='scale(1)', 150);
   }
   calculateTotal();
 }
 
-function manualUpdate(id, value) {
-  let num = parseInt(value);
-  if(isNaN(num) || num < 0) num = 0;
-  if(num > 9999999) num = 9999999;
+function validateInput(el, id) {
+  let val = el.value.replace(/\D/g, ''); // STRICT: Strip non-digits
+  if (val.length > 7) val = val.slice(0, 7); // STRICT: Max length
+  el.value = val;
+  let num = parseInt(val, 10);
+  if (isNaN(num)) num = 0;
   quantities[id] = num;
-  const el = document.getElementById(`input-${id}`);
-  if(el) el.value = num;
   calculateTotal();
 }
 
+function handleBlur(el) {
+  if (el.value === '') el.value = ''; // Let placeholder show
+}
+
 // ==========================================
-// 5. RECEIPT MODAL
+// 5. RECEIPT MODAL & PDF
 // ==========================================
 const modal = document.getElementById('receipt-modal');
 const modalContent = document.getElementById('receipt-content');
@@ -535,7 +540,7 @@ function buildReceipt() {
         <div class="flex items-center justify-between py-3 border-b border-[#222] last:border-0">
           <div class="flex items-center gap-3 sm:gap-4 w-1/2">
             <canvas id="rcpt-${item.id}" width="32" height="32" class="filter grayscale brightness-150" style="image-rendering:pixelated;"></canvas>
-            <span class="text-gray-200 leading-tight truncate">${item.name}</span>
+            <span class="text-gray-200 font-bold leading-tight truncate">${item.name}</span>
           </div>
           <div class="w-1/6 text-right text-gray-500 font-bold">x${qty}</div>
           <div class="w-1/3 text-right price-font text-white font-bold tracking-wide">${formatShorthand(lineTotal)}</div>
@@ -544,11 +549,9 @@ function buildReceipt() {
   });
   list.innerHTML = html;
   
-  // Format the massive exact receipt number properly
   const totalDueNumber = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 }).format(totalSpent);
   document.getElementById('receipt-total').innerText = totalSpent % 1 === 0 ? totalDueNumber.replace('.00', '') : totalDueNumber;
 
-  // Draw tiny receipt canvases
   setTimeout(() => {
     inventory.forEach(item => {
       if(quantities[item.id] > 0) {
@@ -570,61 +573,89 @@ function shareOnX() {
 }
 
 function downloadPDF() {
-  // 1. Setup the hidden print container
-  const printList = document.getElementById('print-list');
-  printList.innerHTML = '';
-  
-  const now = new Date();
-  document.getElementById('print-date').innerText = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
-  document.getElementById('print-id').innerText = 'BM-' + Math.floor(Math.random() * 1000000000).toString().padStart(9, '0');
+  const printDiv = document.createElement('div');
+  printDiv.style.width = '800px';
+  printDiv.style.padding = '40px';
+  printDiv.style.backgroundColor = '#ffffff';
+  printDiv.style.color = '#000000';
+  printDiv.style.position = 'absolute';
+  printDiv.style.top = '-9999px'; 
+  printDiv.style.left = '0';
+  printDiv.style.fontFamily = "'Outfit', sans-serif";
 
+  const now = new Date();
+  const dateStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+  const receiptId = 'BM-' + Math.floor(Math.random() * 1000000000).toString().padStart(9, '0');
+
+  let itemsHtml = '';
   inventory.forEach(item => {
     const qty = quantities[item.id];
     if (qty > 0) {
       const lineTotal = item.price * qty;
-      
-      // Grab the item's canvas and convert to an image for the PDF
       const sourceCanvas = document.getElementById(`rcpt-${item.id}`);
       let imgTag = '';
       if (sourceCanvas) {
-        const dataUrl = sourceCanvas.toDataURL('image/png');
-        imgTag = `<img src="${dataUrl}" class="w-8 h-8" style="image-rendering: pixelated;" />`;
+        imgTag = `<img src="${sourceCanvas.toDataURL('image/png')}" style="width: 32px; height: 32px; image-rendering: pixelated; margin-right: 16px;" />`;
       }
-
-      printList.innerHTML += `
-        <div class="flex items-center py-2 border-b border-slate-100 last:border-0">
-          <div class="flex items-center gap-4 w-1/2">
+      itemsHtml += `
+        <div style="display: flex; align-items: center; border-bottom: 1px solid #f1f5f9; padding: 12px 0;">
+          <div style="flex: 1; display: flex; align-items: center;">
             ${imgTag}
-            <span class="text-lg font-bold text-slate-800">${item.name}</span>
+            <span style="font-size: 18px; font-weight: 700; color: #1e293b;">${item.name}</span>
           </div>
-          <div class="w-1/4 text-center text-slate-500 font-bold text-lg">x${qty}</div>
-          <div class="w-1/4 text-right font-mono text-slate-900 font-bold text-xl">${formatShorthand(lineTotal)}</div>
+          <div style="width: 100px; text-align: center; color: #64748b; font-weight: 700; font-size: 16px;">x${qty}</div>
+          <div style="width: 150px; text-align: right; font-family: 'Space Grotesk', monospace; font-weight: 700; font-size: 18px; color: #0f172a;">
+            ${formatShorthand(lineTotal)}
+          </div>
         </div>
       `;
     }
   });
 
   const totalDueNumber = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 }).format(totalSpent);
-  document.getElementById('print-total').innerText = totalSpent % 1 === 0 ? totalDueNumber.replace('.00', '') : totalDueNumber;
+  const finalTotal = totalSpent % 1 === 0 ? totalDueNumber.replace('.00', '') : totalDueNumber;
 
-  // 2. Generate the PDF from the hidden white container
-  const element = document.getElementById('print-container');
+  printDiv.innerHTML = `
+    <div style="border-bottom: 4px solid #0f172a; padding-bottom: 24px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-end;">
+      <div>
+        <h1 style="margin: 0; font-size: 48px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: #0f172a;">Block Market</h1>
+        <p style="margin: 8px 0 0 0; color: #64748b; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; font-size: 14px;">Official Transaction Receipt</p>
+      </div>
+      <div style="text-align: right;">
+        <p style="margin: 0; color: #94a3b8; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 1px;">Date</p>
+        <p style="margin: 0 0 12px 0; font-family: 'Space Grotesk', monospace; font-weight: 700; font-size: 15px; color: #1e293b;">${dateStr}</p>
+        <p style="margin: 0; color: #94a3b8; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 1px;">Receipt ID</p>
+        <p style="margin: 0; font-family: 'Space Grotesk', monospace; font-weight: 700; font-size: 15px; color: #1e293b;">${receiptId}</p>
+      </div>
+    </div>
+    <div style="display: flex; color: #94a3b8; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 12px; font-size: 13px;">
+      <div style="flex: 1;">Item Description</div>
+      <div style="width: 100px; text-align: center;">Qty</div>
+      <div style="width: 150px; text-align: right;">Subtotal</div>
+    </div>
+    <div style="margin-bottom: 40px; min-height: 200px;">
+      ${itemsHtml}
+    </div>
+    <div style="border-top: 4px solid #0f172a; padding-top: 24px; display: flex; justify-content: space-between; align-items: center;">
+      <span style="font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: #0f172a;">Total Due</span>
+      <span style="font-size: 54px; font-weight: 900; font-family: 'Space Grotesk', sans-serif; color: #059669;">${finalTotal}</span>
+    </div>
+    <div style="margin-top: 60px; text-align: center; color: #94a3b8; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">
+      <p style="margin: 0;">Thank you for your business.</p>
+      <p style="margin: 6px 0 0 0;">All sales are final. No refunds on blocks or items.</p>
+    </div>
+  `;
 
+  document.body.appendChild(printDiv);
   const opt = {
-    margin:       0.5,
+    margin:       0.4,
     filename:     'BlockMarket_Receipt.pdf',
     image:        { type: 'jpeg', quality: 1.0 },
-    html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+    html2canvas:  { scale: 2, useCORS: true, windowWidth: 800 },
     jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
   };
-
-  html2pdf().set(opt).from(element).save();
-}
-    // Restore the UI back to normal after downloading
-    content.style.maxHeight = originalMaxH;
-    list.style.overflowY = originalOverflow;
-    if(closeBtn) closeBtn.style.display = '';
-    if(actionBtns) actionBtns.style.display = '';
+  html2pdf().set(opt).from(printDiv).save().then(() => {
+    document.body.removeChild(printDiv);
   });
 }
 
