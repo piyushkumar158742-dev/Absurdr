@@ -97,6 +97,7 @@ input[type="number"] { -moz-appearance: textfield; }
 .ctrl-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
 .ctrl-btn:active { transform: scale(0.9); background: rgba(255,255,255,0.25); }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body class="pt-[90px] pb-16 antialiased">
 
@@ -143,10 +144,16 @@ input[type="number"] { -moz-appearance: textfield; }
         <span class="text-2xl sm:text-4xl font-black text-white price-font text-center break-all leading-tight w-full" id="receipt-total">$0</span>
       </div>
       
-      <button onclick="shareOnX()" class="w-full bg-white hover:bg-gray-200 text-black font-bold py-3.5 sm:py-4 rounded-xl flex items-center justify-center gap-3 transition-transform active:scale-[0.98]">
-        <svg viewBox="0 0 24 24" class="w-5 h-5 fill-current"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-        Share on 𝕏
-      </button>
+      <div id="receipt-actions" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <button onclick="downloadPDF()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-3.5 sm:py-4 rounded-xl flex items-center justify-center gap-2 transition-transform active:scale-[0.98]">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+          Save PDF
+        </button>
+        <button onclick="shareOnX()" class="w-full bg-white hover:bg-gray-200 text-black font-bold py-3.5 sm:py-4 rounded-xl flex items-center justify-center gap-2 transition-transform active:scale-[0.98]">
+          <svg viewBox="0 0 24 24" class="w-5 h-5 fill-current"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          Share on 𝕏
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -524,6 +531,38 @@ function shareOnX() {
   const text = `I just dropped ${formatMoney(totalSpent)} on the Block Market! 💸 Can you beat my high score?`;
   const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
   window.open(url, '_blank');
+}
+
+function downloadPDF() {
+  const content = document.getElementById('receipt-content');
+  const list = document.getElementById('receipt-list');
+  const closeBtn = content.querySelector('button[onclick="closeReceipt()"]');
+  const actionBtns = document.getElementById('receipt-actions');
+
+  // Temporarily expand the modal & hide buttons to capture all items cleanly
+  const originalMaxH = content.style.maxHeight;
+  const originalOverflow = list.style.overflowY;
+  
+  content.style.maxHeight = 'none';
+  list.style.overflowY = 'visible';
+  if(closeBtn) closeBtn.style.display = 'none';
+  if(actionBtns) actionBtns.style.display = 'none';
+
+  const opt = {
+    margin:       0.2,
+    filename:     'BlockMarket_Receipt.pdf',
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2, backgroundColor: '#0a0a0a', scrollY: 0 },
+    jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+  };
+
+  html2pdf().set(opt).from(content).save().then(() => {
+    // Restore the UI back to normal after downloading
+    content.style.maxHeight = originalMaxH;
+    list.style.overflowY = originalOverflow;
+    if(closeBtn) closeBtn.style.display = '';
+    if(actionBtns) actionBtns.style.display = '';
+  });
 }
 
 // Initialize
