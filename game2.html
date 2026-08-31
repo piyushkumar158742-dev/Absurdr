@@ -158,6 +158,42 @@ input[type="number"] { -moz-appearance: textfield; }
   </div>
 </div>
 
+<!-- Hidden Print Container for PDF Generation -->
+<div id="print-container" class="fixed top-0 left-[-9999px] w-[800px] bg-white text-slate-900 p-12">
+  <div class="border-b-4 border-slate-900 pb-6 mb-8 flex justify-between items-end">
+    <div>
+      <h1 class="text-5xl font-black tracking-widest uppercase text-slate-900">Block Market</h1>
+      <p class="text-slate-500 uppercase tracking-widest mt-2 font-bold">Official Transaction Receipt</p>
+    </div>
+    <div class="text-right">
+      <p class="text-slate-500 font-bold uppercase text-xs">Date</p>
+      <p class="font-mono text-slate-900 font-bold" id="print-date"></p>
+      <p class="text-slate-500 font-bold uppercase text-xs mt-2">Receipt ID</p>
+      <p class="font-mono text-slate-900 font-bold" id="print-id"></p>
+    </div>
+  </div>
+  
+  <div class="flex text-slate-400 uppercase font-bold tracking-widest border-b-2 border-slate-100 pb-2 mb-4 text-sm">
+    <div class="w-1/2">Item Description</div>
+    <div class="w-1/4 text-center">Qty</div>
+    <div class="w-1/4 text-right">Subtotal</div>
+  </div>
+
+  <div id="print-list" class="flex flex-col gap-2 mb-8">
+    <!-- populated via js -->
+  </div>
+  
+  <div class="border-t-4 border-slate-900 pt-6 flex justify-between items-center">
+    <span class="text-2xl font-black uppercase tracking-widest text-slate-900">Total Due</span>
+    <span class="text-5xl font-black price-font text-slate-900" id="print-total">$0.00</span>
+  </div>
+  
+  <div class="mt-16 text-center text-slate-400 text-xs uppercase tracking-widest font-bold">
+    <p>Thank you for your business.</p>
+    <p class="mt-1">All sales are final. No refunds on blocks or items.</p>
+  </div>
+</div>
+
 <script>
 // ==========================================
 // 1. ALL 100 EXACT ITEMS
@@ -534,29 +570,56 @@ function shareOnX() {
 }
 
 function downloadPDF() {
-  const content = document.getElementById('receipt-content');
-  const list = document.getElementById('receipt-list');
-  const closeBtn = content.querySelector('button[onclick="closeReceipt()"]');
-  const actionBtns = document.getElementById('receipt-actions');
-
-  // Temporarily expand the modal & hide buttons to capture all items cleanly
-  const originalMaxH = content.style.maxHeight;
-  const originalOverflow = list.style.overflowY;
+  // 1. Setup the hidden print container
+  const printList = document.getElementById('print-list');
+  printList.innerHTML = '';
   
-  content.style.maxHeight = 'none';
-  list.style.overflowY = 'visible';
-  if(closeBtn) closeBtn.style.display = 'none';
-  if(actionBtns) actionBtns.style.display = 'none';
+  const now = new Date();
+  document.getElementById('print-date').innerText = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+  document.getElementById('print-id').innerText = 'BM-' + Math.floor(Math.random() * 1000000000).toString().padStart(9, '0');
+
+  inventory.forEach(item => {
+    const qty = quantities[item.id];
+    if (qty > 0) {
+      const lineTotal = item.price * qty;
+      
+      // Grab the item's canvas and convert to an image for the PDF
+      const sourceCanvas = document.getElementById(`rcpt-${item.id}`);
+      let imgTag = '';
+      if (sourceCanvas) {
+        const dataUrl = sourceCanvas.toDataURL('image/png');
+        imgTag = `<img src="${dataUrl}" class="w-8 h-8" style="image-rendering: pixelated;" />`;
+      }
+
+      printList.innerHTML += `
+        <div class="flex items-center py-2 border-b border-slate-100 last:border-0">
+          <div class="flex items-center gap-4 w-1/2">
+            ${imgTag}
+            <span class="text-lg font-bold text-slate-800">${item.name}</span>
+          </div>
+          <div class="w-1/4 text-center text-slate-500 font-bold text-lg">x${qty}</div>
+          <div class="w-1/4 text-right font-mono text-slate-900 font-bold text-xl">${formatShorthand(lineTotal)}</div>
+        </div>
+      `;
+    }
+  });
+
+  const totalDueNumber = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 }).format(totalSpent);
+  document.getElementById('print-total').innerText = totalSpent % 1 === 0 ? totalDueNumber.replace('.00', '') : totalDueNumber;
+
+  // 2. Generate the PDF from the hidden white container
+  const element = document.getElementById('print-container');
 
   const opt = {
-    margin:       0.2,
+    margin:       0.5,
     filename:     'BlockMarket_Receipt.pdf',
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale: 2, backgroundColor: '#0a0a0a', scrollY: 0 },
-    jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+    image:        { type: 'jpeg', quality: 1.0 },
+    html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
   };
 
-  html2pdf().set(opt).from(content).save().then(() => {
+  html2pdf().set(opt).from(element).save();
+}
     // Restore the UI back to normal after downloading
     content.style.maxHeight = originalMaxH;
     list.style.overflowY = originalOverflow;
