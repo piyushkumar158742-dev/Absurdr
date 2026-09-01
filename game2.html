@@ -569,20 +569,20 @@ function shareOnX() {
 }
 
 function downloadPDF() {
-  const printDiv = document.createElement('div');
-  printDiv.style.width = '800px';
-  printDiv.style.minHeight = '1130px'; 
-  printDiv.style.padding = '0';
-  printDiv.style.background = '#05070a';
-  printDiv.style.color = '#eef1f6';
-  printDiv.style.position = 'absolute';
-  printDiv.style.top = '-9999px';
-  printDiv.style.left = '0';
-  printDiv.style.fontFamily = "'Outfit', sans-serif";
+  // 1. Create a pristine, white container strictly for the PDF
+  const printWrapper = document.createElement('div');
+  
+  // Safely hide it without breaking the PDF capture bounds
+  Object.assign(printWrapper.style, {
+    position: 'fixed', top: '0', left: '0', width: '800px',
+    zIndex: '-9999', opacity: '0', pointerEvents: 'none',
+    backgroundColor: '#ffffff', color: '#0f172a',
+    fontFamily: "'Outfit', sans-serif"
+  });
 
   const now = new Date();
   const dateStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
-  const receiptId = 'TXN-' + Math.floor(Math.random() * 1000000000).toString().padStart(9, '0');
+  const receiptId = 'BM-' + Math.floor(Math.random() * 1000000000).toString().padStart(9, '0');
 
   let itemsHtml = '';
   inventory.forEach(item => {
@@ -592,21 +592,17 @@ function downloadPDF() {
       const sourceCanvas = document.getElementById(`rcpt-${item.id}`);
       let imgTag = '';
       if (sourceCanvas) {
-        imgTag = `<img src="${sourceCanvas.toDataURL('image/png')}" style="width: 48px; height: 48px; image-rendering: pixelated;" />`;
+        imgTag = `<img src="${sourceCanvas.toDataURL('image/png')}" style="width: 36px; height: 36px; image-rendering: pixelated; margin-right: 16px; border: 1px solid #e2e8f0; border-radius: 6px; background: #f8fafc;" />`;
       }
+      
       itemsHtml += `
-        <div style="display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 16px 0;">
-          <div style="width: 64px; height: 64px; background: #0a0a0c; border: 1px solid #1e1e22; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 20px; flex-shrink: 0;">
+        <div style="display: flex; align-items: center; border-bottom: 1px solid #f1f5f9; padding: 12px 0;">
+          <div style="flex: 1; display: flex; align-items: center;">
             ${imgTag}
+            <span style="font-size: 18px; font-weight: 700; color: #0f172a;">${item.name}</span>
           </div>
-          <div style="flex: 1;">
-            <div style="font-size: 20px; font-weight: 700; color: #fff;">${item.name}</div>
-            <div style="font-size: 14px; color: #8a92a3; font-family: 'Space Grotesk', monospace;">Unit: ${formatShorthand(item.price)}</div>
-          </div>
-          <div style="width: 100px; text-align: center;">
-            <span style="background: #111216; border: 1px solid #23252b; padding: 6px 12px; border-radius: 8px; font-family: 'Space Grotesk', monospace; font-weight: 700; color: #34d97a;">x${qty}</span>
-          </div>
-          <div style="width: 160px; text-align: right; font-family: 'Space Grotesk', monospace; font-weight: 700; font-size: 22px; color: #fff;">
+          <div style="width: 100px; text-align: center; color: #64748b; font-weight: 700; font-size: 16px; font-family: 'Space Grotesk', monospace;">x${qty}</div>
+          <div style="width: 150px; text-align: right; font-family: 'Space Grotesk', monospace; font-weight: 700; font-size: 18px; color: #0f172a;">
             ${formatShorthand(lineTotal)}
           </div>
         </div>
@@ -617,81 +613,50 @@ function downloadPDF() {
   const totalDueNumber = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 }).format(totalSpent);
   const finalTotal = totalSpent % 1 === 0 ? totalDueNumber.replace('.00', '') : totalDueNumber;
 
-  // Generate the fake barcode blocks
-  const barcodeBars = Array(35).fill(0).map(() => `<div style="width: ${Math.random() * 4 + 1}px; background: #fff;"></div>`).join('');
-
-  printDiv.innerHTML = `
-    <div style="padding: 60px; position: relative; overflow: hidden; min-height: 1130px;">
-      <!-- Watermark -->
-      <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 160px; font-weight: 900; color: rgba(255,255,255,0.02); white-space: nowrap; pointer-events: none; user-select: none;">BLOCK MARKET</div>
-      
-      <!-- Header -->
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid rgba(52,217,122,0.3); padding-bottom: 30px; margin-bottom: 30px;">
+  printWrapper.innerHTML = `
+    <div style="padding: 40px; box-sizing: border-box; width: 100%; height: 100%;">
+      <div style="border-bottom: 4px solid #0f172a; padding-bottom: 24px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-end;">
         <div>
-          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-            <div style="width: 16px; height: 16px; background: #34d97a; border-radius: 50%; box-shadow: 0 0 20px #34d97a;"></div>
-            <h1 style="margin: 0; font-size: 42px; font-weight: 900; text-transform: uppercase; letter-spacing: 4px; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.3);">Block Market</h1>
-          </div>
-          <p style="margin: 0; color: #8a92a3; font-weight: 600; text-transform: uppercase; letter-spacing: 3px; font-size: 13px;">Verified Voxel Exchange Node</p>
+          <h1 style="margin: 0; font-size: 48px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: #0f172a;">Block Market</h1>
+          <p style="margin: 8px 0 0 0; color: #64748b; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; font-size: 14px;">Official Transaction Receipt</p>
         </div>
-        <div style="text-align: right; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 16px 24px; border-radius: 12px;">
-          <p style="margin: 0 0 4px 0; color: #8a92a3; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 1px;">Date / Time</p>
-          <p style="margin: 0 0 12px 0; font-family: 'Space Grotesk', monospace; font-weight: 700; font-size: 14px; color: #34d97a;">${dateStr}</p>
-          <p style="margin: 0 0 4px 0; color: #8a92a3; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 1px;">Receipt ID</p>
-          <p style="margin: 0; font-family: 'Space Grotesk', monospace; font-weight: 700; font-size: 14px; color: #fff;">${receiptId}</p>
+        <div style="text-align: right;">
+          <p style="margin: 0; color: #94a3b8; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 1px;">Date</p>
+          <p style="margin: 0 0 12px 0; font-family: 'Space Grotesk', monospace; font-weight: 700; font-size: 15px; color: #1e293b;">${dateStr}</p>
+          <p style="margin: 0; color: #94a3b8; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 1px;">Receipt ID</p>
+          <p style="margin: 0; font-family: 'Space Grotesk', monospace; font-weight: 700; font-size: 15px; color: #1e293b;">${receiptId}</p>
         </div>
       </div>
-
-      <!-- Items Table Header -->
-      <div style="display: flex; color: #8a92a3; text-transform: uppercase; font-weight: 800; letter-spacing: 2px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 16px; margin-bottom: 8px; font-size: 12px;">
-        <div style="flex: 1; padding-left: 84px;">Asset Description</div>
+      <div style="display: flex; color: #94a3b8; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 12px; font-size: 13px;">
+        <div style="flex: 1;">Item Description</div>
         <div style="width: 100px; text-align: center;">Qty</div>
-        <div style="width: 160px; text-align: right;">Subtotal</div>
+        <div style="width: 150px; text-align: right;">Subtotal</div>
       </div>
-
-      <!-- Items List -->
-      <div style="min-height: 400px; position: relative; z-index: 10;">
+      <div style="margin-bottom: 40px; min-height: 200px;">
         ${itemsHtml}
       </div>
-
-      <!-- Totals Area -->
-      <div style="margin-top: 40px; display: flex; justify-content: flex-end; position: relative; z-index: 10;">
-        <div style="width: 400px; background: rgba(52,217,122,0.05); border: 1px solid rgba(52,217,122,0.2); border-radius: 20px; padding: 30px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <span style="color: #8a92a3; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; font-size: 14px;">Total Due</span>
-            <span style="color: #8a92a3; font-family: 'Space Grotesk', monospace; font-size: 14px;">USD</span>
-          </div>
-          <div style="text-align: right; font-size: 48px; font-weight: 900; font-family: 'Space Grotesk', sans-serif; color: #34d97a; text-shadow: 0 0 20px rgba(52,217,122,0.4); line-height: 1;">
-            ${finalTotal}
-          </div>
-        </div>
+      <div style="border-top: 4px solid #0f172a; padding-top: 24px; display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: #0f172a;">Total Due</span>
+        <span style="font-size: 54px; font-weight: 900; font-family: 'Space Grotesk', monospace; color: #059669;">${finalTotal}</span>
       </div>
-
-      <!-- Footer -->
-      <div style="margin-top: 60px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
-        <div>
-          <p style="margin: 0 0 8px 0; color: #fff; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Thank You For Choosing Block Market</p>
-          <p style="margin: 0; color: #8a92a3; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">All sales are final. No refunds on digital assets.</p>
-        </div>
-        <div style="display: flex; gap: 3px; height: 35px; opacity: 0.3;">
-          ${barcodeBars}
-        </div>
+      <div style="margin-top: 60px; text-align: center; color: #94a3b8; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">
+        <p style="margin: 0;">Thank you for your business.</p>
+        <p style="margin: 6px 0 0 0;">All sales are final. No refunds on blocks or items.</p>
       </div>
     </div>
   `;
 
-  document.body.appendChild(printDiv);
-
+  document.body.appendChild(printWrapper);
   const opt = {
-    margin:       0,
+    margin:       0.4,
     filename:     'BlockMarket_Receipt.pdf',
     image:        { type: 'jpeg', quality: 1.0 },
-    html2canvas:  { scale: 2, useCORS: true, windowWidth: 800, backgroundColor: '#05070a' },
+    html2canvas:  { scale: 2, useCORS: true, windowWidth: 800 },
     jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
   };
-
-  html2pdf().set(opt).from(printDiv).save().then(() => {
-    document.body.removeChild(printDiv);
+  
+  html2pdf().set(opt).from(printWrapper).save().then(() => {
+    document.body.removeChild(printWrapper); // Clean up safely
   });
 }
 
