@@ -582,8 +582,7 @@ function downloadPDF() {
   const printWrapper = document.createElement('div');
   
   Object.assign(printWrapper.style, {
-    position: 'fixed', top: '0', left: '0', width: '800px',
-    zIndex: '-9999', pointerEvents: 'none',
+    position: 'static', width: '800px',
     backgroundColor: '#ffffff', color: '#0f172a',
     fontFamily: "'Outfit', sans-serif"
   });
