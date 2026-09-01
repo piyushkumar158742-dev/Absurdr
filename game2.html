@@ -128,6 +128,28 @@ body {
 </div>
 
 <!-- Receipt Modal -->
+
+<!-- Empty Cart Modal -->
+<div id="empty-cart-modal" class="fixed inset-0 bg-black/80 z-[110] hidden items-center justify-center opacity-0 transition-opacity duration-300 backdrop-blur-md p-4" onclick="closeEmptyCart()">
+  <!-- Inner Content (stopPropagation prevents clicks inside the box from closing it) -->
+  <div id="empty-cart-content" class="bg-[#0a0a0a] border border-[#222] rounded-3xl w-full max-w-sm flex flex-col items-center justify-center p-8 sm:p-12 relative shadow-[0_0_40px_rgba(0,0,0,0.8)] transform scale-95 transition-transform duration-300 text-center" onclick="event.stopPropagation()">
+    
+    <!-- Glowing Empty Cart Icon -->
+    <div class="w-20 h-20 rounded-full bg-[#0a0a0c] border border-[#222] flex items-center justify-center mb-6 text-emerald-500 shadow-[inset_0_0_15px_rgba(52,217,122,0.1)]">
+      <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+    </div>
+
+    <!-- Text -->
+    <h2 class="text-xl sm:text-2xl font-black text-white tracking-widest uppercase mb-2">Cart is Empty</h2>
+    <p class="text-gray-500 text-sm font-mono uppercase tracking-widest mb-8">No Items In The Cart</p>
+    
+    <!-- Close Button -->
+    <button onclick="closeEmptyCart()" class="w-full bg-white hover:bg-gray-200 text-black font-bold py-3.5 rounded-xl flex items-center justify-center transition-transform active:scale-[0.98]">
+      Continue Shopping
+    </button>
+  </div>
+</div>
+  
 <div id="receipt-modal" class="fixed inset-0 bg-black/80 z-[100] hidden items-center justify-center opacity-0 transition-opacity duration-300 backdrop-blur-md p-4">
   <div id="receipt-content" class="bg-[#0a0a0a] border border-[#222] rounded-3xl w-full max-w-2xl flex flex-col relative shadow-2xl transform scale-95 transition-transform duration-300 max-h-[90vh]">
     <button onclick="closeReceipt()" class="absolute top-6 right-6 text-gray-500 hover:text-white transition-colors bg-[#111] hover:bg-[#222] p-2 rounded-full z-10 border border-[#222]">
