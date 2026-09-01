@@ -75,11 +75,11 @@ body {
 @media(min-width:640px) { .icon-slot { width: 84px; height: 84px; } }
 
 .pixel-canvas {
-  width: 54px; height: 54px; image-rendering: pixelated;
-  filter: drop-shadow(0 6px 8px rgba(0,0,0,0.8)); transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  width: 58px; height: 58px; image-rendering: pixelated;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.7)); transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
 }
-@media(min-width:640px) { .pixel-canvas { width: 60px; height: 60px; } }
-.item-card:hover .pixel-canvas { transform: scale(1.15) rotate(3deg); }
+@media(min-width:640px) { .pixel-canvas { width: 64px; height: 64px; } }
+.item-card:hover .pixel-canvas { transform: scale(1.15) rotate(2deg); }
 .item-card:hover .iso-canvas { transform: scale(1.15) rotateY(10deg); }
 
 .rarity-badge {
@@ -92,15 +92,12 @@ body {
 .rarity-epic .rarity-badge { color: #b18cfb; } .rarity-epic .icon-slot { box-shadow: inset 0 0 22px rgba(177,140,251,0.2); border-color: rgba(177,140,251,0.45); }
 .rarity-legendary .rarity-badge { color: #f6b93b; } .rarity-legendary .icon-slot { box-shadow: inset 0 0 26px rgba(246,185,59,0.24); border-color: rgba(246,185,59,0.55); }
 
-.icon-slot::before {
-  content: ''; position: absolute; inset: -8px; border-radius: 18px; z-index: -1;
-  background: radial-gradient(circle, var(--glow, transparent) 0%, transparent 72%);
-  filter: blur(7px); opacity: 0.75;
+/* Strict Input Styling */
+input[type="text"] {
+  background: transparent; color: white; border: none; text-align: center;
+  font-family: var(--font-mono); font-weight: 700; width: 100%; min-width: 0;
+  outline: none; box-shadow: none; padding: 0; margin: 0;
 }
-.rarity-uncommon .icon-slot { --glow: rgba(52,217,122,0.4); }
-.rarity-rare .icon-slot { --glow: rgba(91,140,255,0.45); }
-.rarity-epic .icon-slot { --glow: rgba(177,140,251,0.5); }
-.rarity-legendary .icon-slot { --glow: rgba(246,185,59,0.55); }
 </style>
 </head>
 <body class="pt-[90px] pb-16 antialiased">
@@ -128,30 +125,8 @@ body {
 </div>
 
 <!-- Receipt Modal -->
-
-<!-- Empty Cart Modal -->
-<div id="empty-cart-modal" class="fixed inset-0 bg-black/80 z-[110] hidden items-center justify-center opacity-0 transition-opacity duration-300 backdrop-blur-md p-4" onclick="closeEmptyCart()">
-  <!-- Inner Content (stopPropagation prevents clicks inside the box from closing it) -->
-  <div id="empty-cart-content" class="bg-[#0a0a0a] border border-[#222] rounded-3xl w-full max-w-sm flex flex-col items-center justify-center p-8 sm:p-12 relative shadow-[0_0_40px_rgba(0,0,0,0.8)] transform scale-95 transition-transform duration-300 text-center" onclick="event.stopPropagation()">
-    
-    <!-- Glowing Empty Cart Icon -->
-    <div class="w-20 h-20 rounded-full bg-[#0a0a0c] border border-[#222] flex items-center justify-center mb-6 text-emerald-500 shadow-[inset_0_0_15px_rgba(52,217,122,0.1)]">
-      <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-    </div>
-
-    <!-- Text -->
-    <h2 class="text-xl sm:text-2xl font-black text-white tracking-widest uppercase mb-2">Cart is Empty</h2>
-    <p class="text-gray-500 text-sm font-mono uppercase tracking-widest mb-8">No Items In The Cart</p>
-    
-    <!-- Close Button -->
-    <button onclick="closeEmptyCart()" class="w-full bg-white hover:bg-gray-200 text-black font-bold py-3.5 rounded-xl flex items-center justify-center transition-transform active:scale-[0.98]">
-      Continue Shopping
-    </button>
-  </div>
-</div>
-  
-<div id="receipt-modal" class="fixed inset-0 bg-black/80 z-[100] hidden items-center justify-center opacity-0 transition-opacity duration-300 backdrop-blur-md p-4">
-  <div id="receipt-content" class="bg-[#0a0a0a] border border-[#222] rounded-3xl w-full max-w-2xl flex flex-col relative shadow-2xl transform scale-95 transition-transform duration-300 max-h-[90vh]">
+<div id="receipt-modal" class="fixed inset-0 bg-black/80 z-[100] hidden items-center justify-center opacity-0 transition-opacity duration-300 backdrop-blur-md p-4" onclick="closeReceipt()">
+  <div id="receipt-content" class="bg-[#0a0a0a] border border-[#222] rounded-3xl w-full max-w-2xl flex flex-col relative shadow-2xl transform scale-95 transition-transform duration-300 max-h-[90vh]" onclick="event.stopPropagation()">
     <button onclick="closeReceipt()" class="absolute top-6 right-6 text-gray-500 hover:text-white transition-colors bg-[#111] hover:bg-[#222] p-2 rounded-full z-10 border border-[#222]">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
     </button>
@@ -178,6 +153,20 @@ body {
         </button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- Empty Cart Modal -->
+<div id="empty-cart-modal" class="fixed inset-0 bg-black/80 z-[110] hidden items-center justify-center opacity-0 transition-opacity duration-300 backdrop-blur-md p-4" onclick="closeEmptyCart()">
+  <div id="empty-cart-content" class="bg-[#0a0a0a] border border-[#222] rounded-3xl w-full max-w-sm flex flex-col items-center justify-center p-8 sm:p-12 relative shadow-[0_0_40px_rgba(0,0,0,0.8)] transform scale-95 transition-transform duration-300 text-center" onclick="event.stopPropagation()">
+    <div class="w-20 h-20 rounded-full bg-[#0a0a0c] border border-[#222] flex items-center justify-center mb-6 text-emerald-500 shadow-[inset_0_0_15px_rgba(52,217,122,0.1)]">
+      <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+    </div>
+    <h2 class="text-xl sm:text-2xl font-black text-white tracking-widest uppercase mb-2">Cart is Empty</h2>
+    <p class="text-gray-500 text-sm font-mono uppercase tracking-widest mb-8">No Items In The Cart</p>
+    <button onclick="closeEmptyCart()" class="w-full bg-white hover:bg-gray-200 text-black font-bold py-3.5 rounded-xl flex items-center justify-center transition-transform active:scale-[0.98]">
+      Continue Shopping
+    </button>
   </div>
 </div>
 
@@ -259,22 +248,22 @@ const sprites = {
   shield: "0000000000000000,0001111111111000,0012555555553100,0015223223225100,0015223223225100,0015223223225100,0015223223225100,0015223223225100,0015223223225100,0015223223225100,0015223223225100,0001555555551000,0000111111110000,0000000000000000,0000000000000000,0000000000000000"
 };
 
-// Item Data Mapping => [type, template, colOutline, colShade, colBase, colHighlight, colStick]
+// Item Data Mapping => [type, template, colOutline, colShade, colBase, colHighlight, colStick/Secondary]
 const itemData = {
-  dirt: ['block', '#714f35', '#5c402a', '#473223', 'dirt'], grass: ['block', '#599834', '#5c402a', '#473223', 'grass'], cobble: ['block', '#7A7A7A', '#636363', '#505050', 'cobble'], stone: ['block', '#7D7D7D', '#6E6E6E', '#5E5E5E', 'solid'],
-  sand: ['block', '#DBD3A0', '#CDBF86', '#B9AB72', 'dirt'], clay: ['block', '#A8654A', '#90553D', '#764430', 'solid'], brick: ['block', '#964A35', '#7D3B28', '#632D1E', 'bricks'],
-  log: ['block', '#A68453', '#5B472B', '#463520', 'log'], plank: ['block', '#A48352', '#8E7044', '#785D36', 'planks'], leaves: ['block', '#486A25', '#35511A', '#253911', 'leaves'],
-  spruce_log: ['block', '#755E3D', '#3A2613', '#291A0D', 'log'], birch_log: ['block', '#C3B37B', '#E6E5DF', '#CBCAC4', 'log'], jungle_log: ['block', '#A47A50', '#584428', '#46351F', 'log'],
-  glass: ['block', '#E5F2F5', '#C4E1E6', '#A1D1D8', 'glass'], black_glass: ['block', '#1E1E1E', '#141414', '#0A0A0A', 'glass'],
-  wool_white: ['block', '#E7E7E7', '#CBCBCB', '#AFAFAF', 'wool'], wool_black: ['block', '#141519', '#0F1013', '#0A0A0C', 'wool'], wool_red: ['block', '#A12722', '#841F1B', '#661714', 'wool'], wool_blue: ['block', '#35399D', '#2B2E81', '#202364', 'wool'], wool_green: ['block', '#546D1B', '#425715', '#31400F', 'wool'],
-  concrete_white: ['block', '#CFD3D6', '#B8BCBE', '#A0A3A5', 'solid'], concrete_black: ['block', '#080A0F', '#06080C', '#040508', 'solid'],
-  tnt: ['block', '#D13535', '#E3E3E3', '#E3E3E3', 'tnt'], bookshelf: ['block', '#A48352', '#5B472B', '#463520', 'bookshelf'], crafting: ['block', '#905D3B', '#A48352', '#8E7044', 'crafting'], furnace: ['block', '#666666', '#555555', '#444444', 'furnace'], chest: ['block', '#C1882C', '#C1882C', '#C1882C', 'chest'], echest: ['block', '#111A1B', '#111A1B', '#111A1B', 'echest'], sponge: ['block', '#C3C03F', '#AFA932', '#999326', 'sponge'],
-  slime: ['block', '#6EB950', '#5CA241', '#488431', 'slime'], honey: ['block', '#F4A526', '#DE931C', '#C88111', 'solid'], magma: ['block', '#8A3816', '#742C0F', '#5D2109', 'magma'], soul_sand: ['block', '#534032', '#443327', '#36281D', 'dirt'],
-  glowstone: ['block', '#B78A36', '#A1772C', '#8B6521', 'cobble'], sea_lantern: ['block', '#ACCECB', '#96BBBA', '#82A7A6', 'lantern'], basalt: ['block', '#4E4F54', '#2F2F32', '#2F2F32', 'log'], blackstone: ['block', '#2A2429', '#1E1A1E', '#141114', 'cobble'], prismarine: ['block', '#60978E', '#4F7F77', '#3E6760', 'bricks'], netherrack: ['block', '#642929', '#532020', '#421818', 'cobble'],
-  end_stone: ['block', '#DFE49C', '#CCD28A', '#B7BE76', 'cobble'], purpur: ['block', '#A97AA9', '#956695', '#805380', 'solid'], coal_block: ['block', '#101010', '#0B0B0B', '#050505', 'solid'], iron_block: ['block', '#DCDCDC', '#C8C8C8', '#B2B2B2', 'solid'], gold_block: ['block', '#F9DE48', '#E7C934', '#D3B322', 'solid'], diamond_block: ['block', '#60EADB', '#4CD8C9', '#3AC4B5', 'solid'], emerald_block: ['block', '#3FF06B', '#2CDA59', '#1AC447', 'solid'], netherite_block: ['block', '#423F40', '#363233', '#292526', 'solid'], obsidian: ['block', '#15101E', '#0E0A15', '#08050D', 'cobble'], bedrock: ['block', '#4F4F4F', '#3C3C3C', '#2A2A2A', 'cobble'],
+  dirt: ['block', '#825936'], grass: ['block', '#599834'], cobble: ['block', '#6B6B6B'], stone: ['block', '#848484'],
+  sand: ['block', '#D2C38A'], clay: ['block', '#9C5B42'], brick: ['block', '#A0432E'],
+  log: ['block', '#735232'], plank: ['block', '#9C7646'], leaves: ['block', '#315418'],
+  spruce_log: ['block', '#3A2613'], birch_log: ['block', '#D4CFB6'], jungle_log: ['block', '#574227'],
+  glass: ['block', '#BFE2E7'], black_glass: ['block', '#1A1A1A'],
+  wool_white: ['block', '#E0E0E0'], wool_black: ['block', '#121316'], wool_red: ['block', '#93221C'], wool_blue: ['block', '#2C3088'], wool_green: ['block', '#4B6219'],
+  concrete_white: ['block', '#C7CBCE'], concrete_black: ['block', '#06080A'],
+  tnt: ['block', '#D13535'], bookshelf: ['block', '#8A683E'], crafting: ['block', '#734629'], furnace: ['block', '#555555'], chest: ['block', '#AD7520'], echest: ['block', '#0F1618'], sponge: ['block', '#BFBC37'],
+  slime: ['block', '#63A848'], honey: ['block', '#EB9B20'], magma: ['block', '#803415'], soul_sand: ['block', '#4A392D'],
+  glowstone: ['block', '#A57C30'], sea_lantern: ['block', '#9BBEBD'], basalt: ['block', '#44454A'], blackstone: ['block', '#211D20'], prismarine: ['block', '#578880'], netherrack: ['block', '#5A2626'],
+  end_stone: ['block', '#D3DA8B'], purpur: ['block', '#9E6F9E'], coal_block: ['block', '#111111'], iron_block: ['block', '#CECECE'], gold_block: ['block', '#F0D130'], diamond_block: ['block', '#4BDECF'], emerald_block: ['block', '#36E361'], netherite_block: ['block', '#3A3738'], obsidian: ['block', '#110C18'], bedrock: ['block', '#444444'],
   
-  // Tools
-  wood_sword: ['item', 'sword', '#210', '#742', '#963', '#531', '#5B472B'], wood_pick: ['item', 'pickaxe', '#210', '#742', '#963', '#531', '#5B472B'], wood_axe: ['item', 'axe', '#210', '#742', '#963', '#531', '#5B472B'], wood_shovel: ['item', 'shovel', '#210', '#742', '#963', '#531', '#5B472B'], wood_hoe: ['item', 'hoe', '#210', '#742', '#963', '#531', '#5B472B'],
+  // Tools [type, template, outline, darkShade, baseColor, highlight, stick]
+  wood_sword: ['item', 'sword', '#221100', '#742', '#963', '#531', '#5B472B'], wood_pick: ['item', 'pickaxe', '#221100', '#742', '#963', '#531', '#5B472B'], wood_axe: ['item', 'axe', '#221100', '#742', '#963', '#531', '#5B472B'], wood_shovel: ['item', 'shovel', '#221100', '#742', '#963', '#531', '#5B472B'], wood_hoe: ['item', 'hoe', '#221100', '#742', '#963', '#531', '#5B472B'],
   stone_sword: ['item', 'sword', '#111', '#7A7A7A', '#9A9A9A', '#531', '#5B472B'], stone_pick: ['item', 'pickaxe', '#111', '#7A7A7A', '#9A9A9A', '#531', '#5B472B'], stone_axe: ['item', 'axe', '#111', '#7A7A7A', '#9A9A9A', '#531', '#5B472B'], stone_shovel: ['item', 'shovel', '#111', '#7A7A7A', '#9A9A9A', '#531', '#5B472B'], stone_hoe: ['item', 'hoe', '#111', '#7A7A7A', '#9A9A9A', '#531', '#5B472B'],
   iron_sword: ['item', 'sword', '#333', '#DCDCDC', '#FFFFFF', '#531', '#5B472B'], iron_pick: ['item', 'pickaxe', '#333', '#DCDCDC', '#FFFFFF', '#531', '#5B472B'], iron_axe: ['item', 'axe', '#333', '#DCDCDC', '#FFFFFF', '#531', '#5B472B'], iron_shovel: ['item', 'shovel', '#333', '#DCDCDC', '#FFFFFF', '#531', '#5B472B'], iron_hoe: ['item', 'hoe', '#333', '#DCDCDC', '#FFFFFF', '#531', '#5B472B'],
   gold_sword: ['item', 'sword', '#640', '#F9DE48', '#FFEE77', '#531', '#5B472B'], gold_pick: ['item', 'pickaxe', '#640', '#F9DE48', '#FFEE77', '#531', '#5B472B'], gold_axe: ['item', 'axe', '#640', '#F9DE48', '#FFEE77', '#531', '#5B472B'], gold_shovel: ['item', 'shovel', '#640', '#F9DE48', '#FFEE77', '#531', '#5B472B'], gold_hoe: ['item', 'hoe', '#640', '#F9DE48', '#FFEE77', '#531', '#5B472B'],
@@ -326,57 +315,37 @@ function shade(col, amt) {
   return (useHash?"#":"") + newColor;
 }
 
-function drawIsoBlock(ctx, colors, texType, sizeMultiplier = 1) {
-  const size = 16;
-  const s = 2.1 * sizeMultiplier;
-  const cx = 32 * sizeMultiplier;
-  const cy = 20 * sizeMultiplier;
-  const [cTop, cLeft, cRight] = [colors[1], colors[2], colors[3]];
+// Crisp, smooth, high-quality isometric cube renderer
+function drawIsoCube(ctx, baseColor, sizeMultiplier = 1) {
+  const cx = 32;
+  const cy = 34; 
+  const a = 18 * sizeMultiplier;
+  const b = 15.5 * sizeMultiplier;
 
-  function drawFace(face, color) {
-    for(let u=0; u<size; u++) {
-      for(let v=0; v<size; v++) {
-        let finalColor = color;
-        if(texType === 'dirt' || texType === 'cobble' || texType === 'solid') {
-          if(Math.random() > 0.5) finalColor = shade(color, texType==='cobble' ? (Math.random()>0.5?15:-15) : (Math.random()>0.5?8:-8));
-        } else if (texType === 'grass') {
-          if (face !== 'top' && v < 3 + Math.random()*2) finalColor = '#599834';
-          else if (face !== 'top' && Math.random() > 0.5) finalColor = shade(color, 8);
-        } else if (texType === 'log') {
-          if(face === 'top') {
-            if(u===0||v===0||u===15||v===15) finalColor = shade(color, -20);
-            else if(u>2&&v>2&&u<13&&v<13) finalColor = shade(color, 15);
-          } else if(u%3===0) finalColor = shade(color, -10);
-        } else if (texType === 'planks') {
-          if(u%4===0 || v%4===0) finalColor = shade(color, -15);
-        } else if (texType === 'bricks') {
-          if(u%4===0 || (v%8===0)) finalColor = '#dddddd';
-        } else if (texType === 'tnt') {
-          if(face !== 'top') {
-            if(u>4 && u<11) finalColor = '#ffffff';
-            if(u>6 && u<9) finalColor = '#000000';
-          } else if(Math.random()>0.7) finalColor = shade(color, 15);
-        }
+  const pTop = {x: cx, y: cy - a};
+  const pBot = {x: cx, y: cy + a};
+  const pCen = {x: cx, y: cy};
+  const pTL = {x: cx - b, y: cy - a/2};
+  const pTR = {x: cx + b, y: cy - a/2};
+  const pBL = {x: cx - b, y: cy + a/2};
+  const pBR = {x: cx + b, y: cy + a/2};
 
-        let x, y, z;
-        if(face === 'top') { x=u; y=v; z=size; }
-        if(face === 'left') { x=size; y=u; z=v; }
-        if(face === 'right') { x=u; y=size; z=v; }
-        const sx = cx + (x - y) * 1.732 * (s/2);
-        const sy = cy + (x + y) * (s/2) - z * s;
+  const topC = shade(baseColor, 40);
+  const rightC = shade(baseColor, 0);
+  const leftC = shade(baseColor, -40);
+  
+  ctx.lineWidth = 2.5 * sizeMultiplier;
+  ctx.strokeStyle = '#111';
+  ctx.lineJoin = 'round';
 
-        ctx.fillStyle = finalColor;
-        if(face === 'top') {
-          ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx+1.732*(s/2), sy+(s/2)); ctx.lineTo(sx, sy+s); ctx.lineTo(sx-1.732*(s/2), sy+(s/2)); ctx.fill();
-        } else if (face === 'left') {
-          ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx-1.732*(s/2), sy-(s/2)); ctx.lineTo(sx-1.732*(s/2), sy-(s/2)+s); ctx.lineTo(sx, sy+s); ctx.fill();
-        } else {
-          ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx+1.732*(s/2), sy-(s/2)); ctx.lineTo(sx+1.732*(s/2), sy-(s/2)+s); ctx.lineTo(sx, sy+s); ctx.fill();
-        }
-      }
-    }
-  }
-  drawFace('top', cTop); drawFace('left', cLeft); drawFace('right', cRight);
+  ctx.fillStyle = topC;
+  ctx.beginPath(); ctx.moveTo(pCen.x, pCen.y); ctx.lineTo(pTR.x, pTR.y); ctx.lineTo(pTop.x, pTop.y); ctx.lineTo(pTL.x, pTL.y); ctx.closePath(); ctx.fill(); ctx.stroke();
+  
+  ctx.fillStyle = leftC;
+  ctx.beginPath(); ctx.moveTo(pCen.x, pCen.y); ctx.lineTo(pTL.x, pTL.y); ctx.lineTo(pBL.x, pBL.y); ctx.lineTo(pBot.x, pBot.y); ctx.closePath(); ctx.fill(); ctx.stroke();
+  
+  ctx.fillStyle = rightC;
+  ctx.beginPath(); ctx.moveTo(pCen.x, pCen.y); ctx.lineTo(pBot.x, pBot.y); ctx.lineTo(pBR.x, pBR.y); ctx.lineTo(pTR.x, pTR.y); ctx.closePath(); ctx.fill(); ctx.stroke();
 }
 
 function drawItemSprite(ctx, templateKey, colors, sizeMultiplier = 1) {
@@ -452,7 +421,7 @@ function renderGrid() {
         const cvs = document.getElementById(`cvs-${item.id}`);
         if(cvs) {
           const ctx = cvs.getContext('2d');
-          if(item.type === 'block') drawIsoBlock(ctx, item.data, item.data[4]);
+          if(item.type === 'block') drawIsoCube(ctx, item.data[1]);
           else drawItemSprite(ctx, item.data[1], item.data);
         }
       }, i * 3);
@@ -517,18 +486,11 @@ function handleBlur(el) {
 // ==========================================
 const modal = document.getElementById('receipt-modal');
 const modalContent = document.getElementById('receipt-content');
-
-// ==========================================
-// 5. RECEIPT MODAL & PDF
-// ==========================================
-const modal = document.getElementById('receipt-modal');
-const modalContent = document.getElementById('receipt-content');
 const emptyModal = document.getElementById('empty-cart-modal');
 const emptyModalContent = document.getElementById('empty-cart-content');
 
 function openReceipt() {
   if (totalSpent === 0) { 
-    // Trigger Custom Empty Cart Pop-up
     emptyModal.classList.remove('hidden'); 
     emptyModal.classList.add('flex');
     setTimeout(() => {
@@ -547,7 +509,6 @@ function openReceipt() {
   }, 10);
 }
 
-// Function to close the empty cart pop-up
 function closeEmptyCart() {
   emptyModal.classList.add('opacity-0');
   emptyModalContent.classList.remove('scale-100'); 
@@ -556,12 +517,6 @@ function closeEmptyCart() {
     emptyModal.classList.add('hidden'); 
     emptyModal.classList.remove('flex'); 
   }, 300);
-}
-
-function closeReceipt() {
-  modal.classList.add('opacity-0');
-  modalContent.classList.remove('scale-100'); modalContent.classList.add('scale-95');
-  setTimeout(()=>{ modal.classList.add('hidden'); modal.classList.remove('flex'); }, 300);
 }
 
 function closeReceipt() {
@@ -599,7 +554,7 @@ function buildReceipt() {
         const rc = document.getElementById(`rcpt-${item.id}`);
         if(rc) {
           const ctx = rc.getContext('2d');
-          if(item.type === 'block') drawIsoBlock(ctx, item.data, item.data[4], 0.5);
+          if(item.type === 'block') drawIsoCube(ctx, item.data[1], 0.5);
           else drawItemSprite(ctx, item.data[1], item.data, 0.5);
         }
       }
