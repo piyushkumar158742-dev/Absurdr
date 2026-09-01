@@ -592,8 +592,8 @@ function downloadPDF() {
       const lineTotal = item.price * qty;
       const sourceCanvas = document.getElementById(`rcpt-${item.id}`);
       const imgTag = sourceCanvas ? `<img src="${sourceCanvas.toDataURL('image/png')}" style="width:20px;height:20px;image-rendering:pixelated;margin-right:8px;margin-top:2px;flex-shrink:0;" />` : '';
-      itemsHtml += `
-        <div style="display:flex; align-items:flex-start; padding:6px 0; border-bottom:1px dotted #e5e7eb;">
+            itemsHtml += `
+        <div style="display:flex; align-items:flex-start; padding:6px 0; border-bottom:1px dotted #e5e7eb; page-break-inside: avoid;">
           ${imgTag}
           <div style="flex:1; min-width:0;">
             <div style="font-size:12px; font-weight:700; color:#111827; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.name}</div>
@@ -651,7 +651,7 @@ function downloadPDF() {
         <span>Items (qty)</span><span>${totalQty}</span>
       </div>
       <div style="border-top:2px solid #111827; margin:10px 0;"></div>
-      <div style="display:flex; justify-content:space-between; align-items:center;">
+      <div style="display:flex; justify-content:space-between; align-items:center; page-break-inside: avoid;">
         <span style="font-size:15px; font-weight:800; text-transform:uppercase; letter-spacing:1px;">Total</span>
         <span style="font-size:22px; font-weight:800;">${finalTotal}</span>
       </div>
@@ -669,20 +669,18 @@ function downloadPDF() {
   overlay.appendChild(printWrapper);
   document.body.appendChild(overlay);
 
-  const heightIn = Math.max(printWrapper.scrollHeight / 96 + 0.3, 4);
-
   const opt = {
     margin:       0,
     filename:     'BlockMarket_Receipt.pdf',
     image:        { type: 'jpeg', quality: 1.0 },
     html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollX: 0, scrollY: 0 },
-    jsPDF:        { unit: 'in', format: [4, heightIn], orientation: 'portrait' }
+    jsPDF:        { unit: 'in', format: [4, 9], orientation: 'portrait' },
+    pagebreak:    { mode: ['css', 'legacy'] }
   };
 
   html2pdf().set(opt).from(printWrapper).save().then(() => {
     document.body.removeChild(overlay);
   });
-}
 
 // Initialize
 renderGrid();
