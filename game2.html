@@ -518,14 +518,50 @@ function handleBlur(el) {
 const modal = document.getElementById('receipt-modal');
 const modalContent = document.getElementById('receipt-content');
 
+// ==========================================
+// 5. RECEIPT MODAL & PDF
+// ==========================================
+const modal = document.getElementById('receipt-modal');
+const modalContent = document.getElementById('receipt-content');
+const emptyModal = document.getElementById('empty-cart-modal');
+const emptyModalContent = document.getElementById('empty-cart-content');
+
 function openReceipt() {
-  if(totalSpent === 0) { alert("Your cart is empty. Please add items."); return; }
+  if (totalSpent === 0) { 
+    // Trigger Custom Empty Cart Pop-up
+    emptyModal.classList.remove('hidden'); 
+    emptyModal.classList.add('flex');
+    setTimeout(() => {
+      emptyModal.classList.remove('opacity-0');
+      emptyModalContent.classList.remove('scale-95'); 
+      emptyModalContent.classList.add('scale-100');
+    }, 10);
+    return; 
+  }
+  
   buildReceipt();
   modal.classList.remove('hidden'); modal.classList.add('flex');
   setTimeout(()=>{
     modal.classList.remove('opacity-0');
     modalContent.classList.remove('scale-95'); modalContent.classList.add('scale-100');
   }, 10);
+}
+
+// Function to close the empty cart pop-up
+function closeEmptyCart() {
+  emptyModal.classList.add('opacity-0');
+  emptyModalContent.classList.remove('scale-100'); 
+  emptyModalContent.classList.add('scale-95');
+  setTimeout(() => { 
+    emptyModal.classList.add('hidden'); 
+    emptyModal.classList.remove('flex'); 
+  }, 300);
+}
+
+function closeReceipt() {
+  modal.classList.add('opacity-0');
+  modalContent.classList.remove('scale-100'); modalContent.classList.add('scale-95');
+  setTimeout(()=>{ modal.classList.add('hidden'); modal.classList.remove('flex'); }, 300);
 }
 
 function closeReceipt() {
