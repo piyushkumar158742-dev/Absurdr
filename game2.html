@@ -702,21 +702,27 @@ function dataURLtoFile(dataUrl, filename) {
 }
 
 function shareOnX() {
-  const { overlay, printWrapper } = createReceiptElement();
-  captureReceiptPages(printWrapper).then(pages => {
-    document.body.removeChild(overlay);
-
-    const pageUrl = window.location.href;
-    const text = `I just dropped ${formatMoney(totalSpent)} on the Block Market! 💸 Can you beat my high score? ${pageUrl}`;
-    const files = pages.map((page, i) => dataURLtoFile(page.dataURL, `block-market-receipt-${i + 1}.png`));
-
-    if (navigator.canShare && navigator.canShare({ files })) {
-      navigator.share({ files, title: 'Block Market Receipt', text }).catch(() => {});
-    } else {
-      const intentUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
-      window.open(intentUrl, '_blank');
+  const pageUrl = window.location.href;
+  const lines = [];
+  inventory.forEach(item => {
+    const qty = quantities[item.id];
+    if (qty > 0) {
+      lines.push(`${item.name} x${qty} - ${formatShorthand(item.price * qty)}`);
     }
   });
+
+  const text = [
+    `I just dropped ${formatMoney(totalSpent)} on the Block Market! 💸`,
+    '',
+    ...lines,
+    '',
+    `Total: ${formatMoney(totalSpent)}`,
+    `Can you beat my high score?`,
+    pageUrl
+  ].join('\n');
+
+  const intentUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+  window.open(intentUrl, '_blank');
 }
 
 function downloadPDF() {
