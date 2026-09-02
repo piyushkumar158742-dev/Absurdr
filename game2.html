@@ -703,7 +703,7 @@ function dataURLtoFile(dataUrl, filename) {
 
 function shareOnX() {
   const pageUrl = window.location.href;
-  const text = `I just dropped ${formatMoney(totalSpent)} on the Block Market! 💸 Can you beat my high score?\n${pageUrl}`;
+  const text = `I just dropped ${formatMoney(totalSpent)} on the Block Market! 💸 \n${pageUrl}`;
   const intentUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
   window.open(intentUrl, '_blank');
 }
