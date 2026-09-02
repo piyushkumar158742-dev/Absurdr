@@ -571,9 +571,12 @@ function buildReceipt() {
 }
 
 function shareOnX() {
+  downloadPDF();
+
   const text = `I just dropped ${formatMoney(totalSpent)} on the Block Market! 💸 Can you beat my high score?`;
-  const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
-  window.open(url, '_blank');
+  const pageUrl = window.location.href;
+  const intentUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(pageUrl)}`;
+  setTimeout(() => window.open(intentUrl, '_blank'), 400);
 }
 
 function downloadPDF() {
