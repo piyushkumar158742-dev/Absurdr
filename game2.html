@@ -653,20 +653,42 @@ function downloadPDF() {
     </div>
   `;
 
-  document.body.appendChild(printWrapper);
-  
-  const opt = {
-    margin:       [0.4, 0.4, 0.4, 0.4],
-    filename:     'BlockMarket_Receipt.pdf',
-    image:        { type: 'jpeg', quality: 1.0 },
-    html2canvas:  { scale: 2, useCORS: true, letterRendering: true, windowWidth: 800 },
-    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-  };
-  
-  html2pdf().set(opt).from(printWrapper).save().then(() => {
-    document.body.removeChild(printWrapper);
+    overlay.appendChild(printWrapper);
+  document.body.appendChild(overlay);
+
+  html2canvas(printWrapper, { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollX: 0, scrollY: 0 }).then(canvas => {
+    const { jsPDF } = window.jspdf;
+    const pageWidthIn = 4;
+    const dpi = canvas.width / pageWidthIn;
+    const maxPageHeightPx = Math.floor(9 * dpi);
+
+    let renderedY = 0;
+    let pdf = null;
+
+    while (renderedY < canvas.height) {
+      const sliceHeight = Math.min(maxPageHeightPx, canvas.height - renderedY);
+      const pageCanvas = document.createElement('canvas');
+      pageCanvas.width = canvas.width;
+      pageCanvas.height = sliceHeight;
+      const ctx = pageCanvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+      ctx.drawImage(canvas, 0, renderedY, canvas.width, sliceHeight, 0, 0, canvas.width, sliceHeight);
+      const imgData = pageCanvas.toDataURL('image/jpeg', 1.0);
+      const pageHeightIn = sliceHeight / dpi;
+
+      if (!pdf) {
+        pdf = new jsPDF({ unit: 'in', format: [pageWidthIn, pageHeightIn] });
+      } else {
+        pdf.addPage([pageWidthIn, pageHeightIn], 'portrait');
+      }
+      pdf.addImage(imgData, 'JPEG', 0, 0, pageWidthIn, pageHeightIn);
+      renderedY += sliceHeight;
+    }
+
+    pdf.save('BlockMarket_Receipt.pdf');
+    document.body.removeChild(overlay);
   });
-}
 
 // Initialize
 renderGrid();
