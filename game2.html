@@ -570,16 +570,7 @@ function buildReceipt() {
   }, 50);
 }
 
-function shareOnX() {
-  downloadPDF();
-
-  const text = `I just dropped ${formatMoney(totalSpent)} on the Block Market! Go try out yourself`;
-  const pageUrl = window.location.href;
-  const intentUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(pageUrl)}`;
-  setTimeout(() => window.open(intentUrl, '_blank'), 400);
-}
-
-function downloadPDF() {
+function createReceiptElement() {
   const now = new Date();
   const dateStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
   const receiptId = 'BM-' + Math.floor(Math.random() * 1000000000).toString().padStart(9, '0');
@@ -593,7 +584,6 @@ function downloadPDF() {
       const lineTotal = item.price * qty;
       const sourceCanvas = document.getElementById(`rcpt-${item.id}`);
       const imgTag = sourceCanvas ? `<img src="${sourceCanvas.toDataURL('image/png')}" style="width:20px;height:20px;image-rendering:pixelated;margin-right:8px;margin-top:2px;flex-shrink:0;" />` : '';
-      
       itemsHtml += `
         <div style="display:flex; align-items:flex-start; padding:6px 0; border-bottom:1px dotted #e5e7eb; page-break-inside: avoid;">
           ${imgTag}
@@ -618,7 +608,7 @@ function downloadPDF() {
   const overlay = document.createElement('div');
   Object.assign(overlay.style, {
     position: 'fixed', top: '0', left: '0', width: '100vw', height: '100vh',
-    background: '#e5e7eb', zIndex: '-999999',
+    background: '#e5e7eb', zIndex: '999999',
     display: 'flex', justifyContent: 'center', alignItems: 'flex-start',
     paddingTop: '40px', overflow: 'auto', boxSizing: 'border-box'
   });
@@ -670,17 +660,76 @@ function downloadPDF() {
 
   overlay.appendChild(printWrapper);
   document.body.appendChild(overlay);
+  return { overlay, printWrapper };
+}
 
-  const opt = {
-    margin:       0,
-    filename:     'BlockMarket_Receipt.pdf',
-    image:        { type: 'jpeg', quality: 1.0 },
-    html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollX: 0, scrollY: 0 },
-    jsPDF:        { unit: 'in', format: [4, 9], orientation: 'portrait' },
-    pagebreak:    { mode: ['css', 'legacy'] }
-  };
+function captureReceiptPages(printWrapper) {
+  return html2canvas(printWrapper, { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollX: 0, scrollY: 0 }).then(canvas => {
+    const pageWidthIn = 4;
+    const dpi = canvas.width / pageWidthIn;
+    const maxPageHeightPx = Math.floor(9 * dpi);
+    const pages = [];
+    let renderedY = 0;
 
-  html2pdf().set(opt).from(printWrapper).save().then(() => {
+    while (renderedY < canvas.height) {
+      const sliceHeight = Math.min(maxPageHeightPx, canvas.height - renderedY);
+      const pageCanvas = document.createElement('canvas');
+      pageCanvas.width = canvas.width;
+      pageCanvas.height = sliceHeight;
+      const ctx = pageCanvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+      ctx.drawImage(canvas, 0, renderedY, canvas.width, sliceHeight, 0, 0, canvas.width, sliceHeight);
+      pages.push({
+        dataURL: pageCanvas.toDataURL('image/png', 1.0),
+        widthIn: pageWidthIn,
+        heightIn: sliceHeight / dpi
+      });
+      renderedY += sliceHeight;
+    }
+    return pages;
+  });
+}
+
+function dataURLtoFile(dataUrl, filename) {
+  const arr = dataUrl.split(',');
+  const mime = arr[0].match(/:(.*?);/)[1];
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) u8arr[n] = bstr.charCodeAt(n);
+  return new File([u8arr], filename, { type: mime });
+}
+
+function shareOnX() {
+  const { overlay, printWrapper } = createReceiptElement();
+  captureReceiptPages(printWrapper).then(pages => {
+    document.body.removeChild(overlay);
+
+    const text = `I just dropped ${formatMoney(totalSpent)} on the Block Market! 💸 Can you beat my high score?`;
+    const files = pages.map((page, i) => dataURLtoFile(page.dataURL, `block-market-receipt-${i + 1}.png`));
+
+    if (navigator.canShare && navigator.canShare({ files })) {
+      navigator.share({ files, title: 'Block Market Receipt', text }).catch(() => {});
+    } else {
+      const intentUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+      window.open(intentUrl, '_blank');
+    }
+  });
+}
+
+function downloadPDF() {
+  const { overlay, printWrapper } = createReceiptElement();
+  captureReceiptPages(printWrapper).then(pages => {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ unit: 'in', format: [pages[0].widthIn, pages[0].heightIn] });
+
+    pages.forEach((page, i) => {
+      if (i > 0) pdf.addPage([page.widthIn, page.heightIn], 'portrait');
+      pdf.addImage(page.dataURL, 'PNG', 0, 0, page.widthIn, page.heightIn);
+    });
+
+    pdf.save('BlockMarket_Receipt.pdf');
     document.body.removeChild(overlay);
   });
 }
