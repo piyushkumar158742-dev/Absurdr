@@ -715,13 +715,20 @@ function shareOnX() {
 
 function downloadPDF() {
   const { overlay, printWrapper } = createReceiptElement();
+
+  const label = document.createElement('div');
+  label.textContent = 'Generating PDF…';
+  Object.assign(label.style, {
+    position: 'fixed', top: '12px', left: '50%', transform: 'translateX(-50%)',
+    background: '#111827', color: '#fff', padding: '8px 16px', borderRadius: '999px',
+    fontFamily: 'sans-serif', fontSize: '13px', fontWeight: '600', zIndex: '1000000'
+  });
+  overlay.appendChild(label);
+
   captureReceiptPages(printWrapper).then(pages => {
     const jsPDF = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
-    if (!jsPDF) {
-      document.body.removeChild(overlay);
-      alert('PDF library failed to load. Please refresh and try again.');
-      return;
-    }
+    if (!jsPDF) throw new Error('PDF library (jsPDF) did not load.');
+
     const pdf = new jsPDF({ unit: 'in', format: [pages[0].widthIn, pages[0].heightIn] });
 
     pages.forEach((page, i) => {
@@ -731,6 +738,10 @@ function downloadPDF() {
 
     pdf.save('BlockMarket_Receipt.pdf');
     document.body.removeChild(overlay);
+  }).catch(err => {
+    console.error('PDF generation failed:', err);
+    if (overlay.parentNode) document.body.removeChild(overlay);
+    alert('Failed to generate PDF: ' + (err && err.message ? err.message : err));
   });
 }
 
