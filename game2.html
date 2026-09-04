@@ -748,16 +748,16 @@ function downloadPDF() {
   y += 0.2;
 
   pdf.setFontSize(8); pdf.setTextColor(60);
-  [['Date', dateStr], ['Receipt #', receiptId], ['Cashier', 'SYSTEM-01']].forEach(([k, v]) => {
+    [['Date', dateStr], ['Receipt #', receiptId], ['Region', userRegion]].forEach(([k, v]) => {
     pdf.text(k, marginX, y); pdf.text(v, pageW - marginX, y, { align: 'right' });
     y += 0.15;
   });
   dashedLine(y);
   y += 0.18;
 
-  pdf.setFontSize(7); pdf.setTextColor(150);
+    pdf.setFontSize(7); pdf.setTextColor(150);
   pdf.text('ITEM', marginX, y); pdf.text('TOTAL', pageW - marginX, y, { align: 'right' });
-  y += 0.15;
+  y += 0.24;
 
   let totalQty = 0;
   inventory.forEach(item => {
@@ -777,7 +777,7 @@ function downloadPDF() {
       pdf.setFont('helvetica', 'normal'); pdf.setFontSize(7); pdf.setTextColor(150);
       pdf.text(`${qty} x ${formatShorthand(item.price)}`, textX, y);
       y += 0.16;
-      pdf.setDrawColor(235); pdf.setLineWidth(0.005);
+      pdf.setDrawColor(190); pdf.setLineWidth(0.012);
       pdf.line(marginX, y, pageW - marginX, y);
       y += 0.18;
     }
@@ -814,6 +814,12 @@ function downloadPDF() {
 
   pdf.save('BlockMarket_Receipt.pdf');
 }
+
+// Region detection (via IP) for receipt
+let userRegion = 'Unknown';
+fetch('https://ipapi.co/json/').then(r => r.json()).then(data => {
+  userRegion = [data.region, data.country_name].filter(Boolean).join(', ') || 'Unknown';
+}).catch(() => { userRegion = 'Unknown'; });
 
 // Initialize
 renderGrid();
