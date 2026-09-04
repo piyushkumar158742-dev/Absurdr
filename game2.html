@@ -714,35 +714,105 @@ function shareOnX() {
 }
 
 function downloadPDF() {
-  const { overlay, printWrapper } = createReceiptElement();
+  const jsPDF = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+  if (!jsPDF) { alert('PDF library did not load. Please refresh and try again.'); return; }
 
-  const label = document.createElement('div');
-  label.textContent = 'Generating PDF…';
-  Object.assign(label.style, {
-    position: 'fixed', top: '12px', left: '50%', transform: 'translateX(-50%)',
-    background: '#111827', color: '#fff', padding: '8px 16px', borderRadius: '999px',
-    fontFamily: 'sans-serif', fontSize: '13px', fontWeight: '600', zIndex: '1000000'
+  const now = new Date();
+  const dateStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+  const receiptId = 'BM-' + Math.floor(Math.random() * 1000000000).toString().padStart(9, '0');
+
+  const pageW = 4, pageH = 9, marginX = 0.3, marginBottom = 0.5, iconSize = 0.18;
+  let y = 0.5;
+  const pdf = new jsPDF({ unit: 'in', format: [pageW, pageH] });
+
+  function checkPageBreak(nextBlockHeight) {
+    if (y + nextBlockHeight > pageH - marginBottom) {
+      pdf.addPage([pageW, pageH]);
+      y = 0.5;
+    }
+  }
+  function dashedLine(yy) {
+    pdf.setDrawColor(190); pdf.setLineWidth(0.005);
+    pdf.setLineDashPattern([0.02, 0.02], 0);
+    pdf.line(marginX, yy, pageW - marginX, yy);
+    pdf.setLineDashPattern([], 0);
+  }
+
+  pdf.setFont('helvetica', 'bold'); pdf.setFontSize(18); pdf.setTextColor(20);
+  pdf.text('BLOCK MARKET', pageW / 2, y, { align: 'center' });
+  y += 0.18;
+  pdf.setFont('helvetica', 'normal'); pdf.setFontSize(7.5); pdf.setTextColor(130);
+  pdf.text('VOXEL EXCHANGE CO.', pageW / 2, y, { align: 'center' });
+  y += 0.15;
+  dashedLine(y);
+  y += 0.2;
+
+  pdf.setFontSize(8); pdf.setTextColor(60);
+  [['Date', dateStr], ['Receipt #', receiptId], ['Cashier', 'SYSTEM-01']].forEach(([k, v]) => {
+    pdf.text(k, marginX, y); pdf.text(v, pageW - marginX, y, { align: 'right' });
+    y += 0.15;
   });
-  overlay.appendChild(label);
+  dashedLine(y);
+  y += 0.18;
 
-  captureReceiptPages(printWrapper).then(pages => {
-    const jsPDF = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
-    if (!jsPDF) throw new Error('PDF library (jsPDF) did not load.');
+  pdf.setFontSize(7); pdf.setTextColor(150);
+  pdf.text('ITEM', marginX, y); pdf.text('TOTAL', pageW - marginX, y, { align: 'right' });
+  y += 0.15;
 
-    const pdf = new jsPDF({ unit: 'in', format: [pages[0].widthIn, pages[0].heightIn] });
-
-    pages.forEach((page, i) => {
-      if (i > 0) pdf.addPage([page.widthIn, page.heightIn], 'portrait');
-      pdf.addImage(page.dataURL, 'PNG', 0, 0, page.widthIn, page.heightIn);
-    });
-
-    pdf.save('BlockMarket_Receipt.pdf');
-    document.body.removeChild(overlay);
-  }).catch(err => {
-    console.error('PDF generation failed:', err);
-    if (overlay.parentNode) document.body.removeChild(overlay);
-    alert('Failed to generate PDF: ' + (err && err.message ? err.message : err));
+  let totalQty = 0;
+  inventory.forEach(item => {
+    const qty = quantities[item.id];
+    if (qty > 0) {
+      totalQty += qty;
+      checkPageBreak(0.34);
+      const iconCanvas = document.getElementById(`rcpt-${item.id}`);
+      if (iconCanvas) {
+        try { pdf.addImage(iconCanvas.toDataURL('image/png'), 'PNG', marginX, y - 0.14, iconSize, iconSize); } catch (e) {}
+      }
+      const textX = marginX + iconSize + 0.08;
+      pdf.setFont('helvetica', 'bold'); pdf.setFontSize(9.5); pdf.setTextColor(20);
+      pdf.text(item.name, textX, y);
+      pdf.text(formatShorthand(item.price * qty), pageW - marginX, y, { align: 'right' });
+      y += 0.13;
+      pdf.setFont('helvetica', 'normal'); pdf.setFontSize(7); pdf.setTextColor(150);
+      pdf.text(`${qty} x ${formatShorthand(item.price)}`, textX, y);
+      y += 0.1;
+      pdf.setDrawColor(235); pdf.setLineWidth(0.005);
+      pdf.line(marginX, y, pageW - marginX, y);
+      y += 0.1;
+    }
   });
+
+  checkPageBreak(0.5);
+  y += 0.04;
+  pdf.setFont('helvetica', 'normal'); pdf.setFontSize(8); pdf.setTextColor(100);
+  pdf.text('Items (qty)', marginX, y);
+  pdf.text(String(totalQty), pageW - marginX, y, { align: 'right' });
+  y += 0.15;
+  pdf.setDrawColor(20); pdf.setLineWidth(0.02);
+  pdf.line(marginX, y, pageW - marginX, y);
+  y += 0.22;
+
+  const totalDueNumber = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 }).format(totalSpent);
+  const finalTotal = totalSpent % 1 === 0 ? totalDueNumber.replace('.00', '') : totalDueNumber;
+
+  checkPageBreak(0.3);
+  pdf.setFont('helvetica', 'bold'); pdf.setFontSize(11); pdf.setTextColor(20);
+  pdf.text('TOTAL', marginX, y);
+  pdf.setFontSize(16);
+  pdf.text(finalTotal, pageW - marginX, y, { align: 'right' });
+  y += 0.25;
+
+  checkPageBreak(0.5);
+  dashedLine(y);
+  y += 0.2;
+  pdf.setFont('helvetica', 'normal'); pdf.setFontSize(9); pdf.setTextColor(70);
+  pdf.text('Thank you for shopping!', pageW / 2, y, { align: 'center' });
+  y += 0.13;
+  pdf.setFontSize(6.5); pdf.setTextColor(150);
+  pdf.text('All sales are final. No refunds on blocks or items.', pageW / 2, y, { align: 'center' });
+
+  pdf.save('BlockMarket_Receipt.pdf');
 }
 
 // Initialize
