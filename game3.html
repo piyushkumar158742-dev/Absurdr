@@ -20,139 +20,121 @@
     width: 100%;
     position: relative;
     z-index: 2;
+    padding-bottom: 5vh;
   }
 
-  /* Logo-style Title - Moved Up */
+  /* Logo-style Title */
   .stop-title-wrapper {
-    position: absolute;
-    top: 5vh; /* Moved higher up */
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
-    width: 100%;
+    margin-bottom: 6vh;
   }
 
   .stop-title-small {
     font-family: 'Space Mono', monospace;
-    font-size: clamp(0.7rem, 2vw, 1rem);
+    font-size: clamp(0.75rem, 2.5vw, 1rem);
     color: var(--text-muted);
-    letter-spacing: 4px;
+    letter-spacing: 6px;
     text-transform: uppercase;
-    margin-bottom: -5px;
+    margin-bottom: 0.5rem;
+    opacity: 0.8;
   }
 
   .stop-title-main {
     font-family: 'Fraunces', serif;
-    font-size: clamp(2.5rem, 8vw, 5rem);
+    font-size: clamp(2.5rem, 7vw, 4.5rem);
     font-weight: 700;
     color: #fff;
     text-transform: uppercase;
     line-height: 1.1;
-    letter-spacing: -2px;
-    text-shadow: 0 0 20px rgba(52, 217, 122, 0.4), 0 4px 10px rgba(0,0,0,0.5);
+    letter-spacing: -1px;
+    white-space: nowrap;
+    text-shadow: 0 4px 20px rgba(124, 108, 240, 0.4);
   }
   
   .stop-title-main span {
     color: #34d97a; /* Neon Green */
     font-family: 'Space Mono', monospace;
+    text-shadow: 0 0 25px rgba(52, 217, 122, 0.5);
   }
 
-  /* Digital Rectangular Timer */
+  /* Clean Digital Timer (No Squares) */
   .timer-display {
-    display: flex;
-    gap: 12px;
-    margin-top: 8vh;
-    margin-bottom: 4rem;
-  }
-
-  /* Explicit Rectangles for numbers AND the dot */
-  .digit-box {
-    width: clamp(50px, 12vw, 85px);
-    height: clamp(75px, 18vw, 120px);
-    background: #081a10; /* Very dark green */
-    border: 3px solid #34d97a; /* Bright green border */
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #34d97a; /* Neon green numbers */
     font-family: 'Space Mono', monospace;
     font-weight: 700;
-    font-size: clamp(3rem, 8vw, 5.5rem);
-    box-shadow: 0 0 20px rgba(52, 217, 122, 0.2), inset 0 0 15px rgba(52, 217, 122, 0.15);
-    text-shadow: 0 0 15px rgba(52, 217, 122, 0.8);
-    transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+    font-size: clamp(4.5rem, 12vw, 8rem);
+    color: #34d97a; /* Neon Green */
+    line-height: 1;
+    margin-bottom: 3.5rem;
+    font-variant-numeric: tabular-nums; /* Keeps width stable so text doesn't jitter */
+    text-shadow: 0 0 30px rgba(52, 217, 122, 0.4);
+    transition: color 0.1s ease, text-shadow 0.3s ease;
   }
 
-  /* The dot also gets a rectangle */
-  .digit-box.dot {
-    width: clamp(30px, 7vw, 45px); /* Slightly narrower box */
-    align-items: flex-end;
-    padding-bottom: 10px;
+  .timer-display.active {
+    text-shadow: 0 0 40px rgba(52, 217, 122, 0.6);
   }
 
   /* 2-Second Invisibility Mechanic */
-  .timer-display.hidden-time .digit-box {
+  .timer-display.hidden-time {
     color: transparent;
     text-shadow: none;
-    /* The green boxes stay visible, but the numbers inside vanish */
   }
 
   /* End States (when the user stops) */
-  .timer-display.failed .digit-box {
-    color: #ff6767;
-    border-color: #ff6767;
-    background: #1a0808;
-    box-shadow: 0 0 20px rgba(255, 103, 103, 0.2), inset 0 0 15px rgba(255, 103, 103, 0.15);
-    text-shadow: 0 0 15px rgba(255, 103, 103, 0.8);
+  .timer-display.failed {
+    color: #ff5b5b;
+    text-shadow: 0 0 40px rgba(255, 91, 91, 0.6);
   }
 
-  .timer-display.close .digit-box {
+  .timer-display.close {
     color: var(--stellar-gold);
-    border-color: var(--stellar-gold);
-    background: #1a1508;
-    box-shadow: 0 0 20px rgba(240, 194, 110, 0.2), inset 0 0 15px rgba(240, 194, 110, 0.15);
-    text-shadow: 0 0 15px rgba(240, 194, 110, 0.8);
+    text-shadow: 0 0 40px rgba(240, 194, 110, 0.6);
   }
 
   /* Action Button */
   .action-btn {
     background: rgba(52, 217, 122, 0.1);
-    border: 2px solid #34d97a;
+    border: 2px solid rgba(52, 217, 122, 0.6);
     color: #fff;
     font-family: 'Space Mono', monospace;
     font-weight: 700;
-    font-size: clamp(1.2rem, 3vw, 1.8rem);
-    padding: 1.2rem 4rem;
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+    padding: 1.2rem 4.5rem;
     border-radius: 50px;
     cursor: pointer;
-    transition: all 0.15s ease;
-    box-shadow: 0 0 25px rgba(52, 217, 122, 0.2);
+    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow: 0 0 25px rgba(52, 217, 122, 0.15);
     text-transform: uppercase;
-    letter-spacing: 3px;
+    letter-spacing: 4px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
 
   .action-btn:hover {
-    background: rgba(52, 217, 122, 0.3);
-    box-shadow: 0 0 40px rgba(52, 217, 122, 0.5);
+    background: rgba(52, 217, 122, 0.25);
+    border-color: #34d97a;
+    box-shadow: 0 0 40px rgba(52, 217, 122, 0.4);
     transform: translateY(-3px);
   }
 
   .action-btn:active {
-    transform: translateY(2px) scale(0.95);
+    transform: translateY(2px) scale(0.96);
   }
 
   /* Stop State Button Styling */
   .action-btn.btn-stop {
-    background: rgba(255, 103, 103, 0.1);
-    border-color: #ff6767;
-    box-shadow: 0 0 25px rgba(255, 103, 103, 0.2);
+    background: rgba(255, 91, 91, 0.1);
+    border-color: rgba(255, 91, 91, 0.6);
+    box-shadow: 0 0 25px rgba(255, 91, 91, 0.15);
   }
   
   .action-btn.btn-stop:hover {
-    background: rgba(255, 103, 103, 0.3);
-    box-shadow: 0 0 40px rgba(255, 103, 103, 0.5);
+    background: rgba(255, 91, 91, 0.25);
+    border-color: #ff5b5b;
+    box-shadow: 0 0 40px rgba(255, 91, 91, 0.4);
   }
 
   .result-message {
@@ -160,7 +142,7 @@
     font-size: clamp(1rem, 2.5vw, 1.25rem);
     color: var(--text-muted);
     margin-top: 2.5rem;
-    height: 1.5em;
+    height: 1.5em; /* Prevents layout jump when text appears */
     text-align: center;
     font-weight: 500;
     opacity: 0;
@@ -214,10 +196,8 @@
         <div class="stop-title-main">STOP AT <span>5.000</span></div>
       </div>
       
-      <!-- Green Rectangles Display -->
-      <div class="timer-display" id="timer-display">
-        <!-- Javascript fills this -->
-      </div>
+      <!-- Clean Number Display -->
+      <div class="timer-display" id="timer-display">0.000</div>
       
       <button class="action-btn" id="action-btn">Start</button>
       
@@ -266,26 +246,13 @@
     return timeInSeconds.toFixed(3);
   }
 
-  // Renders the time into the individual green rectangles
-  function renderTimer(timeStr) {
-    const chars = timeStr.split('');
-    timerDisplay.innerHTML = chars.map(c => {
-      if(c === '.') {
-        return `<div class="digit-box dot">.</div>`;
-      }
-      return `<div class="digit-box">${c}</div>`;
-    }).join('');
-  }
-
-  // Set initial display
-  renderTimer("0.000");
-
   function startTimer() {
     isRunning = true;
     actionBtn.textContent = 'Stop';
     actionBtn.classList.add('btn-stop');
     
     // Clear old result states and reveal the text
+    timerDisplay.classList.add('active');
     timerDisplay.classList.remove('failed', 'close', 'hidden-time');
     resultMessage.classList.remove('visible');
     
@@ -299,7 +266,7 @@
       // Auto-fail if taking too long
       if (elapsed >= 10.000) {
         elapsed = 10.000;
-        renderTimer(formatTime(elapsed));
+        timerDisplay.textContent = formatTime(elapsed);
         stopTimer(true); 
         return;
       }
@@ -309,7 +276,7 @@
         timerDisplay.classList.add('hidden-time');
       }
       
-      renderTimer(formatTime(elapsed));
+      timerDisplay.textContent = formatTime(elapsed);
       animationFrameId = requestAnimationFrame(tick);
     }
     
@@ -323,14 +290,14 @@
     actionBtn.textContent = 'Start';
     actionBtn.classList.remove('btn-stop');
     
-    // Un-hide the numbers upon stopping
-    timerDisplay.classList.remove('hidden-time');
+    // Un-hide the numbers and remove active glow upon stopping
+    timerDisplay.classList.remove('hidden-time', 'active');
     
     let finalTime = (performance.now() - startTime) / 1000;
     
     // 10-second timeout fail condition
     if (forceFail || finalTime >= 10.000) {
-      renderTimer("10.000");
+      timerDisplay.textContent = "10.000";
       timerDisplay.classList.add('failed');
       resultMessage.innerHTML = "You are too slow!";
       resultMessage.classList.add('visible');
@@ -349,7 +316,7 @@
     }
     // ==========================================
 
-    renderTimer(formatTime(finalTime));
+    timerDisplay.textContent = formatTime(finalTime);
     
     let diff = Math.abs(5.000 - finalTime);
     
