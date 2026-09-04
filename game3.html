@@ -10,62 +10,34 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="shared.css">
 <style>
-  .crt-overlay{
-    position:fixed; inset:0; z-index:1; pointer-events:none; opacity:0.5; mix-blend-mode:overlay;
-    background:repeating-linear-gradient(to bottom, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 3px);
-  }
-
   header{ position:relative; z-index:2; }
-  .glitch-title{
+  .timer-title{
     font-family:'Space Mono',monospace; font-weight:700; text-transform:uppercase;
-    font-size:clamp(1.5rem, 6vw, 2.5rem); letter-spacing:6px; color:#eafcff;
-    position:relative; text-shadow:0 0 18px rgba(45,212,255,0.5);
+    font-size:clamp(1.4rem, 5.5vw, 2.2rem); letter-spacing:5px; color:#eafcff;
   }
-  .glitch-title::before, .glitch-title::after{
-    content:attr(data-text); position:absolute; left:0; top:0; width:100%; overflow:hidden; color:inherit;
-  }
-  .glitch-title::before{ text-shadow:2px 0 #ff2d78; clip-path:inset(0 0 60% 0); animation:glitchTop 3.4s infinite linear alternate-reverse; }
-  .glitch-title::after{ text-shadow:-2px 0 #2dd4ff; clip-path:inset(60% 0 0 0); animation:glitchBottom 2.6s infinite linear alternate-reverse; }
-  @keyframes glitchTop{ 0%{transform:translate(0,0);} 20%{transform:translate(-2px,-1px);} 40%{transform:translate(2px,1px);} 60%{transform:translate(-1px,1px);} 80%{transform:translate(1px,-1px);} 100%{transform:translate(0,0);} }
-  @keyframes glitchBottom{ 0%{transform:translate(0,0);} 25%{transform:translate(2px,1px);} 50%{transform:translate(-2px,-1px);} 75%{transform:translate(1px,-2px);} 100%{transform:translate(0,0);} }
 
   .timer-panel{
     flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
-    gap:32px; padding:20px; position:relative; z-index:2;
+    gap:20px; padding:20px; position:relative; z-index:2;
   }
 
   .timer-display{
     font-family:'Space Mono',monospace; font-weight:700;
     font-size:clamp(3.2rem, 16vw, 6.5rem); letter-spacing:2px; color:#eafcff;
-    text-shadow:0 0 30px rgba(45,212,255,0.6), 0 0 70px rgba(45,212,255,0.25);
-    transition:color .3s ease, text-shadow .3s ease;
+    transition:opacity .6s ease, color .3s ease;
   }
-  .timer-panel.danger .timer-display{ color:#ff5470; text-shadow:0 0 30px rgba(255,84,112,0.6), 0 0 70px rgba(255,84,112,0.3); }
-  .timer-panel.hidden-phase .timer-display{
-    color:#ff2d78; text-shadow:0 0 24px rgba(255,45,120,0.6);
-    animation:jitter .12s steps(2) infinite;
-  }
-  @keyframes jitter{ 0%{transform:translate(0,0);} 50%{transform:translate(1px,-1px);} 100%{transform:translate(-1px,1px);} }
-
-  .timer-bar-track{
-    width:min(80vw, 420px); height:4px; border-radius:4px; background:rgba(255,255,255,0.08); overflow:hidden;
-  }
-  .timer-bar-fill{
-    height:100%; width:0%; background:linear-gradient(90deg,#2dd4ff,#7c6cf0);
-    box-shadow:0 0 12px rgba(45,212,255,0.7); transition:width .04s linear, background .3s ease;
-  }
-  .timer-panel.danger .timer-bar-fill{ background:linear-gradient(90deg,#ff5470,#ff2d78); box-shadow:0 0 12px rgba(255,84,112,0.7); }
+  .timer-panel.danger .timer-display{ color:#ff5470; }
+  .timer-panel.hidden-phase .timer-display{ opacity:0; }
 
   .timer-btn{
     font-family:'Space Mono',monospace; font-weight:700; letter-spacing:3px; text-transform:uppercase;
-    font-size:0.85rem; padding:14px 40px; border-radius:6px;
+    font-size:0.85rem; padding:14px 40px; border-radius:6px; margin-top:28px;
     border:1px solid rgba(45,212,255,0.5); background:rgba(45,212,255,0.08); color:#2dd4ff;
-    cursor:pointer; transition:background .25s ease, color .25s ease, box-shadow .25s ease, transform .15s ease, border-color .25s ease;
+    cursor:pointer; transition:background .25s ease, color .25s ease, transform .15s ease, border-color .25s ease;
   }
-  .timer-btn:hover{ background:rgba(45,212,255,0.16); box-shadow:0 0 24px rgba(45,212,255,0.35); transform:translateY(-2px); }
+  .timer-btn:hover{ background:rgba(45,212,255,0.16); transform:translateY(-2px); }
   .timer-btn:active{ transform:translateY(0) scale(0.97); }
   .timer-btn.stop{ border-color:rgba(255,45,120,0.6); background:rgba(255,45,120,0.1); color:#ff5470; }
-  .timer-btn.stop:hover{ box-shadow:0 0 24px rgba(255,45,120,0.4); }
   .timer-btn:focus-visible{ outline:2px solid #2dd4ff; outline-offset:3px; }
 
   .timer-result{
@@ -84,7 +56,6 @@
   <div class="bg-grid"></div>
   <div class="bg-orbit-wrap"><svg id="orbit-svg" viewBox="0 0 700 700"></svg></div>
   <canvas id="starfield" aria-hidden="true"></canvas>
-  <div class="crt-overlay"></div>
 
   <button id="settings-btn" class="settings-btn" aria-label="Settings" aria-haspopup="true" aria-expanded="false" type="button">
     <svg viewBox="0 0 24 24">
@@ -103,13 +74,12 @@
   </div>
 
   <header>
-    <h1 class="glitch-title" data-text="STOP AT 5.000">STOP AT 5.000</h1>
+    <h1 class="timer-title">Stop at 5.000</h1>
   </header>
 
   <div class="app-container">
     <div class="timer-panel" id="timer-panel">
       <div class="timer-display" id="timer-display">0.000</div>
-      <div class="timer-bar-track"><div class="timer-bar-fill" id="timer-bar-fill"></div></div>
       <button class="timer-btn" id="timer-btn" type="button">Start</button>
       <div class="timer-result" id="timer-result" aria-live="polite"></div>
     </div>
@@ -142,7 +112,6 @@
 <script>
 (function(){
   var display = document.getElementById('timer-display');
-  var barFill = document.getElementById('timer-bar-fill');
   var btn = document.getElementById('timer-btn');
   var result = document.getElementById('timer-result');
   var panel = document.getElementById('timer-panel');
@@ -150,16 +119,10 @@
   var TIMEOUT = 10.000;
   var HIDE_AFTER = 2.000;
   var DANGER_AFTER = 8.000;
+  var CLOSE_WINDOW_MS = 1000;
   var running = false;
   var startTime = 0;
   var rafId = null;
-
-  function randomDigits(){
-    var whole = Math.floor(Math.random() * 10);
-    var frac = '';
-    for (var i = 0; i < 3; i++) frac += Math.floor(Math.random() * 10);
-    return whole + '.' + frac;
-  }
 
   function tick(){
     if(!running) return;
@@ -168,10 +131,9 @@
       finish(TIMEOUT, true);
       return;
     }
-    display.textContent = elapsed >= HIDE_AFTER ? randomDigits() : elapsed.toFixed(3);
+    display.textContent = elapsed.toFixed(3);
     panel.classList.toggle('hidden-phase', elapsed >= HIDE_AFTER);
     panel.classList.toggle('danger', elapsed >= DANGER_AFTER);
-    barFill.style.width = Math.min(elapsed / TIMEOUT, 1) * 100 + '%';
     rafId = requestAnimationFrame(tick);
   }
 
@@ -179,7 +141,6 @@
     running = true;
     startTime = performance.now();
     display.textContent = '0.000';
-    barFill.style.width = '0%';
     panel.classList.remove('hidden-phase', 'danger');
     btn.textContent = 'Stop';
     btn.classList.add('stop');
@@ -198,7 +159,6 @@
 
     if(timedOut){
       display.textContent = TIMEOUT.toFixed(3);
-      barFill.style.width = '100%';
       result.textContent = "You're too slow.";
       result.classList.add('visible', 'fail');
       return;
@@ -213,10 +173,13 @@
 
     var clamped = Math.min(Math.max(elapsedRaw, 0), TIMEOUT);
     display.textContent = clamped.toFixed(3);
-    barFill.style.width = (clamped / TIMEOUT) * 100 + '%';
 
-    var diffSeconds = (Math.abs(diffMs) / 1000).toFixed(3);
-    result.textContent = '> ' + diffSeconds + 's ' + (diffMs > 0 ? 'late' : 'early') + ' — so close!';
+    if(Math.abs(diffMs) > CLOSE_WINDOW_MS){
+      result.textContent = diffMs > 0 ? 'Too late.' : 'Too early.';
+    } else {
+      var diffSeconds = (Math.abs(diffMs) / 1000).toFixed(3);
+      result.textContent = diffSeconds + 's ' + (diffMs > 0 ? 'late' : 'early') + ' — so close!';
+    }
     result.classList.add('visible', 'miss');
   }
 
@@ -240,18 +203,4 @@
 })();
 </script>
 </body>
-</html>
-<!--
-  GAME 3 — Stop at 5.000 (precision timer, CRT/glitch redesign)
-  ==========================================
-  Slot 3 of 7 in the Cosmic Arcade ecosystem (see index.html for the
-  shared-chrome explanation). Same rules as before — Start/Space begins
-  a stopwatch, Stop/Space again reads out how many ms early/late you
-  were versus the 5.000s target, 10s auto-fails as "too slow", and an
-  exact hit is nudged 1-4ms so it's never literally 0. The look is now
-  a CRT/glitch terminal theme: no card/box, a chromatic-aberration
-  glitch title, scanline overlay, a thin progress bar instead of a
-  ring, and — past 2.000s — the digits are replaced with rapidly
-  randomized decoys (not just faded out) so there's nothing real to
-  read until you stop.
--->
+</html
