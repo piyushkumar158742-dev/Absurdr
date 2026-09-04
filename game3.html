@@ -10,166 +10,70 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,700;1,500&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="shared.css">
 <style>
-  /* ============ Game 3 Specific Styles ============ */
-  .game-3-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    position: relative;
-    z-index: 2;
-    padding-bottom: 5vh;
+  .timer-panel{
+    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:26px; padding:48px 28px; text-align:center; position:relative; overflow:hidden;
+    max-width:560px; margin:0 auto; width:100%;
   }
-
-  /* Logo-style Title */
-  .stop-title-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    margin-bottom: 6vh;
+  .timer-panel::before{
+    content:''; position:absolute; inset:0;
+    background:radial-gradient(circle at 50% 40%, rgba(124,108,240,0.10), transparent 65%);
+    pointer-events:none;
   }
-
-  .stop-title-small {
-    font-family: 'Space Mono', monospace;
-    font-size: clamp(0.75rem, 2.5vw, 1rem);
-    color: var(--text-muted);
-    letter-spacing: 6px;
-    text-transform: uppercase;
-    margin-bottom: 0.5rem;
-    opacity: 0.8;
+  .timer-ring-wrap{
+    position:relative; width:min(62vw, 300px); height:min(62vw, 300px);
+    display:flex; align-items:center; justify-content:center; z-index:2;
   }
-
-  .stop-title-main {
-    font-family: 'Fraunces', serif;
-    font-size: clamp(2.5rem, 7vw, 4.5rem);
-    font-weight: 700;
-    color: #fff;
-    text-transform: uppercase;
-    line-height: 1.1;
-    letter-spacing: -1px;
-    white-space: nowrap;
-    text-shadow: 0 4px 20px rgba(124, 108, 240, 0.4);
+  .timer-ring-wrap svg{ position:absolute; inset:0; width:100%; height:100%; transform:rotate(-90deg); }
+  .timer-ring-track{ fill:none; stroke:rgba(255,255,255,0.07); stroke-width:5; }
+  .timer-ring-arc{
+    fill:none; stroke:var(--nebula-violet); stroke-width:5; stroke-linecap:round;
+    transition:stroke-dashoffset .04s linear, stroke .3s ease;
+    filter:drop-shadow(0 0 8px rgba(124,108,240,0.6));
   }
-  
-  .stop-title-main span {
-    color: #34d97a; /* Neon Green */
-    font-family: 'Space Mono', monospace;
-    text-shadow: 0 0 25px rgba(52, 217, 122, 0.5);
+  .timer-panel.running .timer-ring-arc{ stroke:var(--nebula-rose); filter:drop-shadow(0 0 8px rgba(239,108,155,0.6)); }
+  .timer-display{
+    font-family:'Space Mono',monospace; font-weight:700;
+    font-size:clamp(2.1rem, 9vw, 3.6rem); color:#fff; letter-spacing:1px;
+    text-shadow:0 0 30px rgba(124,108,240,0.45);
   }
-
-  /* Clean Digital Timer (No Squares) */
-  .timer-display {
-    font-family: 'Space Mono', monospace;
-    font-weight: 700;
-    font-size: clamp(4.5rem, 12vw, 8rem);
-    color: #34d97a; /* Neon Green */
-    line-height: 1;
-    margin-bottom: 3.5rem;
-    font-variant-numeric: tabular-nums; /* Keeps width stable so text doesn't jitter */
-    text-shadow: 0 0 30px rgba(52, 217, 122, 0.4);
-    transition: color 0.1s ease, text-shadow 0.3s ease;
+  .timer-target{
+    font-family:'Space Mono',monospace; font-size:0.7rem; letter-spacing:2px;
+    color:var(--text-muted); text-transform:uppercase; margin-top:8px;
   }
-
-  .timer-display.active {
-    text-shadow: 0 0 40px rgba(52, 217, 122, 0.6);
+  .timer-btn{
+    font-family:'Space Mono',monospace; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+    font-size:0.9rem; padding:15px 46px; border-radius:50px; border:none;
+    background:var(--nebula-violet); color:#05060f; cursor:pointer; z-index:2;
+    transition:background .25s ease, transform .15s ease, box-shadow .25s ease;
+    box-shadow:0 0 24px rgba(124,108,240,0.4);
   }
-
-  /* 2-Second Invisibility Mechanic */
-  .timer-display.hidden-time {
-    color: transparent;
-    text-shadow: none;
+  .timer-btn:hover{ transform:translateY(-2px); }
+  .timer-btn:active{ transform:translateY(0) scale(0.97); }
+  .timer-btn.stop{ background:var(--nebula-rose); box-shadow:0 0 24px rgba(239,108,155,0.4); }
+  .timer-btn:focus-visible{ outline:2px solid var(--stellar-gold); outline-offset:3px; }
+  .timer-result{
+    min-height:1.4em; font-family:'Space Mono',monospace;
+    font-size:clamp(0.82rem, 2.4vw, 1rem); max-width:34ch; z-index:2;
+    opacity:0; transform:translateY(6px); transition:opacity .35s ease, transform .35s ease;
   }
-
-  /* End States (when the user stops) */
-  .timer-display.failed {
-    color: #ff5b5b;
-    text-shadow: 0 0 40px rgba(255, 91, 91, 0.6);
+  .timer-result.visible{ opacity:1; transform:translateY(0); }
+  .timer-result.fail{ color:var(--nebula-rose); }
+  .timer-result.miss{ color:var(--stellar-gold); }
+  .timer-hint{
+    font-size:0.68rem; letter-spacing:1px; color:var(--text-muted);
+    text-transform:uppercase; font-family:'Space Mono',monospace; z-index:2;
   }
-
-  .timer-display.close {
-    color: var(--stellar-gold);
-    text-shadow: 0 0 40px rgba(240, 194, 110, 0.6);
-  }
-
-  /* Action Button */
-  .action-btn {
-    background: rgba(52, 217, 122, 0.1);
-    border: 2px solid rgba(52, 217, 122, 0.6);
-    color: #fff;
-    font-family: 'Space Mono', monospace;
-    font-weight: 700;
-    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
-    padding: 1.2rem 4.5rem;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
-    box-shadow: 0 0 25px rgba(52, 217, 122, 0.15);
-    text-transform: uppercase;
-    letter-spacing: 4px;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-  }
-
-  .action-btn:hover {
-    background: rgba(52, 217, 122, 0.25);
-    border-color: #34d97a;
-    box-shadow: 0 0 40px rgba(52, 217, 122, 0.4);
-    transform: translateY(-3px);
-  }
-
-  .action-btn:active {
-    transform: translateY(2px) scale(0.96);
-  }
-
-  /* Stop State Button Styling */
-  .action-btn.btn-stop {
-    background: rgba(255, 91, 91, 0.1);
-    border-color: rgba(255, 91, 91, 0.6);
-    box-shadow: 0 0 25px rgba(255, 91, 91, 0.15);
-  }
-  
-  .action-btn.btn-stop:hover {
-    background: rgba(255, 91, 91, 0.25);
-    border-color: #ff5b5b;
-    box-shadow: 0 0 40px rgba(255, 91, 91, 0.4);
-  }
-
-  .result-message {
-    font-family: 'Inter', sans-serif;
-    font-size: clamp(1rem, 2.5vw, 1.25rem);
-    color: var(--text-muted);
-    margin-top: 2.5rem;
-    height: 1.5em; /* Prevents layout jump when text appears */
-    text-align: center;
-    font-weight: 500;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.4s ease, transform 0.4s ease;
-  }
-
-  .result-message.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  
-  .result-message strong {
-    color: #fff;
-    font-family: 'Space Mono', monospace;
-  }
+  .timer-hint strong{ color:var(--text-primary); }
 </style>
 </head>
-<body data-game-index="2">
+<body data-game-index="3">
 
-  <!-- Shared Backgrounds -->
   <div class="bg-void"></div>
   <div class="bg-grid"></div>
   <div class="bg-orbit-wrap"><svg id="orbit-svg" viewBox="0 0 700 700"></svg></div>
   <canvas id="starfield" aria-hidden="true"></canvas>
 
-  <!-- Settings -->
   <button id="settings-btn" class="settings-btn" aria-label="Settings" aria-haspopup="true" aria-expanded="false" type="button">
     <svg viewBox="0 0 24 24">
       <circle cx="12" cy="5" r="1.6" fill="currentColor"></circle>
@@ -186,26 +90,29 @@
     </div>
   </div>
 
-  <!-- Game Interface -->
+  <header>
+    <h1>Stop at 5.000</h1>
+    <p class="eyebrow">Precision Timer Challenge</p>
+  </header>
+
   <div class="app-container">
-    <div class="game-3-container">
-      
-      <!-- Logo Title -->
-      <div class="stop-title-wrapper">
-        <span class="stop-title-small">Reflex Challenge</span>
-        <div class="stop-title-main">STOP AT <span>5.000</span></div>
+    <div class="glass-panel timer-panel" id="timer-panel">
+      <div class="timer-ring-wrap">
+        <svg viewBox="0 0 120 120" aria-hidden="true">
+          <circle class="timer-ring-track" cx="60" cy="60" r="54"></circle>
+          <circle class="timer-ring-arc" id="timer-ring-arc" cx="60" cy="60" r="54" stroke-dasharray="339.29" stroke-dashoffset="339.29"></circle>
+        </svg>
+        <div style="display:flex; flex-direction:column; align-items:center;">
+          <div class="timer-display" id="timer-display">0.000</div>
+          <div class="timer-target">Target — 5.000s</div>
+        </div>
       </div>
-      
-      <!-- Clean Number Display -->
-      <div class="timer-display" id="timer-display">0.000</div>
-      
-      <button class="action-btn" id="action-btn">Start</button>
-      
-      <div class="result-message" id="result-message"></div>
+      <button class="timer-btn" id="timer-btn" type="button">Start</button>
+      <div class="timer-result" id="timer-result" aria-live="polite"></div>
+      <div class="timer-hint">Press <strong>Space</strong> or tap the button</div>
     </div>
   </div>
 
-  <!-- Shared Navigation -->
   <nav class="game-nav" id="game-nav" aria-label="Game navigation" tabindex="0">
     <button class="game-nav-btn" id="back-game-btn" aria-label="Previous game" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -230,127 +137,112 @@
   </nav>
 
 <script src="shared.js"></script>
-
-<!-- Game 3 Logic -->
 <script>
 (function(){
-  const timerDisplay = document.getElementById('timer-display');
-  const actionBtn = document.getElementById('action-btn');
-  const resultMessage = document.getElementById('result-message');
-  
-  let isRunning = false;
-  let startTime = 0;
-  let animationFrameId = null;
+  var display = document.getElementById('timer-display');
+  var btn = document.getElementById('timer-btn');
+  var result = document.getElementById('timer-result');
+  var panel = document.getElementById('timer-panel');
+  var ringArc = document.getElementById('timer-ring-arc');
+  var CIRC = 2 * Math.PI * 54;
+  var TARGET = 5.000;
+  var TIMEOUT = 10.000;
+  var running = false;
+  var startTime = 0;
+  var rafId = null;
 
-  function formatTime(timeInSeconds) {
-    return timeInSeconds.toFixed(3);
+  function setRing(fraction){
+    var offset = CIRC * (1 - Math.min(Math.max(fraction, 0), 1));
+    ringArc.style.strokeDashoffset = offset;
   }
 
-  function startTimer() {
-    isRunning = true;
-    actionBtn.textContent = 'Stop';
-    actionBtn.classList.add('btn-stop');
-    
-    // Clear old result states and reveal the text
-    timerDisplay.classList.add('active');
-    timerDisplay.classList.remove('failed', 'close', 'hidden-time');
-    resultMessage.classList.remove('visible');
-    
-    startTime = performance.now();
-    
-    function tick() {
-      if (!isRunning) return;
-      
-      let elapsed = (performance.now() - startTime) / 1000;
-      
-      // Auto-fail if taking too long
-      if (elapsed >= 10.000) {
-        elapsed = 10.000;
-        timerDisplay.textContent = formatTime(elapsed);
-        stopTimer(true); 
-        return;
-      }
-      
-      // Exactly after 2 seconds, apply the invisibility mechanic
-      if (elapsed >= 2.000) {
-        timerDisplay.classList.add('hidden-time');
-      }
-      
-      timerDisplay.textContent = formatTime(elapsed);
-      animationFrameId = requestAnimationFrame(tick);
+  function tick(){
+    if(!running) return;
+    var elapsed = (performance.now() - startTime) / 1000;
+    if(elapsed >= TIMEOUT){
+      finish(TIMEOUT, true);
+      return;
     }
-    
-    animationFrameId = requestAnimationFrame(tick);
+    display.textContent = elapsed.toFixed(3);
+    setRing(elapsed / TIMEOUT);
+    rafId = requestAnimationFrame(tick);
   }
 
-  function stopTimer(forceFail = false) {
-    isRunning = false;
-    cancelAnimationFrame(animationFrameId);
-    
-    actionBtn.textContent = 'Start';
-    actionBtn.classList.remove('btn-stop');
-    
-    // Un-hide the numbers and remove active glow upon stopping
-    timerDisplay.classList.remove('hidden-time', 'active');
-    
-    let finalTime = (performance.now() - startTime) / 1000;
-    
-    // 10-second timeout fail condition
-    if (forceFail || finalTime >= 10.000) {
-      timerDisplay.textContent = "10.000";
-      timerDisplay.classList.add('failed');
-      resultMessage.innerHTML = "You are too slow!";
-      resultMessage.classList.add('visible');
+  function start(){
+    running = true;
+    startTime = performance.now();
+    display.textContent = '0.000';
+    setRing(0);
+    btn.textContent = 'Stop';
+    btn.classList.add('stop');
+    panel.classList.add('running');
+    result.classList.remove('visible', 'fail', 'miss');
+    result.textContent = '';
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function finish(elapsedRaw, timedOut){
+    running = false;
+    if(rafId) cancelAnimationFrame(rafId);
+    panel.classList.remove('running');
+    btn.textContent = 'Try Again';
+    btn.classList.remove('stop');
+
+    if(timedOut){
+      display.textContent = TIMEOUT.toFixed(3);
+      setRing(1);
+      result.textContent = "You're too slow.";
+      result.classList.add('visible', 'fail');
       return;
     }
 
-    // ==========================================
-    // TROLL MECHANIC
-    // Prevents exactly stopping on 5.000
-    // ==========================================
-    let formattedStr = formatTime(finalTime);
-    if (formattedStr === "5.000") {
-      const offsets = [0.001, 0.002, 0.003, 0.004, -0.001, -0.002, -0.003, -0.004];
-      const randomOffset = offsets[Math.floor(Math.random() * offsets.length)];
-      finalTime = 5.000 + randomOffset;
+    var diffMs = Math.round((elapsedRaw - TARGET) * 1000);
+    if(diffMs === 0){
+      // Never let it land exactly on target — nudge just off it.
+      var nudge = 1 + Math.floor(Math.random() * 4);
+      diffMs = Math.random() < 0.5 ? -nudge : nudge;
+      elapsedRaw = TARGET + diffMs / 1000;
     }
-    // ==========================================
 
-    timerDisplay.textContent = formatTime(finalTime);
-    
-    let diff = Math.abs(5.000 - finalTime);
-    
-    resultMessage.innerHTML = `You were <strong>${formatTime(diff)}</strong> seconds away.`;
-    resultMessage.classList.add('visible');
-    
-    if (diff <= 0.050) {
-      timerDisplay.classList.add('close'); // Highlight gold if they were close
-    } else if (diff >= 1.000) {
-      timerDisplay.classList.add('failed'); // Highlight red if off by a lot
-    }
+    var clamped = Math.min(Math.max(elapsedRaw, 0), TIMEOUT);
+    display.textContent = clamped.toFixed(3);
+    setRing(clamped / TIMEOUT);
+
+    var diffSeconds = (Math.abs(diffMs) / 1000).toFixed(3);
+    result.textContent = diffSeconds + 's ' + (diffMs > 0 ? 'late' : 'early') + ' — so close!';
+    result.classList.add('visible', 'miss');
   }
 
-  function handleAction() {
-    if (isRunning) {
-      stopTimer();
+  function toggle(){
+    if(running){
+      var elapsed = (performance.now() - startTime) / 1000;
+      finish(elapsed, false);
     } else {
-      startTimer();
+      start();
     }
   }
 
-  actionBtn.addEventListener('click', () => {
-    handleAction();
-    actionBtn.blur();
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.code === 'Space' && !e.repeat) {
+  btn.addEventListener('click', toggle);
+  window.addEventListener('keydown', function(e){
+    if(e.code === 'Space' || e.key === ' ' || e.key === 'Spacebar'){
+      if(e.repeat) return;
       e.preventDefault();
-      handleAction();
+      toggle();
     }
   });
-
 })();
 </script>
 </body>
 </html>
+<!--
+  GAME 4 — Stop at 5.000 (precision timer)
+  ==========================================
+  This is slot 4 of 7 in the Cosmic Arcade ecosystem (see index.html
+  for the shared-chrome explanation). Press Start (or Space) to begin
+  a stopwatch counting up from 0.000; press Stop (or Space again)
+  before the 10.000s timeout to see how close you landed to the
+  5.000s target. Landing exactly on target is deliberately impossible:
+  finish() nudges an exact hit by 1-4ms before displaying the result,
+  so the game can never be "won" outright — it only reports how many
+  milliseconds early or late you were.
+-->
