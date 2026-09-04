@@ -4,19 +4,126 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#05060f">
-<title>Game 3 — Cosmic Arcade</title>
+<title>Stop at 5.000 — Cosmic Arcade</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,700;1,500&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="shared.css">
+<style>
+  /* ============ Game 3 Specific Styles ============ */
+  .game-3-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+  }
+
+  .stop-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(2rem, 5vw, 3rem);
+    color: #fff;
+    margin-bottom: 2rem;
+    text-shadow: 0 2px 24px rgba(124,108,240,0.4);
+    letter-spacing: -1px;
+  }
+  
+  .stop-title span {
+    color: var(--nebula-rose);
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+  }
+
+  .timer-display {
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: clamp(4rem, 12vw, 8rem);
+    color: var(--text-primary);
+    line-height: 1;
+    margin-bottom: 2.5rem;
+    font-variant-numeric: tabular-nums; /* Keeps width stable so text doesn't jitter */
+    text-shadow: 0 0 30px rgba(255, 255, 255, 0.15);
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+  }
+
+  .timer-display.active {
+    color: var(--stellar-gold);
+    text-shadow: 0 0 40px rgba(240, 194, 110, 0.3);
+  }
+
+  .timer-display.failed {
+    color: #ff6767;
+    text-shadow: 0 0 40px rgba(255, 103, 103, 0.3);
+  }
+
+  .timer-display.close {
+    color: #34d97a; /* Emerald green for near misses */
+    text-shadow: 0 0 40px rgba(52, 217, 122, 0.3);
+  }
+
+  .action-btn {
+    background: rgba(124, 108, 240, 0.15);
+    border: 2px solid var(--nebula-violet);
+    color: #fff;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
+    padding: 1rem 3.5rem;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow: 0 0 20px rgba(124, 108, 240, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .action-btn:hover {
+    background: rgba(124, 108, 240, 0.4);
+    box-shadow: 0 0 35px rgba(124, 108, 240, 0.5);
+    transform: translateY(-2px);
+  }
+
+  .action-btn:active {
+    transform: translateY(2px) scale(0.96);
+  }
+
+  .result-message {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    color: var(--text-muted);
+    margin-top: 2rem;
+    height: 1.5em; /* Reserve space so UI doesn't jump */
+    text-align: center;
+    font-weight: 500;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  .result-message.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .result-message strong {
+    color: var(--text-primary);
+    font-family: 'Space Mono', monospace;
+  }
+</style>
 </head>
 <body data-game-index="2">
 
+  <!-- Shared Backgrounds -->
   <div class="bg-void"></div>
   <div class="bg-grid"></div>
   <div class="bg-orbit-wrap"><svg id="orbit-svg" viewBox="0 0 700 700"></svg></div>
   <canvas id="starfield" aria-hidden="true"></canvas>
 
+  <!-- Settings -->
   <button id="settings-btn" class="settings-btn" aria-label="Settings" aria-haspopup="true" aria-expanded="false" type="button">
     <svg viewBox="0 0 24 24">
       <circle cx="12" cy="5" r="1.6" fill="currentColor"></circle>
@@ -33,14 +140,20 @@
     </div>
   </div>
 
+  <!-- Game Interface -->
   <div class="app-container">
-    <div class="stage">
-      <span class="stage-number">Slot 3 of 7</span>
-      <h2>Game 3</h2>
-      <p>Not built yet — this is a reserved placeholder in the Cosmic Arcade ecosystem.</p>
+    <div class="game-3-container">
+      <h1 class="stop-title">stop at <span>5.000</span></h1>
+      
+      <div class="timer-display" id="timer-display">0.000</div>
+      
+      <button class="action-btn" id="action-btn">Start</button>
+      
+      <div class="result-message" id="result-message"></div>
     </div>
   </div>
 
+  <!-- Shared Navigation -->
   <nav class="game-nav" id="game-nav" aria-label="Game navigation" tabindex="0">
     <button class="game-nav-btn" id="back-game-btn" aria-label="Previous game" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -64,24 +177,123 @@
     </button>
   </nav>
 
+<!-- Ecosystem Shared Scripts -->
 <script src="shared.js"></script>
+
+<!-- Game 3 Logic -->
+<script>
+(function(){
+  const timerDisplay = document.getElementById('timer-display');
+  const actionBtn = document.getElementById('action-btn');
+  const resultMessage = document.getElementById('result-message');
+  
+  let isRunning = false;
+  let startTime = 0;
+  let animationFrameId = null;
+
+  function formatTime(timeInSeconds) {
+    return timeInSeconds.toFixed(3);
+  }
+
+  function startTimer() {
+    isRunning = true;
+    actionBtn.textContent = 'Stop';
+    
+    // Reset visuals
+    timerDisplay.classList.remove('failed', 'close');
+    timerDisplay.classList.add('active');
+    resultMessage.classList.remove('visible');
+    
+    startTime = performance.now();
+    
+    function tick() {
+      if (!isRunning) return;
+      
+      let elapsed = (performance.now() - startTime) / 1000;
+      
+      // Auto-fail if taking too long
+      if (elapsed >= 10.000) {
+        elapsed = 10.000;
+        timerDisplay.textContent = formatTime(elapsed);
+        stopTimer(true); 
+        return;
+      }
+      
+      timerDisplay.textContent = formatTime(elapsed);
+      animationFrameId = requestAnimationFrame(tick);
+    }
+    
+    animationFrameId = requestAnimationFrame(tick);
+  }
+
+  function stopTimer(forceFail = false) {
+    isRunning = false;
+    cancelAnimationFrame(animationFrameId);
+    actionBtn.textContent = 'Start';
+    timerDisplay.classList.remove('active');
+    
+    let finalTime = (performance.now() - startTime) / 1000;
+    
+    // Check for 10-second timeout
+    if (forceFail || finalTime >= 10.000) {
+      timerDisplay.textContent = "10.000";
+      timerDisplay.classList.add('failed');
+      resultMessage.innerHTML = "You are too slow!";
+      resultMessage.classList.add('visible');
+      return;
+    }
+
+    // ==========================================
+    // THE TROLL MECHANIC
+    // ==========================================
+    let formattedStr = formatTime(finalTime);
+    if (formattedStr === "5.000") {
+      // Pick a random offset between 1 and 4 milliseconds (positive or negative)
+      const offsets = [0.001, 0.002, 0.003, 0.004, -0.001, -0.002, -0.003, -0.004];
+      const randomOffset = offsets[Math.floor(Math.random() * offsets.length)];
+      finalTime = 5.000 + randomOffset;
+    }
+    // ==========================================
+
+    // Update screen to the "final" (potentially trolled) time
+    timerDisplay.textContent = formatTime(finalTime);
+    
+    // Calculate difference
+    let diff = Math.abs(5.000 - finalTime);
+    
+    // Present the result
+    resultMessage.innerHTML = `You were <strong>${formatTime(diff)}</strong> seconds away.`;
+    resultMessage.classList.add('visible');
+    
+    if (diff <= 0.050) {
+      timerDisplay.classList.add('close');
+    }
+  }
+
+  function handleAction() {
+    if (isRunning) {
+      stopTimer();
+    } else {
+      startTimer();
+    }
+  }
+
+  // Button Click event
+  actionBtn.addEventListener('click', () => {
+    handleAction();
+    actionBtn.blur(); // Remove focus so pressing spacebar later doesn't click it twice
+  });
+
+  // Spacebar event (globally)
+  document.addEventListener('keydown', (e) => {
+    // Only trigger if Spacebar is pressed, and not holding modifier keys
+    if (e.code === 'Space' && !e.repeat) {
+      e.preventDefault(); // Stop page scrolling
+      handleAction();
+    }
+  });
+
+})();
+</script>
 </body>
 </html>
-<!--
-  GAME 3 — RESERVED SLOT (not yet built)
-  ==========================================
-  This is slot 3 of 7 in the Cosmic Arcade ecosystem (see index.html,
-  the Cosmic Calendar, for the first real game and the shared-chrome
-  explanation). No concept has been chosen for this slot yet — its
-  currently just a centered "Game 3" label inside the shared .stage
-  layout so the back/random/next game nav has something to land on.
-
-  For whoever (human or AI) builds this next: replace the .stage block
-  in <body> with the real game markup, add any game-specific CSS in a
-  <style> block in <head> (after the shared.css link, same pattern as
-  index.html), and add game-specific JS in a <script> block after
-  shared.js. Leave shared.css/shared.js untouched and keep the
-  data-game-index attribute on <body> as-is (it's what tells the
-  shared nav which slot this page is) — then update THIS comment to
-  describe the finished game's idea instead of "not yet built".
--->
