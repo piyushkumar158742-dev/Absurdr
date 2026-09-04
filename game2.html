@@ -773,13 +773,13 @@ function downloadPDF() {
       pdf.setFont('helvetica', 'bold'); pdf.setFontSize(9.5); pdf.setTextColor(20);
       pdf.text(item.name, textX, y);
       pdf.text(formatShorthand(item.price * qty), pageW - marginX, y, { align: 'right' });
-      y += 0.13;
+      y += 0.14;
       pdf.setFont('helvetica', 'normal'); pdf.setFontSize(7); pdf.setTextColor(150);
       pdf.text(`${qty} x ${formatShorthand(item.price)}`, textX, y);
-      y += 0.1;
+      y += 0.16;
       pdf.setDrawColor(235); pdf.setLineWidth(0.005);
       pdf.line(marginX, y, pageW - marginX, y);
-      y += 0.1;
+      y += 0.18;
     }
   });
 
