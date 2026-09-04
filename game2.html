@@ -113,9 +113,127 @@ input[type="text"]::placeholder { color: #4b5563; }
 @media (max-width: 449px) {
   .item-card input[type="text"] { flex: 0 1 auto !important; width: 24px !important; max-width: 24px !important; margin: 0 !important; }
 }
+
+/* ============ SETTINGS BUTTON & PANEL ============ */
+.settings-btn{
+  width:40px; height:40px; border-radius:50%; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(255,255,255,0.06);
+  border:1px solid var(--border); color:#9aa1ad;
+  cursor:pointer; transition:background .25s ease, color .25s ease, border-color .25s ease;
+}
+.settings-btn:hover{ background:rgba(255,255,255,0.12); color:var(--emerald); border-color:var(--emerald); }
+.settings-btn:focus-visible{ outline:2px solid var(--emerald); outline-offset:2px; }
+.settings-btn svg{ width:17px; height:17px; }
+
+.settings-panel{
+  position:fixed; top:92px; right:16px;
+  width:min(260px, 80vw);
+  background:rgba(10,10,12,0.96);
+  backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+  border:1px solid var(--border); border-radius:16px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.55); padding:16px; z-index:60;
+  opacity:0; pointer-events:none; transform:translateY(-8px);
+  transition:opacity .25s ease, transform .25s ease;
+}
+@media(min-width:640px){ .settings-panel{ right:32px; } }
+.settings-panel.open{ opacity:1; pointer-events:auto; transform:translateY(0); }
+.settings-panel h2{
+  font-family: var(--font-mono); font-size:0.7rem; letter-spacing:2px;
+  text-transform:uppercase; color:#9aa1ad; margin-bottom:12px;
+}
+.settings-row{ display:flex; align-items:center; justify-content:space-between; padding:8px 0; }
+.settings-row span{ font-size:0.88rem; color:var(--text); }
+.settings-toggle{
+  width:38px; height:21px; border-radius:20px;
+  background:rgba(255,255,255,0.12); border:1px solid var(--border);
+  position:relative; cursor:pointer; transition:background .2s ease; flex-shrink:0;
+}
+.settings-toggle::after{
+  content:''; position:absolute; top:2px; left:2px;
+  width:15px; height:15px; border-radius:50%;
+  background:#9aa1ad; transition:transform .2s ease, background .2s ease;
+}
+.settings-toggle.on{ background:rgba(52,217,122,0.3); border-color:var(--emerald); }
+.settings-toggle.on::after{ transform:translateX(17px); background:var(--emerald); }
+
+/* ============ GAME NAV — bottom bar ============ */
+.game-nav {
+  position: fixed; left: 50%; bottom:16px;
+  transform: translateX(-50%);
+  display: flex; align-items: center; gap: 4px;
+  background: rgba(10,10,12,0.96);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border); padding: 6px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.55); z-index: 60;
+  border-radius: 50px;
+}
+.game-nav-btn {
+  background: transparent; border: none; color: #9aa1ad;
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background .25s ease, color .25s ease;
+}
+.game-nav-btn svg { width: 18px; height: 18px; }
+.game-nav-btn:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+.game-nav-btn:focus-visible { outline: 2px solid var(--emerald); outline-offset: 2px; }
+.game-nav-btn.random-btn { color: var(--emerald); }
+.game-nav-btn.random-btn:hover { background: rgba(52,217,122,0.14); }
+
+@media (min-width: 992px) {
+  .game-nav {
+    opacity: 0;
+    transform: translate(-50%, 150%);
+    transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    pointer-events: none;
+  }
+  .game-nav.desktop-visible {
+    opacity: 1;
+    transform: translate(-50%, 0);
+    pointer-events: auto;
+  }
+}
+
+@media (max-width: 991px) {
+  .game-nav {
+    left: auto; right: 20px; transform: none;
+    width: 56px; height: 56px; padding: 0;
+    background: transparent; border: none; box-shadow: none;
+    backdrop-filter: none; -webkit-backdrop-filter: none;
+    cursor: pointer;
+  }
+  .game-nav::before {
+    content: '';
+    position: absolute; inset: 0; border-radius: 16px;
+    background: rgba(10,10,12,0.96);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.55);
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='%2334d97a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='3' y='3' width='18' height='18' rx='4'%3E%3C/rect%3E%3Ccircle cx='8' cy='8' r='1.3' fill='%2334d97a' stroke='none'%3E%3C/circle%3E%3Ccircle cx='16' cy='8' r='1.3' fill='%2334d97a' stroke='none'%3E%3C/circle%3E%3Ccircle cx='12' cy='12' r='1.3' fill='%2334d97a' stroke='none'%3E%3C/circle%3E%3Ccircle cx='8' cy='16' r='1.3' fill='%2334d97a' stroke='none'%3E%3C/circle%3E%3Ccircle cx='16' cy='16' r='1.3' fill='%2334d97a' stroke='none'%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: center; background-size: 22px 22px;
+    transition: opacity 0.25s ease;
+  }
+  .game-nav.mobile-expanded::before { opacity: 0; }
+  .game-nav-btn {
+    position: absolute; right: 0; bottom: 62px;
+    width: 52px; height: 52px; border-radius: 16px;
+    background: rgba(10,10,12,0.96);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.55);
+    opacity: 0; transform: translateY(14px) scale(0.85); pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.32s cubic-bezier(0.2,0.8,0.2,1);
+  }
+  .game-nav-btn:nth-child(1){ bottom: 62px;  transition-delay: 0s; }
+  .game-nav-btn:nth-child(2){ bottom: 124px; transition-delay: 0.04s; }
+  .game-nav-btn:nth-child(3){ bottom: 186px; transition-delay: 0.08s; }
+  .game-nav.mobile-expanded .game-nav-btn {
+    opacity: 1; transform: translateY(0) scale(1); pointer-events: auto;
+  }
+}
 </style>
 </head>
-<body class="pt-[90px] pb-16 antialiased">
+<body class="pt-[90px] pb-16 antialiased" data-game-index="1">
 
 <header class="fixed top-0 left-0 right-0 h-[80px] bg-[#030303]/85 backdrop-blur-xl border-b border-white/10 z-50 flex items-center justify-between px-4 sm:px-8 shadow-2xl">
   <div class="flex items-center gap-3 w-1/3 sm:w-1/4">
@@ -127,13 +245,28 @@ input[type="text"]::placeholder { color: #4b5563; }
     <span class="price-font font-bold text-3xl sm:text-4xl tracking-tight gradient-text drop-shadow-[0_2px_15px_rgba(52,217,122,0.2)]" id="total-spent">$0</span>
   </div>
 
-  <div class="w-1/3 sm:w-1/4 flex justify-end">
+  <div class="w-1/3 sm:w-1/4 flex justify-end items-center gap-2">
+    <button id="settings-btn" class="settings-btn" aria-label="Settings" aria-haspopup="true" aria-expanded="false" type="button">
+      <svg viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="5" r="1.6" fill="currentColor"></circle>
+        <circle cx="12" cy="12" r="1.6" fill="currentColor"></circle>
+        <circle cx="12" cy="19" r="1.6" fill="currentColor"></circle>
+      </svg>
+    </button>
     <button onclick="openReceipt()" class="bg-white text-black hover:bg-gray-200 font-bold py-2.5 px-4 sm:px-7 rounded-full text-sm transition-all shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:shadow-[0_0_25px_rgba(255,255,255,0.25)] active:scale-95 flex items-center gap-2">
       <svg class="w-4 h-4 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
       <span>Receipt</span>
     </button>
   </div>
 </header>
+
+<div class="settings-panel" id="settings-panel" role="dialog" aria-label="Settings">
+  <h2>Settings</h2>
+  <div class="settings-row">
+    <span>Sound</span>
+    <button class="settings-toggle" id="sound-toggle" role="switch" aria-checked="true" type="button"></button>
+  </div>
+</div>
 
 <div class="max-w-[1500px] mx-auto px-3 sm:px-6">
   <div id="items-grid" class="grid grid-cols-1 min-[450px]:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 items-stretch"></div>
@@ -179,11 +312,34 @@ input[type="text"]::placeholder { color: #4b5563; }
     </div>
     <h2 class="text-xl sm:text-2xl font-black text-white tracking-widest uppercase mb-2">Cart is Empty</h2>
     <p class="text-gray-500 text-sm font-mono uppercase tracking-widest mb-8">No Items In The Cart</p>
-    <button onclick="closeEmptyCart()" class="w-full bg-white hover:bg-gray-200 text-black font-bold py-3.5 rounded-xl flex items-center justify-center transition-transform active:scale-[0.98]">
+        <button onclick="closeEmptyCart()" class="w-full bg-white hover:bg-gray-200 text-black font-bold py-3.5 rounded-xl flex items-center justify-center transition-transform active:scale-[0.98]">
       Continue Shopping
     </button>
   </div>
 </div>
+
+<nav class="game-nav" id="game-nav" aria-label="Game navigation" tabindex="0">
+  <button class="game-nav-btn" id="back-game-btn" aria-label="Previous game" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M16.5 5 7.5 12l9 7Z"></path>
+    </svg>
+  </button>
+  <button class="game-nav-btn random-btn" id="random-game-btn" aria-label="Random game" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="4"></rect>
+      <circle cx="8" cy="8" r="1.3" fill="currentColor" stroke="none"></circle>
+      <circle cx="16" cy="8" r="1.3" fill="currentColor" stroke="none"></circle>
+      <circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"></circle>
+      <circle cx="8" cy="16" r="1.3" fill="currentColor" stroke="none"></circle>
+      <circle cx="16" cy="16" r="1.3" fill="currentColor" stroke="none"></circle>
+    </svg>
+  </button>
+  <button class="game-nav-btn" id="next-game-btn" aria-label="Next game" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M7.5 5l9 7-9 7Z"></path>
+    </svg>
+  </button>
+</nav>
 
 <script>
 // ==========================================
@@ -820,6 +976,125 @@ let userRegion = 'Unknown';
 fetch('https://ipapi.co/json/').then(r => r.json()).then(data => {
   userRegion = [data.region, data.country_name].filter(Boolean).join(', ') || 'Unknown';
 }).catch(() => { userRegion = 'Unknown'; });
+
+// ==========================================
+// 6. SHARED ECOSYSTEM CHROME (settings + game nav)
+// ==========================================
+(function(){
+  var settingsBtn = document.getElementById('settings-btn');
+  var settingsPanel = document.getElementById('settings-panel');
+  var soundToggle = document.getElementById('sound-toggle');
+  var soundOn = true;
+
+  function setToggleState(btn, on){
+    if(!btn) return;
+    btn.classList.toggle('on', on);
+    btn.setAttribute('aria-checked', on ? 'true' : 'false');
+  }
+  setToggleState(soundToggle, soundOn);
+
+  if(settingsBtn && settingsPanel){
+    settingsBtn.addEventListener('click', function(){
+      var open = settingsPanel.classList.toggle('open');
+      settingsBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    document.addEventListener('click', function(e){
+      if(settingsPanel.classList.contains('open') &&
+         !settingsPanel.contains(e.target) &&
+         !settingsBtn.contains(e.target)){
+        settingsPanel.classList.remove('open');
+        settingsBtn.setAttribute('aria-expanded','false');
+      }
+    });
+  }
+  if(soundToggle){
+    soundToggle.addEventListener('click', function(){
+      soundOn = !soundOn;
+      setToggleState(soundToggle, soundOn);
+    });
+  }
+
+  var GAMES = [
+    { name:"Cosmic Calendar", url:"index.html" },
+    { name:"Block Market", url:"game2.html" },
+    { name:"Game 3", url:"game3.html" },
+    { name:"Game 4", url:"game4.html" },
+    { name:"Game 5", url:"game5.html" },
+    { name:"Game 6", url:"game6.html" },
+    { name:"Game 7", url:"game7.html" }
+  ];
+  var currentGameIndex = parseInt(document.body.getAttribute('data-game-index'), 10) || 0;
+
+  function loadGame(idx){
+    idx = ((idx % GAMES.length) + GAMES.length) % GAMES.length;
+    if(idx === currentGameIndex) return;
+    if (window.innerWidth < 992) { sessionStorage.setItem('navExpanded', '1'); }
+    window.location.href = GAMES[idx].url;
+  }
+
+  function wireNavButton(id, handler){
+    var el = document.getElementById(id);
+    if(el){ el.addEventListener('click', handler); }
+  }
+  wireNavButton('back-game-btn', function(){ loadGame(currentGameIndex-1); });
+  wireNavButton('random-game-btn', function(){
+    var idx;
+    do{ idx = Math.floor(Math.random()*GAMES.length); } while(idx===currentGameIndex && GAMES.length>1);
+    loadGame(idx);
+  });
+  wireNavButton('next-game-btn', function(){ loadGame(currentGameIndex+1); });
+
+  var navBar = document.querySelector('.game-nav');
+  if (navBar) {
+    document.addEventListener('mousemove', function(e) {
+      if (window.innerWidth >= 992) {
+        var revealZone = Math.max(140, window.innerHeight * 0.18);
+        if (window.innerHeight - e.clientY < revealZone) {
+          navBar.classList.add('desktop-visible');
+        } else {
+          navBar.classList.remove('desktop-visible');
+        }
+      }
+    });
+
+    var collapseTimeout;
+    navBar.addEventListener('click', function(e) {
+      if (window.innerWidth < 992) {
+        if (!navBar.classList.contains('mobile-expanded')) {
+          e.preventDefault();
+          navBar.classList.add('mobile-expanded');
+          resetCollapseTimeout();
+        }
+      }
+    });
+    document.addEventListener('click', function(e) {
+      if (window.innerWidth < 992 && navBar.classList.contains('mobile-expanded')) {
+         if (!navBar.contains(e.target)) {
+           navBar.classList.remove('mobile-expanded');
+         }
+      }
+    });
+    navBar.querySelectorAll('.game-nav-btn').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+         if (window.innerWidth < 992) {
+           resetCollapseTimeout();
+           e.stopPropagation();
+         }
+      });
+    });
+    function resetCollapseTimeout() {
+      clearTimeout(collapseTimeout);
+      collapseTimeout = setTimeout(function() {
+        navBar.classList.remove('mobile-expanded');
+      }, 10000);
+    }
+    if (window.innerWidth < 992 && sessionStorage.getItem('navExpanded') === '1') {
+      sessionStorage.removeItem('navExpanded');
+      navBar.classList.add('mobile-expanded');
+      resetCollapseTimeout();
+    }
+  }
+})();
 
 // Initialize
 renderGrid();
