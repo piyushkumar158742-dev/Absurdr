@@ -22,117 +22,137 @@
     z-index: 2;
   }
 
-  /* Logo-style Title */
-  .stop-title {
+  /* Logo-style Title - Moved Up */
+  .stop-title-wrapper {
     position: absolute;
-    top: 10vh;
+    top: 5vh; /* Moved higher up */
     display: flex;
     flex-direction: column;
     align-items: center;
-    font-family: 'Inter', sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 8px;
-    font-size: clamp(0.8rem, 2vw, 1.2rem);
+    text-align: center;
+    width: 100%;
+  }
+
+  .stop-title-small {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(0.7rem, 2vw, 1rem);
     color: var(--text-muted);
-    user-select: none;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: -5px;
+  }
+
+  .stop-title-main {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    line-height: 1.1;
+    letter-spacing: -2px;
+    text-shadow: 0 0 20px rgba(52, 217, 122, 0.4), 0 4px 10px rgba(0,0,0,0.5);
   }
   
-  .stop-title .logo-highlight {
+  .stop-title-main span {
+    color: #34d97a; /* Neon Green */
     font-family: 'Space Mono', monospace;
-    font-size: clamp(2.5rem, 6vw, 4.5rem);
-    font-weight: 700;
-    letter-spacing: -2px;
-    margin-top: 4px;
-    background: linear-gradient(135deg, #ffffff 0%, var(--nebula-violet) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 4px 20px rgba(124,108,240,0.4));
   }
 
   /* Digital Rectangular Timer */
   .timer-display {
     display: flex;
-    gap: 8px;
-    margin-top: 4vh;
-    margin-bottom: 3.5rem;
+    gap: 12px;
+    margin-top: 8vh;
+    margin-bottom: 4rem;
   }
 
+  /* Explicit Rectangles for numbers AND the dot */
   .digit-box {
-    width: clamp(45px, 10vw, 75px);
-    height: clamp(65px, 14vw, 100px);
-    background: rgba(52, 217, 122, 0.05);
-    border: 2px solid rgba(52, 217, 122, 0.4);
-    border-radius: 12px;
+    width: clamp(50px, 12vw, 85px);
+    height: clamp(75px, 18vw, 120px);
+    background: #081a10; /* Very dark green */
+    border: 3px solid #34d97a; /* Bright green border */
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #34d97a; /* Green numbers */
+    color: #34d97a; /* Neon green numbers */
     font-family: 'Space Mono', monospace;
     font-weight: 700;
-    font-size: clamp(2.5rem, 6vw, 4.5rem);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 0 15px rgba(52, 217, 122, 0.1);
-    transition: color 0.1s ease, border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
-    text-shadow: 0 0 15px rgba(52, 217, 122, 0.5);
+    font-size: clamp(3rem, 8vw, 5.5rem);
+    box-shadow: 0 0 20px rgba(52, 217, 122, 0.2), inset 0 0 15px rgba(52, 217, 122, 0.15);
+    text-shadow: 0 0 15px rgba(52, 217, 122, 0.8);
+    transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
   }
 
+  /* The dot also gets a rectangle */
   .digit-box.dot {
-    width: clamp(20px, 4vw, 30px);
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    color: rgba(255, 255, 255, 0.3);
+    width: clamp(30px, 7vw, 45px); /* Slightly narrower box */
     align-items: flex-end;
-    padding-bottom: 15px;
-    text-shadow: none;
+    padding-bottom: 10px;
   }
 
-  /* Invisible Time Mechanic */
-  .timer-display.hidden-time .digit-box:not(.dot) {
+  /* 2-Second Invisibility Mechanic */
+  .timer-display.hidden-time .digit-box {
     color: transparent;
     text-shadow: none;
+    /* The green boxes stay visible, but the numbers inside vanish */
   }
 
-  /* End States */
-  .timer-display.failed .digit-box:not(.dot) {
+  /* End States (when the user stops) */
+  .timer-display.failed .digit-box {
     color: #ff6767;
-    border-color: rgba(255, 103, 103, 0.4);
-    background: rgba(255, 103, 103, 0.05);
-    box-shadow: inset 0 0 15px rgba(255, 103, 103, 0.1);
-    text-shadow: 0 0 15px rgba(255, 103, 103, 0.5);
+    border-color: #ff6767;
+    background: #1a0808;
+    box-shadow: 0 0 20px rgba(255, 103, 103, 0.2), inset 0 0 15px rgba(255, 103, 103, 0.15);
+    text-shadow: 0 0 15px rgba(255, 103, 103, 0.8);
   }
 
-  .timer-display.close .digit-box:not(.dot) {
+  .timer-display.close .digit-box {
     color: var(--stellar-gold);
-    border-color: rgba(240, 194, 110, 0.5);
-    background: rgba(240, 194, 110, 0.08);
-    box-shadow: inset 0 0 20px rgba(240, 194, 110, 0.15);
-    text-shadow: 0 0 20px rgba(240, 194, 110, 0.6);
+    border-color: var(--stellar-gold);
+    background: #1a1508;
+    box-shadow: 0 0 20px rgba(240, 194, 110, 0.2), inset 0 0 15px rgba(240, 194, 110, 0.15);
+    text-shadow: 0 0 15px rgba(240, 194, 110, 0.8);
   }
 
+  /* Action Button */
   .action-btn {
-    background: rgba(124, 108, 240, 0.15);
-    border: 2px solid var(--nebula-violet);
+    background: rgba(52, 217, 122, 0.1);
+    border: 2px solid #34d97a;
     color: #fff;
     font-family: 'Space Mono', monospace;
     font-weight: 700;
     font-size: clamp(1.2rem, 3vw, 1.8rem);
-    padding: 1rem 3.5rem;
+    padding: 1.2rem 4rem;
     border-radius: 50px;
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
-    box-shadow: 0 0 20px rgba(124, 108, 240, 0.2);
+    transition: all 0.15s ease;
+    box-shadow: 0 0 25px rgba(52, 217, 122, 0.2);
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 3px;
   }
 
   .action-btn:hover {
-    background: rgba(124, 108, 240, 0.4);
-    box-shadow: 0 0 35px rgba(124, 108, 240, 0.5);
-    transform: translateY(-2px);
+    background: rgba(52, 217, 122, 0.3);
+    box-shadow: 0 0 40px rgba(52, 217, 122, 0.5);
+    transform: translateY(-3px);
   }
 
   .action-btn:active {
-    transform: translateY(2px) scale(0.96);
+    transform: translateY(2px) scale(0.95);
+  }
+
+  /* Stop State Button Styling */
+  .action-btn.btn-stop {
+    background: rgba(255, 103, 103, 0.1);
+    border-color: #ff6767;
+    box-shadow: 0 0 25px rgba(255, 103, 103, 0.2);
+  }
+  
+  .action-btn.btn-stop:hover {
+    background: rgba(255, 103, 103, 0.3);
+    box-shadow: 0 0 40px rgba(255, 103, 103, 0.5);
   }
 
   .result-message {
@@ -140,7 +160,7 @@
     font-size: clamp(1rem, 2.5vw, 1.25rem);
     color: var(--text-muted);
     margin-top: 2.5rem;
-    height: 1.5em; /* Reserve space so UI doesn't jump */
+    height: 1.5em;
     text-align: center;
     font-weight: 500;
     opacity: 0;
@@ -154,7 +174,7 @@
   }
   
   .result-message strong {
-    color: var(--text-primary);
+    color: #fff;
     font-family: 'Space Mono', monospace;
   }
 </style>
@@ -187,13 +207,16 @@
   <!-- Game Interface -->
   <div class="app-container">
     <div class="game-3-container">
-      <div class="stop-title">
-        Target Protocol
-        <div class="logo-highlight">STOP AT 5.000</div>
+      
+      <!-- Logo Title -->
+      <div class="stop-title-wrapper">
+        <span class="stop-title-small">Reflex Challenge</span>
+        <div class="stop-title-main">STOP AT <span>5.000</span></div>
       </div>
       
+      <!-- Green Rectangles Display -->
       <div class="timer-display" id="timer-display">
-        <!-- Rendered by JS -->
+        <!-- Javascript fills this -->
       </div>
       
       <button class="action-btn" id="action-btn">Start</button>
@@ -226,7 +249,6 @@
     </button>
   </nav>
 
-<!-- Ecosystem Shared Scripts -->
 <script src="shared.js"></script>
 
 <!-- Game 3 Logic -->
@@ -244,23 +266,26 @@
     return timeInSeconds.toFixed(3);
   }
 
-  // Parses the string and creates distinct boxes for each character
+  // Renders the time into the individual green rectangles
   function renderTimer(timeStr) {
     const chars = timeStr.split('');
     timerDisplay.innerHTML = chars.map(c => {
-      if(c === '.') return `<div class="digit-box dot">.</div>`;
+      if(c === '.') {
+        return `<div class="digit-box dot">.</div>`;
+      }
       return `<div class="digit-box">${c}</div>`;
     }).join('');
   }
 
-  // Initial render
+  // Set initial display
   renderTimer("0.000");
 
   function startTimer() {
     isRunning = true;
     actionBtn.textContent = 'Stop';
+    actionBtn.classList.add('btn-stop');
     
-    // Reset visuals
+    // Clear old result states and reveal the text
     timerDisplay.classList.remove('failed', 'close', 'hidden-time');
     resultMessage.classList.remove('visible');
     
@@ -279,7 +304,7 @@
         return;
       }
       
-      // Invisible time mechanic
+      // Exactly after 2 seconds, apply the invisibility mechanic
       if (elapsed >= 2.000) {
         timerDisplay.classList.add('hidden-time');
       }
@@ -294,12 +319,16 @@
   function stopTimer(forceFail = false) {
     isRunning = false;
     cancelAnimationFrame(animationFrameId);
+    
     actionBtn.textContent = 'Start';
-    timerDisplay.classList.remove('hidden-time'); // Reveal the time immediately
+    actionBtn.classList.remove('btn-stop');
+    
+    // Un-hide the numbers upon stopping
+    timerDisplay.classList.remove('hidden-time');
     
     let finalTime = (performance.now() - startTime) / 1000;
     
-    // Check for 10-second timeout
+    // 10-second timeout fail condition
     if (forceFail || finalTime >= 10.000) {
       renderTimer("10.000");
       timerDisplay.classList.add('failed');
@@ -309,32 +338,28 @@
     }
 
     // ==========================================
-    // THE TROLL MECHANIC
+    // TROLL MECHANIC
+    // Prevents exactly stopping on 5.000
     // ==========================================
     let formattedStr = formatTime(finalTime);
     if (formattedStr === "5.000") {
-      // Pick a random offset between 1 and 4 milliseconds (positive or negative)
       const offsets = [0.001, 0.002, 0.003, 0.004, -0.001, -0.002, -0.003, -0.004];
       const randomOffset = offsets[Math.floor(Math.random() * offsets.length)];
       finalTime = 5.000 + randomOffset;
     }
     // ==========================================
 
-    // Update screen to the "final" (potentially trolled) time
     renderTimer(formatTime(finalTime));
     
-    // Calculate difference
     let diff = Math.abs(5.000 - finalTime);
     
-    // Present the result
     resultMessage.innerHTML = `You were <strong>${formatTime(diff)}</strong> seconds away.`;
     resultMessage.classList.add('visible');
     
-    // Color coding based on how close they were
     if (diff <= 0.050) {
-      timerDisplay.classList.add('close'); // Gold styling
+      timerDisplay.classList.add('close'); // Highlight gold if they were close
     } else if (diff >= 1.000) {
-      timerDisplay.classList.add('failed'); // Red styling if they were really far off
+      timerDisplay.classList.add('failed'); // Highlight red if off by a lot
     }
   }
 
@@ -346,17 +371,14 @@
     }
   }
 
-  // Button Click event
   actionBtn.addEventListener('click', () => {
     handleAction();
-    actionBtn.blur(); // Remove focus so pressing spacebar later doesn't click it twice
+    actionBtn.blur();
   });
 
-  // Spacebar event (globally)
   document.addEventListener('keydown', (e) => {
-    // Only trigger if Spacebar is pressed, and not holding modifier keys
     if (e.code === 'Space' && !e.repeat) {
-      e.preventDefault(); // Stop page scrolling
+      e.preventDefault();
       handleAction();
     }
   });
