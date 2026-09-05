@@ -79,32 +79,31 @@
   .timer-result.fail { color: #ff5470; }
   .timer-result.miss { color: #2dd4ff; }
 
-  /* Share button: ONE mechanism controls visibility — the .visible class.
-     No inline style.display anywhere, so there's nothing to fight it. */
+  /* Redesigned Official X Button */
   .share-btn {
-  font-family: 'Space Mono', monospace;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  font-size: 0.78rem;
-  padding: 11px 28px;
-  border-radius: 6px;
-  margin-top: 6px;
-  border: 1px solid rgba(255,255,255,0.2);
-  background: rgba(255,255,255,0.05);
-  color: #eafcff;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  opacity: 0;
-  transform: translateY(6px);
-  pointer-events: none;
-  transition: opacity .35s ease, transform .35s ease, background .25s ease, border-color .25s ease;
-}
-.share-btn.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
-.share-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.35); }
-.share-btn svg { width: 13px; height: 13px; }
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    padding: 12px 28px;
+    border-radius: 9999px; /* Pill shape */
+    margin-top: 10px;
+    border: 1px solid #333;
+    background: #000000;
+    color: #ffffff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    transform: translateY(6px);
+    pointer-events: none;
+    transition: opacity .35s ease, transform .35s ease, background .2s ease;
+  }
+  .share-btn.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  .share-btn:hover { background: #1a1a1a; }
+  .share-btn svg { width: 14px; height: 14px; fill: #ffffff; }
 </style>
 </head>
 <body data-game-index="2">
@@ -177,9 +176,7 @@
   var result = document.getElementById('timer-result');
   var panel = document.getElementById('timer-panel');
   var shareBtn = document.getElementById('share-btn');
-  var shareText = '';
-  var shareBtn = document.getElementById('share-btn');
-
+  
   var TARGET = 5.000;
   var TIMEOUT = 10.000;
   var HIDE_AFTER = 2.000;
@@ -231,11 +228,6 @@
       result.textContent = "How Slow You Are";
       result.classList.add('visible', 'fail');
       var diffSec = (TIMEOUT - TARGET).toFixed(3);
-      shareText = "I was just " + diffSec + " seconds away from stopping the timer at exactly 5.000. You should also try " + window.location.href;
-      shareBtn.classList.add('visible');
-      return;
-
-      var diffSec = (TIMEOUT - TARGET).toFixed(3);
       shareText = "I was just " + diffSec + " seconds away from stopping the timer at exactly 5.000. You should also try " + pageUrl;
       shareBtn.classList.add('visible');
       return;
@@ -243,6 +235,7 @@
 
     var diffMs = Math.round((elapsedRaw - TARGET) * 1000);
 
+    // Kept your impossible-to-win mechanic intact!
     if(diffMs === 0){
       var nudge = 1 + Math.floor(Math.random() * 4);
       diffMs = Math.random() < 0.5 ? -nudge : nudge;
@@ -261,9 +254,6 @@
     }
 
     result.classList.add('visible', 'miss');
-    shareText = "I was just " + diffSeconds + " seconds away from stopping the timer at exactly 5.000. You should also try " + window.location.href;
-    shareBtn.classList.add('visible');
-
     shareText = "I was just " + diffSeconds + " seconds away from stopping the timer at exactly 5.000. You should also try " + pageUrl;
     shareBtn.classList.add('visible');
   }
@@ -292,10 +282,6 @@
     }
   });
 })();
-
-shareBtn.addEventListener('click', function(){
-  window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareText), '_blank');
-});
 </script>
 </body>
 </html>
