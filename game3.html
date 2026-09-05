@@ -7,64 +7,111 @@
 <title>Stop at 5.000 — Cosmic Arcade</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Michroma&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<!-- Changed font to Roboto -->
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="shared.css">
 <style>
-  header{ position:relative; z-index:2; }
-  .timer-title{
-    font-family:'Michroma',sans-serif; font-weight:400; text-transform:uppercase;
-    font-size:clamp(1.2rem, 5vw, 2rem); letter-spacing:4px; color:#eafcff;
+  header { position: relative; z-index: 2; }
+  
+  .timer-title {
+    font-family: 'Roboto', sans-serif; /* Applied Roboto */
+    font-weight: 900; 
+    text-transform: uppercase;
+    font-size: clamp(1.2rem, 5vw, 2rem); 
+    letter-spacing: 4px; 
+    color: #eafcff;
   }
 
-  .timer-panel{
-    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
-    gap:20px; padding:20px; position:relative; z-index:2;
+  .timer-panel {
+    flex: 1; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center;
+    gap: 20px; 
+    padding: 20px; 
+    position: relative; 
+    z-index: 2;
   }
 
-  .timer-display{
-    font-family:'Michroma',sans-serif; font-weight:400;
-    font-size:clamp(2.8rem, 14vw, 5.8rem); letter-spacing:0px; color:#eafcff;
-    transition:opacity .6s ease, color .3s ease;
+  .timer-display {
+    font-family: 'Roboto', sans-serif; /* Applied Roboto */
+    font-weight: 700;
+    font-size: clamp(2.8rem, 14vw, 5.8rem); 
+    letter-spacing: 0px; 
+    color: #eafcff;
+    transition: opacity .6s ease, color .3s ease;
+    font-variant-numeric: tabular-nums;
   }
-  .timer-panel.danger .timer-display{ color:#ff5470; }
-  .timer-panel.hidden-phase .timer-display{ opacity:0; }
+  
+  .timer-panel.danger .timer-display { color: #ff5470; }
+  .timer-panel.hidden-phase .timer-display { opacity: 0; }
 
-  .timer-btn{
-    font-family:'Space Mono',monospace; font-weight:700; letter-spacing:3px; text-transform:uppercase;
-    font-size:0.85rem; padding:14px 40px; border-radius:6px; margin-top:28px;
-    border:1px solid rgba(45,212,255,0.5); background:rgba(45,212,255,0.08); color:#2dd4ff;
-    cursor:pointer; transition:background .25s ease, color .25s ease, transform .15s ease, border-color .25s ease;
+  .timer-btn {
+    font-family: 'Space Mono', monospace; 
+    font-weight: 700; 
+    letter-spacing: 3px; 
+    text-transform: uppercase;
+    font-size: 0.85rem; 
+    padding: 14px 40px; 
+    border-radius: 6px; 
+    margin-top: 28px;
+    border: 1px solid rgba(45,212,255,0.5); 
+    background: rgba(45,212,255,0.08); 
+    color: #2dd4ff;
+    cursor: pointer; 
+    transition: background .25s ease, color .25s ease, transform .15s ease, border-color .25s ease;
   }
-  .timer-btn:hover{ background:rgba(45,212,255,0.16); transform:translateY(-2px); }
-  .timer-btn:active{ transform:translateY(0) scale(0.97); }
-  .timer-btn.stop{ border-color:rgba(255,45,120,0.6); background:rgba(255,45,120,0.1); color:#ff5470; }
-  .timer-btn:focus-visible{ outline:2px solid #2dd4ff; outline-offset:3px; }
+  
+  .timer-btn:hover { background: rgba(45,212,255,0.16); transform: translateY(-2px); }
+  .timer-btn:active { transform: translateY(0) scale(0.97); }
+  .timer-btn.stop { border-color: rgba(255,45,120,0.6); background: rgba(255,45,120,0.1); color: #ff5470; }
+  .timer-btn:focus-visible { outline: 2px solid #2dd4ff; outline-offset: 3px; }
 
-  .timer-result{
-    font-family:'Space Mono',monospace; font-size:clamp(0.8rem, 2.2vw, 0.95rem);
-    letter-spacing:1px; text-transform:uppercase; min-height:1.4em;
-    opacity:0; transform:translateY(6px); transition:opacity .35s ease, transform .35s ease;
+  .timer-result {
+    font-family: 'Space Mono', monospace; 
+    font-size: clamp(0.8rem, 2.2vw, 0.95rem);
+    letter-spacing: 1px; 
+    text-transform: uppercase; 
+    min-height: 1.4em;
+    opacity: 0; 
+    transform: translateY(6px); 
+    transition: opacity .35s ease, transform .35s ease;
   }
-  .timer-result.visible{ opacity:1; transform:translateY(0); }
-  .timer-result.fail{ color:#ff5470; }
-  .timer-result.miss{ color:#2dd4ff; }
+  
+  .timer-result.visible { opacity: 1; transform: translateY(0); }
+  .timer-result.fail { color: #ff5470; }
+  .timer-result.miss { color: #2dd4ff; }
 
-  .share-btn{
-    font-family:'Space Mono',monospace; font-weight:700; letter-spacing:2px; text-transform:uppercase;
-    font-size:0.78rem; padding:11px 28px; border-radius:6px; margin-top:6px;
-    border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.05); color:#eafcff;
-    cursor:pointer; display:flex; align-items:center; gap:8px;
-    opacity:0; transform:translateY(6px); pointer-events:none;
-    transition:opacity .35s ease, transform .35s ease, background .25s ease, border-color .25s ease;
+  .share-btn {
+    font-family: 'Space Mono', monospace; 
+    font-weight: 700; 
+    letter-spacing: 2px; 
+    text-transform: uppercase;
+    font-size: 0.78rem; 
+    padding: 11px 28px; 
+    border-radius: 6px; 
+    margin-top: 6px;
+    border: 1px solid rgba(255,255,255,0.2); 
+    background: rgba(255,255,255,0.05); 
+    color: #eafcff;
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px;
+    opacity: 0; 
+    transform: translateY(6px); 
+    pointer-events: none; /* Prevents clicking when invisible */
+    transition: opacity .35s ease, transform .35s ease, background .25s ease, border-color .25s ease;
   }
-  .share-btn.visible{ opacity:1; transform:translateY(0); pointer-events:auto; }
-  .share-btn:hover{ background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.35); }
-  .share-btn svg{ width:13px; height:13px; }
-  .share-btn:focus-visible{ outline:2px solid #2dd4ff; outline-offset:3px; }
+  
+  .share-btn.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  .share-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.35); }
+  .share-btn svg { width: 13px; height: 13px; }
+  .share-btn:focus-visible { outline: 2px solid #2dd4ff; outline-offset: 3px; }
 </style>
 </head>
 <body data-game-index="2">
-
   <div class="bg-void"></div>
   <div class="bg-grid"></div>
   <div class="bg-orbit-wrap"><svg id="orbit-svg" viewBox="0 0 700 700"></svg></div>
@@ -95,6 +142,8 @@
       <div class="timer-display" id="timer-display">0.000</div>
       <button class="timer-btn" id="timer-btn" type="button">Start</button>
       <div class="timer-result" id="timer-result" aria-live="polite"></div>
+      
+      <!-- Share button directly below -->
       <button class="share-btn" id="share-btn" type="button">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
         Share on 𝕏
@@ -133,11 +182,11 @@
   var result = document.getElementById('timer-result');
   var panel = document.getElementById('timer-panel');
   var shareBtn = document.getElementById('share-btn');
+  
   var TARGET = 5.000;
   var TIMEOUT = 10.000;
   var HIDE_AFTER = 2.000;
   var DANGER_AFTER = 8.000;
-  var CLOSE_WINDOW_MS = 1000;
   var running = false;
   var startTime = 0;
   var rafId = null;
@@ -166,13 +215,14 @@
     panel.classList.add('running');
     result.classList.remove('visible', 'fail', 'miss');
     result.textContent = '';
-    shareBtn.classList.remove('visible');
+    shareBtn.classList.remove('visible'); // Hides the share button when running
     rafId = requestAnimationFrame(tick);
   }
 
   function finish(elapsedRaw, timedOut){
     running = false;
     if(rafId) cancelAnimationFrame(rafId);
+    
     panel.classList.remove('running', 'hidden-phase', 'danger');
     btn.textContent = 'Try Again';
     btn.classList.remove('stop');
@@ -181,14 +231,19 @@
 
     if(timedOut){
       display.textContent = TIMEOUT.toFixed(3);
-      result.textContent = "You're too slow.";
+      var diffMs = Math.round((TIMEOUT - TARGET) * 1000);
+      var diffSeconds = (Math.abs(diffMs) / 1000).toFixed(3);
+      
+      result.textContent = diffSeconds + " seconds away - SO Late";
       result.classList.add('visible', 'fail');
-      shareText = "I couldn't even stop the timer before 10 seconds! Think you can nail exactly 5.000? " + pageUrl;
-      shareBtn.classList.add('visible');
+      
+      shareText = "I was just " + diffSeconds + " seconds away from stooping timer at exactly 5.000. You SHould also try " + pageUrl;
+      shareBtn.classList.add('visible'); // Shows the share button
       return;
     }
 
     var diffMs = Math.round((elapsedRaw - TARGET) * 1000);
+    
     if(diffMs === 0){
       var nudge = 1 + Math.floor(Math.random() * 4);
       diffMs = Math.random() < 0.5 ? -nudge : nudge;
@@ -199,15 +254,15 @@
     display.textContent = clamped.toFixed(3);
 
     var diffSeconds = (Math.abs(diffMs) / 1000).toFixed(3);
-    if(Math.abs(diffMs) > CLOSE_WINDOW_MS){
-      result.textContent = diffMs > 0 ? 'Too late.' : 'Too early.';
-    } else {
-      result.textContent = diffSeconds + 's ' + (diffMs > 0 ? 'late' : 'early') + ' — so close!';
-    }
+    var earlyOrLate = diffMs > 0 ? "Late" : "Early";
+
+    // Format strictly as requested: [time] seconds away - SO Early/Late
+    result.textContent = diffSeconds + " seconds away - SO " + earlyOrLate;
     result.classList.add('visible', 'miss');
 
-    shareText = 'I was just ' + diffSeconds + 's away from stopping the timer at exactly 5.000. You should also try ' + pageUrl;
-    shareBtn.classList.add('visible');
+    // Share text with requested format and exact spelling
+    shareText = "I was just " + diffSeconds + " seconds away from stooping timer at exactly 5.000. You SHould also try " + pageUrl;
+    shareBtn.classList.add('visible'); // Shows the share button
   }
 
   function toggle(){
@@ -220,10 +275,12 @@
   }
 
   btn.addEventListener('click', toggle);
+  
   shareBtn.addEventListener('click', function(){
     var intentUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareText);
     window.open(intentUrl, '_blank');
   });
+  
   window.addEventListener('keydown', function(e){
     if(e.code === 'Space' || e.key === ' ' || e.key === 'Spacebar'){
       if(e.repeat) return;
