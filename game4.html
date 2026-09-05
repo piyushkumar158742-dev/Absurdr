@@ -6,27 +6,29 @@
 <title>Reverse Typer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg-color: #000000;
-    --text-untyped: #ffffff;
-    --color-correct: #39ff14; /* Green */
-    --color-literal: #ffd700; /* Yellow */
-    --color-wrong: #ff3333;   /* Red */
+    --bg-1: #05060d;
+    --bg-2: #0b0d1c;
+    --text-untyped: #cdd3ee;
+    --color-correct: #00f5c4;
+    --color-literal: #ffbe3d;
+    --color-wrong: #ff3d6e;
+    --panel-border: rgba(0, 245, 196, 0.18);
   }
 
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body { height: 100%; }
 
   body {
-    background-color: var(--bg-color);
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,245,196,0.08), transparent 60%),
+      radial-gradient(ellipse 70% 55% at 100% 100%, rgba(124,108,240,0.10), transparent 60%),
+      var(--bg-1);
     color: var(--text-untyped);
-    font-family: 'Space Mono', monospace;
-    height: 100vh;
+    font-family: 'JetBrains Mono', monospace;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -35,174 +37,342 @@
     user-select: none;
   }
 
-  .score-container {
-    position: absolute;
-    top: 2rem;
-    left: 2rem;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: rgba(255, 255, 255, 0.6);
-    letter-spacing: 2px;
+  .scanlines {
+    position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0.35;
+    background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 3px);
   }
 
-  #score {
-    color: #ffffff;
+  .hud {
+    position: fixed; top: 2rem; left: 2rem; right: 2rem;
+    display: flex; justify-content: space-between; align-items: flex-start;
+    z-index: 2; pointer-events: none;
+  }
+  .hud-block { display: flex; flex-direction: column; gap: 2px; }
+  .hud-label {
+    font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase;
+    color: rgba(205, 211, 238, 0.45); font-weight: 500;
+  }
+  .hud-value {
+    font-size: 1.4rem; font-weight: 700; color: #ffffff;
+    font-variant-numeric: tabular-nums;
+  }
+  #time { color: var(--color-correct); text-shadow: 0 0 14px rgba(0,245,196,0.4); }
+
+  .progress-wrap {
+    position: fixed; bottom: 2.2rem; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    z-index: 2;
+  }
+  #progress-count {
+    font-size: 0.7rem; letter-spacing: 2px; color: rgba(205, 211, 238, 0.4);
+    font-variant-numeric: tabular-nums; transition: opacity 0.3s ease;
+  }
+  .hint {
+    font-size: 0.68rem; letter-spacing: 1px; color: rgba(205, 211, 238, 0.35);
+    text-align: center; max-width: 90vw;
+  }
+  .hint strong { color: rgba(205, 211, 238, 0.6); }
+
+  .word-card {
+    position: relative;
+    padding: clamp(2rem, 6vw, 4rem) clamp(1.5rem, 8vw, 5rem);
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--panel-border);
+    box-shadow: 0 0 60px rgba(0, 245, 196, 0.06), inset 0 0 40px rgba(0, 245, 196, 0.02);
+    max-width: 92vw;
+    display: flex;
+    z-index: 2;
+    animation: borderPulse 4s ease-in-out infinite;
+  }
+  @keyframes borderPulse {
+    0%, 100% { box-shadow: 0 0 60px rgba(0, 245, 196, 0.06), inset 0 0 40px rgba(0, 245, 196, 0.02); }
+    50% { box-shadow: 0 0 80px rgba(0, 245, 196, 0.12), inset 0 0 50px rgba(0, 245, 196, 0.05); }
   }
 
   .word-display {
-    font-size: 8vw; /* Responsive huge text */
+    font-size: 8vw;
     font-weight: 700;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 4px;
     text-transform: uppercase;
   }
 
   @media (min-width: 1200px) {
-    .word-display {
-      font-size: 6rem;
-    }
+    .word-display { font-size: 5.2rem; }
   }
 
   .letter {
+    position: relative;
     transition: color 0.1s ease, text-shadow 0.1s ease;
   }
 
-  .untyped {
-    color: var(--text-untyped);
-    opacity: 0.9;
+  .letter.space-letter { width: 0.5em; }
+
+  .letter.current::after {
+    content: '';
+    position: absolute; left: 4%; right: 4%; bottom: -0.14em;
+    height: 4px; border-radius: 3px;
+    background: currentColor;
+    box-shadow: 0 0 10px currentColor;
+    animation: caretBlink 1s steps(2) infinite;
   }
+  @keyframes caretBlink { 50% { opacity: 0.15; } }
+
+  .untyped { color: var(--text-untyped); opacity: 0.88; }
 
   .typed {
     color: var(--color-correct);
-    text-shadow: 0 0 20px rgba(57, 255, 20, 0.6);
+    text-shadow: 0 0 22px rgba(0, 245, 196, 0.55);
   }
 
   .literal-error {
     color: var(--color-literal);
-    text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+    text-shadow: 0 0 22px rgba(255, 190, 61, 0.55);
   }
 
   .wrong-error {
     color: var(--color-wrong);
-    text-shadow: 0 0 20px rgba(255, 51, 51, 0.6);
+    text-shadow: 0 0 22px rgba(255, 61, 110, 0.55);
+    animation: shake 0.22s ease;
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-3px); }
+    60% { transform: translateY(2px); }
   }
 
   @keyframes popIn {
     0% { transform: scale(0.9); opacity: 0; }
-    50% { transform: scale(1.05); }
+    50% { transform: scale(1.04); }
     100% { transform: scale(1); opacity: 1; }
   }
-  
-  .pop-anim {
-    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-  }
+  .pop-anim { animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 </style>
 </head>
 <body>
 
-  <div class="score-container">
-    SCORE: <span id="score">0</span>
+  <div class="scanlines"></div>
+
+  <div class="hud">
+    <div class="hud-block">
+      <span class="hud-label">Score</span>
+      <span class="hud-value" id="score">0</span>
+    </div>
+    <div class="hud-block" style="align-items:flex-end;">
+      <span class="hud-label">Time</span>
+      <span class="hud-value" id="time">0.00s</span>
+    </div>
   </div>
 
-  <div id="word-display" class="word-display">
-    <!-- Letters will be injected here via JS -->
+  <div class="word-card">
+    <div id="word-display" class="word-display"></div>
+  </div>
+
+  <div class="progress-wrap">
+    <span id="progress-count"></span>
+    <span class="hint">Type the <strong>mirrored</strong> letter — a↔z, b↔y, c↔x…</span>
   </div>
 
 <script>
-  const words = [
-    "time", "year", "people", "way", "day", "man", "thing", "woman", "life", "child",
-    "world", "school", "state", "family", "student", "group", "country", "problem", "hand", "part",
-    "place", "case", "week", "company", "system", "program", "question", "work", "government", "number",
-    "night", "point", "home", "water", "room", "mother", "area", "money", "story", "fact",
-    "month", "lot", "right", "study", "book", "eye", "job", "word", "business", "issue",
-    "side", "kind", "head", "house", "service", "friend", "father", "power", "hour", "game",
-    "line", "end", "member", "law", "car", "city", "community", "name", "president", "team",
-    "minute", "idea", "kid", "body", "information", "back", "parent", "face", "others", "level",
-    "office", "door", "health", "person", "art", "war", "history", "party", "result", "change",
-    "morning", "reason", "research", "girl", "guy", "moment", "air", "teacher", "force", "education",
-    "foot", "boy", "age", "policy", "process", "music", "market", "sense", "nation", "plan",
-    "college", "interest", "death", "experience", "effect", "use", "class", "control", "care", "field",
-    "development", "role", "effort", "rate", "heart", "drug", "show", "leader", "light", "voice",
-    "wife", "police", "mind", "step", "record", "paper", "action", "model", "nature", "matter",
-    "center", "space", "board", "rule", "figure", "street", "industry", "direction", "subject", "page",
-    "test", "answer", "sound", "food", "dog", "author", "ground", "glass", "history", "truth",
-    "animal", "blood", "economy", "letter", "plant", "region", "science", "character", "tree", "river",
-    "store", "summer", "winter", "stone", "star", "flower", "moon", "earth", "fire", "wind",
-    "bird", "fish", "horse", "rain", "snow", "cloud", "ocean", "sea", "lake", "forest",
-    "mountain", "valley", "desert", "island", "beach", "road", "bridge", "machine", "engine", "train",
-    "plane", "boat", "ship", "bicycle", "truck", "bus", "farm", "garden", "park", "yard",
-    "building", "hospital", "church", "bank", "library", "hotel", "restaurant", "factory", "station", "airport",
-    "movie", "song", "picture", "painting", "photo", "camera", "phone", "computer", "screen", "keyboard",
-    "mouse", "software", "network", "internet", "website", "email", "message", "video", "radio", "television",
-    "guitar", "piano", "drum", "band", "concert", "singer", "actor", "director", "writer", "artist",
-    "doctor", "nurse", "lawyer", "judge", "engineer", "farmer", "soldier", "pilot", "driver", "chef",
-    "manager", "officer", "player", "coach", "umpire", "referee", "editor", "reporter", "author", "poet",
-    "friend", "neighbor", "guest", "host", "visitor", "stranger", "crowd", "audience", "public", "society",
-    "culture", "religion", "language", "belief", "tradition", "custom", "value", "moral", "ethic", "principle",
-    "goal", "purpose", "target", "vision", "mission", "strategy", "tactic", "method", "system", "process",
-    "theory", "concept", "idea", "thought", "opinion", "belief", "fact", "truth", "lie", "secret",
-    "mystery", "puzzle", "dream", "fantasy", "reality", "illusion", "magic", "wonder", "miracle", "danger",
-    "risk", "threat", "fear", "courage", "bravery", "hero", "villain", "monster", "ghost", "alien",
-    "robot", "cyborg", "mutant", "zombie", "vampire", "dragon", "knight", "wizard", "witch", "fairy",
-    "elf", "dwarf", "giant", "king", "queen", "prince", "princess", "lord", "lady", "knight",
-    "castle", "palace", "fort", "tower", "dungeon", "prison", "cave", "tunnel", "mine", "grave",
-    "tomb", "temple", "shrine", "monument", "statue", "ruin", "relic", "artifact", "treasure", "gem",
-    "gold", "silver", "bronze", "iron", "steel", "copper", "brass", "metal", "wood", "stone",
-    "brick", "glass", "plastic", "rubber", "leather", "cotton", "wool", "silk", "paper", "cardboard",
-    "paint", "ink", "glue", "tape", "string", "rope", "wire", "cable", "chain", "lock",
-    "key", "door", "window", "roof", "floor", "wall", "ceiling", "stairs", "elevator", "escalator",
-    "room", "hall", "closet", "attic", "basement", "kitchen", "bathroom", "bedroom", "living", "dining",
-    "chair", "table", "desk", "bed", "sofa", "couch", "lamp", "mirror", "clock", "watch",
-    "shirt", "pants", "dress", "skirt", "shoe", "boot", "sock", "hat", "coat", "jacket",
-    "glove", "scarf", "belt", "tie", "ring", "necklace", "bracelet", "earring", "glasses", "wallet",
-    "purse", "bag", "backpack", "suitcase", "box", "basket", "bottle", "cup", "glass", "plate",
-    "bowl", "fork", "knife", "spoon", "pan", "pot", "oven", "stove", "fridge", "freezer",
-    "apple", "banana", "orange", "grape", "lemon", "lime", "peach", "pear", "plum", "cherry",
-    "melon", "berry", "carrot", "potato", "onion", "garlic", "tomato", "pepper", "bean", "corn",
-    "wheat", "rice", "bread", "cake", "pie", "cookie", "candy", "sugar", "salt", "spice"
-  ];
+  // ===========================================================
+  // Word bank — ~1000 unique lowercase words across many themes
+  // ===========================================================
+  const rawWords = `
+    sun moon star sky cloud rain snow wind storm thunder lightning rainbow mountain valley canyon desert forest jungle meadow field prairie island beach shore coast ocean sea lake river stream creek waterfall cave cliff volcano glacier iceberg tundra swamp marsh
+    lion tiger bear wolf fox deer moose elk bison buffalo zebra giraffe elephant rhino hippo monkey gorilla panda koala kangaroo rabbit squirrel beaver otter raccoon skunk badger hedgehog mole bat whale dolphin shark seal walrus penguin eagle falcon hawk owl
+    sparrow robin crow raven pigeon dove swan duck goose heron stork flamingo parrot peacock ostrich pelican seagull woodpecker cardinal hummingbird
+    ant bee wasp moth butterfly beetle cricket grasshopper ladybug dragonfly firefly mosquito spider scorpion centipede caterpillar cockroach termite aphid mantis
+    octopus squid jellyfish starfish crab lobster shrimp clam oyster coral anemone urchin eel ray plankton
+    head face eye ear nose mouth lip tooth tongue chin neck shoulder arm elbow wrist hand finger thumb chest back waist hip leg knee ankle foot toe skin bone muscle
+    mother father sister brother daughter son uncle aunt cousin nephew niece grandmother grandfather husband wife parent child sibling twin orphan
+    happy sad angry afraid scared brave calm nervous excited bored curious jealous proud ashamed guilty lonely hopeful grateful confused surprised worried relieved content anxious cheerful gloomy furious terrified delighted embarrassed
+    red blue green yellow purple orange pink black white gray brown gold silver violet indigo maroon navy teal beige crimson
+    sunny cloudy rainy windy stormy foggy humid freezing chilly mild tropical arctic breezy misty hazy
+    today tomorrow yesterday morning afternoon evening midnight noon dawn dusk second minute hour week month year decade century season moment
+    bread cheese butter milk cream sugar salt pepper honey jam sauce soup salad sandwich burger pizza pasta noodle rice beans lentil mushroom spinach broccoli cabbage pumpkin cucumber radish olive coconut mango pineapple strawberry blueberry raspberry watermelon avocado ginger cinnamon vanilla
+    water coffee tea juice soda lemonade smoothie milkshake cocktail cider
+    kettle toaster blender microwave dishwasher sink faucet cabinet drawer shelf curtain carpet rug pillow blanket mattress wardrobe dresser mirror vase candle lantern broom mop bucket sponge towel soap shampoo toothbrush
+    hammer wrench screwdriver drill saw chisel nail screw bolt nut ladder shovel rake axe pliers clamp file sandpaper ruler tape
+    bicycle motorcycle scooter car truck van bus train subway tram airplane helicopter glider rocket submarine canoe kayak yacht ferry sled
+    castle palace cottage cabin mansion apartment skyscraper warehouse factory mill barn stable church temple mosque synagogue cathedral monastery museum gallery theater cinema stadium arena courthouse prison embassy lighthouse windmill greenhouse
+    pencil crayon eraser notebook textbook backpack chalkboard marker highlighter calculator globe microscope telescope compass protractor folder binder homework exam
+    soccer football basketball baseball tennis golf hockey cricket rugby volleyball swimming diving boxing wrestling fencing archery cycling running jogging hiking climbing skiing snowboarding skating surfing
+    melody harmony rhythm tempo chorus verse lyric symphony orchestra opera ballet sculpture mural sketch portrait landscape canvas palette brush easel pottery ceramic mosaic origami calligraphy
+    laptop tablet monitor printer scanner router modem server database algorithm browser password firewall virus malware download upload wireless bluetooth satellite sensor battery charger adapter cable
+    atom molecule electron proton neutron element compound mixture solution reaction energy gravity friction velocity momentum magnetism radiation ecosystem habitat species gene cell tissue organ bacteria
+    planet galaxy universe comet asteroid meteor nebula orbit astronaut spacecraft cosmos constellation eclipse solstice equinox blackhole
+    continent peninsula plateau delta estuary archipelago hemisphere equator latitude longitude border territory region province capital port canal reservoir
+    baker butcher tailor plumber electrician carpenter mechanic painter sculptor architect scientist philosopher historian journalist photographer librarian pharmacist dentist surgeon therapist accountant banker economist diplomat politician senator mayor governor ambassador curator
+    freedom justice honesty loyalty wisdom patience kindness honor dignity integrity humility gratitude forgiveness compassion empathy sympathy tolerance equality liberty democracy anarchy chaos unity diversity identity memory imagination creativity
+    dragon phoenix unicorn mermaid centaur griffin sphinx titan oracle prophecy spell potion curse blessing enchantment sorcery alchemy legend myth folklore quest kingdom dynasty throne
+    run jump walk swim fly climb crawl dance sing laugh cry shout whisper listen speak read write draw paint build break fix clean wash cook bake grow plant hunt fish travel explore discover invent create design imagine dream wonder
+    tall short wide narrow thick thin heavy light strong weak fast slow loud quiet bright dark warm cool wet dry dirty smooth rough sharp blunt soft hard sweet sour bitter salty fresh stale ancient modern simple complex common rare
+    zero one two three four five six seven eight nine ten dozen hundred thousand million
+    shirt blouse sweater cardigan jacket coat vest trousers shorts skirt dress gown suit tuxedo uniform pajama robe apron mitten glove scarf hat cap helmet veil
+    ring necklace bracelet earring brooch anklet pendant tiara cufflink locket
+    chair table desk bench stool sofa couch armchair bookshelf bunk cradle crib hammock recliner ottoman sideboard vanity
+    france germany italy spain portugal greece russia china japan korea india nepal thailand vietnam egypt kenya nigeria morocco canada mexico brazil argentina chile peru colombia australia iceland ireland scotland wales england norway sweden finland denmark poland hungary austria turkey israel
+    english spanish french german italian chinese japanese korean arabic russian
+    chess checkers poker bridge solitaire dominoes backgammon scrabble monopoly charades bingo dice puzzle riddle trivia
+    tractor plow harvest silo pasture orchard vineyard ranch corral trough haystack scarecrow rooster hen piglet lamb calf foal kitten
+    sailing rowing snorkel paddle anchor harbor pier dock buoy current
+    timid shy bold confident humble arrogant generous selfish honest dishonest loyal faithful stubborn impatient optimistic pessimistic
+    pebble boulder gravel sand dune oasis spring geyser cavern grotto reef lagoon fjord bay cove strait channel gorge ridge summit
+    umbrella wallet ticket passport luggage suitcase calendar diary journal envelope stamp postcard package parcel receipt invoice coupon voucher badge medal trophy award certificate diploma license permit contract agreement treaty alliance coalition federation republic monarchy empire colony settlement village hamlet town metropolis suburb district neighborhood community population census survey referendum citizen
+    yogurt pancake waffle syrup mustard ketchup vinegar oatmeal cereal granola pretzel popcorn marshmallow caramel toffee biscuit muffin bagel croissant baguette tortilla burrito taco sushi ramen curry kebab falafel hummus salsa
+  `;
 
-  let currentWord = "";
+  const words = [...new Set(rawWords.split(/\s+/).filter(Boolean))];
+
+  // ===========================================================
+  // Game state
+  // ===========================================================
+  const SPECIAL_THANKS = 'thank you for playing';
+  const SPECIAL_AGAIN = 'play again';
+
+  let currentWord = '';
   let currentIndex = 0;
   let score = 0;
   let isTransitioning = false;
   let spanElements = [];
-  
+  let currentWordIsSpecial = false;
+
+  let gameWords = [];
+  let wordPointer = 0;
+  let stage = 'playing'; // 'playing' | 'thanks' | 'again'
+
+  let wordStartTime = 0;
+  let timerRaf = null;
+
   const wordDisplayElement = document.getElementById('word-display');
   const scoreElement = document.getElementById('score');
+  const timeElement = document.getElementById('time');
+  const progressElement = document.getElementById('progress-count');
 
-  function getRandomWord() {
-    const randomIndex = Math.floor(Math.random() * words.length);
-    return words[randomIndex].toLowerCase();
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function resetGame() {
+    gameWords = shuffle(words);
+    wordPointer = 0;
+    stage = 'playing';
+    score = 0;
+    scoreElement.innerText = score;
+  }
+
+  function getNextWord() {
+    if (stage === 'playing') {
+      if (wordPointer < gameWords.length) {
+        currentWordIsSpecial = false;
+        return gameWords[wordPointer++];
+      }
+      stage = 'thanks';
+      currentWordIsSpecial = true;
+      return SPECIAL_THANKS;
+    }
+    if (stage === 'thanks') {
+      stage = 'again';
+      currentWordIsSpecial = true;
+      return SPECIAL_AGAIN;
+    }
+    resetGame();
+    currentWordIsSpecial = false;
+    return gameWords[wordPointer++];
+  }
+
+  function updateProgress() {
+    if (currentWordIsSpecial) {
+      progressElement.style.opacity = '0';
+    } else {
+      progressElement.style.opacity = '1';
+      progressElement.innerText = wordPointer + ' / ' + gameWords.length;
+    }
+  }
+
+  function updateActiveLetter() {
+    spanElements.forEach(s => s.classList.remove('current'));
+    if (currentIndex < spanElements.length) {
+      spanElements[currentIndex].classList.add('current');
+    }
+  }
+
+  function stopTimer() {
+    if (timerRaf) cancelAnimationFrame(timerRaf);
+    timerRaf = null;
+  }
+
+  function startTimer() {
+    wordStartTime = performance.now();
+    timeElement.innerText = '0.00s';
+    stopTimer();
+    timerRaf = requestAnimationFrame(updateTimer);
+  }
+
+  function updateTimer() {
+    const elapsed = (performance.now() - wordStartTime) / 1000;
+    timeElement.innerText = elapsed.toFixed(2) + 's';
+    timerRaf = requestAnimationFrame(updateTimer);
+  }
+
+  function completeWord() {
+    isTransitioning = true;
+    stopTimer();
+    if (!currentWordIsSpecial) {
+      score += 10;
+      scoreElement.innerText = score;
+    }
+    setTimeout(startNextWord, 350);
+  }
+
+  function autoAdvanceSpaces() {
+    while (currentIndex < currentWord.length && currentWord[currentIndex] === ' ') {
+      spanElements[currentIndex].classList.add('typed', 'space-letter');
+      currentIndex++;
+    }
+    if (currentIndex === currentWord.length) {
+      completeWord();
+    } else {
+      updateActiveLetter();
+    }
   }
 
   function startNextWord() {
-    currentWord = getRandomWord();
+    currentWord = getNextWord();
     currentIndex = 0;
     isTransitioning = false;
     spanElements = [];
-    
-    // Clear display
+
     wordDisplayElement.innerHTML = '';
-    
-    // Create span for each letter
+
     for (let i = 0; i < currentWord.length; i++) {
       const span = document.createElement('span');
-      span.innerText = currentWord[i];
-      span.className = 'letter untyped';
+      const ch = currentWord[i];
+      span.innerText = ch === ' ' ? '\u00A0' : ch;
+      span.className = ch === ' ' ? 'letter untyped space-letter' : 'letter untyped';
       wordDisplayElement.appendChild(span);
       spanElements.push(span);
     }
 
-    // Trigger pop animation
+    updateProgress();
+    startTimer();
+
     wordDisplayElement.classList.remove('pop-anim');
-    void wordDisplayElement.offsetWidth; // Force reflow to restart animation
+    void wordDisplayElement.offsetWidth;
     wordDisplayElement.classList.add('pop-anim');
+
+    autoAdvanceSpaces();
   }
 
-  // a (97) -> z (122), b (98) -> y (121), etc.
-  // Formula: 219 - charCode
   function getReversedChar(char) {
     const code = char.charCodeAt(0);
     if (code >= 97 && code <= 122) {
@@ -212,48 +382,40 @@
   }
 
   document.addEventListener('keydown', (e) => {
-    // Prevent default scrolling on spacebar or backspace
-    if(e.key === 'Backspace' || e.key === ' ') {
+    if (e.key === 'Backspace' || e.key === ' ') {
       e.preventDefault();
     }
 
-    // Ignore if transitioning between words or modifier keys are pressed
     if (isTransitioning || e.ctrlKey || e.altKey || e.metaKey || e.key.length !== 1) {
       return;
     }
 
     const pressedKey = e.key.toLowerCase();
-    
-    // Ensure the key pressed is a standard a-z letter
     if (!/^[a-z]$/.test(pressedKey)) return;
 
     const targetChar = currentWord[currentIndex];
     const reversedKey = getReversedChar(pressedKey);
     const currentSpan = spanElements[currentIndex];
+    if (!currentSpan) return;
 
     if (reversedKey === targetChar) {
-      // 1. Correct Reverse Key Pressed -> Green, Move to Next
-      currentSpan.className = 'letter typed';
+      currentSpan.classList.remove('untyped', 'literal-error', 'wrong-error');
+      currentSpan.classList.add('typed');
       currentIndex++;
-
-      // Check if word is completed
-      if (currentIndex === currentWord.length) {
-        isTransitioning = true;
-        score += 10;
-        scoreElement.innerText = score;
-        setTimeout(startNextWord, 200); // Short delay before next word pops
-      }
+      autoAdvanceSpaces();
     } else if (pressedKey === targetChar) {
-      // 2. Literal Match Pressed (e.g., typed 't' for 't') -> Yellow, Don't Move
-      currentSpan.className = 'letter literal-error';
+      currentSpan.classList.remove('untyped');
+      currentSpan.classList.add('literal-error');
+      updateActiveLetter();
     } else {
-      // 3. Completely Wrong Key Pressed -> Red, Don't Move
-      currentSpan.className = 'letter wrong-error';
+      currentSpan.classList.remove('untyped');
+      currentSpan.classList.add('wrong-error');
+      updateActiveLetter();
     }
   });
 
-  // Start the game loop on load
   window.onload = () => {
+    resetGame();
     startNextWord();
   };
 </script>
