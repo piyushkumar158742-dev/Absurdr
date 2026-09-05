@@ -230,6 +230,10 @@
       display.textContent = TIMEOUT.toFixed(3);
       result.textContent = "How Slow You Are";
       result.classList.add('visible', 'fail');
+      var diffSec = (TIMEOUT - TARGET).toFixed(3);
+      shareText = "I was just " + diffSec + " seconds away from stopping the timer at exactly 5.000. You should also try " + window.location.href;
+      shareBtn.classList.add('visible');
+      return;
 
       var diffSec = (TIMEOUT - TARGET).toFixed(3);
       shareText = "I was just " + diffSec + " seconds away from stopping the timer at exactly 5.000. You should also try " + pageUrl;
@@ -257,6 +261,8 @@
     }
 
     result.classList.add('visible', 'miss');
+    shareText = "I was just " + diffSeconds + " seconds away from stopping the timer at exactly 5.000. You should also try " + window.location.href;
+    shareBtn.classList.add('visible');
 
     shareText = "I was just " + diffSeconds + " seconds away from stopping the timer at exactly 5.000. You should also try " + pageUrl;
     shareBtn.classList.add('visible');
@@ -286,6 +292,10 @@
     }
   });
 })();
+
+shareBtn.addEventListener('click', function(){
+  window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareText), '_blank');
+});
 </script>
 </body>
 </html>
