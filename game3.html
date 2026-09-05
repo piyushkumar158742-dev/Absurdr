@@ -231,7 +231,7 @@
       result.classList.add('visible', 'fail');
 
       var diffSec = (TIMEOUT - TARGET).toFixed(3);
-      shareText = "I was just " + diffSec + " seconds away from stooping timer at exactly 5.000. You SHould also try " + pageUrl;
+      shareText = "I was just " + diffSec + " seconds away from stopping the timer at exactly 5.000. You should also try " + pageUrl;
       shareBtn.classList.add('visible');
       return;
     }
@@ -257,7 +257,7 @@
 
     result.classList.add('visible', 'miss');
 
-    shareText = "I was just " + diffSeconds + " seconds away from stooping timer at exactly 5.000. You SHould also try " + pageUrl;
+    shareText = "I was just " + diffSeconds + " seconds away from stopping the timer at exactly 5.000. You should also try " + pageUrl;
     shareBtn.classList.add('visible');
   }
 
