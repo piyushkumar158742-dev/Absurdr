@@ -82,30 +82,29 @@
   /* Share button: ONE mechanism controls visibility — the .visible class.
      No inline style.display anywhere, so there's nothing to fight it. */
   .share-btn {
-    font-family: 'Space Mono', monospace;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    font-size: 0.78rem;
-    padding: 11px 28px;
-    border-radius: 6px;
-    margin-top: 6px;
-    border: 1px solid rgba(255,255,255,0.2);
-    background: rgba(255,255,255,0.05);
-    color: #eafcff;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    opacity: 0;
-    transform: translateY(6px);
-    pointer-events: none;
-    transition: opacity .35s ease, transform .35s ease, background .25s ease, border-color .25s ease;
-  }
-  .share-btn.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
-  .share-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.35); }
-  .share-btn svg { width: 13px; height: 13px; }
-  .share-btn:focus-visible { outline: 2px solid #2dd4ff; outline-offset: 3px; }
+  font-family: 'Space Mono', monospace;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  padding: 11px 28px;
+  border-radius: 6px;
+  margin-top: 6px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.05);
+  color: #eafcff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+  transition: opacity .35s ease, transform .35s ease, background .25s ease, border-color .25s ease;
+}
+.share-btn.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.share-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.35); }
+.share-btn svg { width: 13px; height: 13px; }
 </style>
 </head>
 <body data-game-index="2">
@@ -177,6 +176,8 @@
   var btn = document.getElementById('timer-btn');
   var result = document.getElementById('timer-result');
   var panel = document.getElementById('timer-panel');
+  var shareBtn = document.getElementById('share-btn');
+  var shareText = '';
   var shareBtn = document.getElementById('share-btn');
 
   var TARGET = 5.000;
