@@ -3,67 +3,259 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#05060f">
-<title>Game 4 — Cosmic Arcade</title>
+<title>Reverse Typer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,700;1,500&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="shared.css">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-color: #000000;
+    --text-untyped: #ffffff;
+    --color-correct: #39ff14; /* Green */
+    --color-literal: #ffd700; /* Yellow */
+    --color-wrong: #ff3333;   /* Red */
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background-color: var(--bg-color);
+    color: var(--text-untyped);
+    font-family: 'Space Mono', monospace;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+    user-select: none;
+  }
+
+  .score-container {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.6);
+    letter-spacing: 2px;
+  }
+
+  #score {
+    color: #ffffff;
+  }
+
+  .word-display {
+    font-size: 8vw; /* Responsive huge text */
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    display: flex;
+    gap: 4px;
+    text-transform: uppercase;
+  }
+
+  @media (min-width: 1200px) {
+    .word-display {
+      font-size: 6rem;
+    }
+  }
+
+  .letter {
+    transition: color 0.1s ease, text-shadow 0.1s ease;
+  }
+
+  .untyped {
+    color: var(--text-untyped);
+    opacity: 0.9;
+  }
+
+  .typed {
+    color: var(--color-correct);
+    text-shadow: 0 0 20px rgba(57, 255, 20, 0.6);
+  }
+
+  .literal-error {
+    color: var(--color-literal);
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+  }
+
+  .wrong-error {
+    color: var(--color-wrong);
+    text-shadow: 0 0 20px rgba(255, 51, 51, 0.6);
+  }
+
+  @keyframes popIn {
+    0% { transform: scale(0.9); opacity: 0; }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  
+  .pop-anim {
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  }
+</style>
 </head>
-<body data-game-index="3">
+<body>
 
-  <div class="bg-void"></div>
-  <div class="bg-grid"></div>
-  <div class="bg-orbit-wrap"><svg id="orbit-svg" viewBox="0 0 700 700"></svg></div>
-  <canvas id="starfield" aria-hidden="true"></canvas>
-
-  <button id="settings-btn" class="settings-btn" aria-label="Settings" aria-haspopup="true" aria-expanded="false" type="button">
-    <svg viewBox="0 0 24 24">
-      <circle cx="12" cy="5" r="1.6" fill="currentColor"></circle>
-      <circle cx="12" cy="12" r="1.6" fill="currentColor"></circle>
-      <circle cx="12" cy="19" r="1.6" fill="currentColor"></circle>
-    </svg>
-  </button>
-
-  <div class="settings-panel" id="settings-panel" role="dialog" aria-label="Settings">
-    <h2>Settings</h2>
-    <div class="settings-row">
-      <span>Sound</span>
-      <button class="settings-toggle" id="sound-toggle" role="switch" aria-checked="true" type="button"></button>
-    </div>
+  <div class="score-container">
+    SCORE: <span id="score">0</span>
   </div>
 
-  <div class="app-container">
-    <div class="stage">
-      <span class="stage-number">Slot 4 of 7</span>
-      <h2>Game 4</h2>
-      <p>Not built yet — this is a reserved placeholder in the Cosmic Arcade ecosystem.</p>
-    </div>
+  <div id="word-display" class="word-display">
+    <!-- Letters will be injected here via JS -->
   </div>
 
-  <nav class="game-nav" id="game-nav" aria-label="Game navigation" tabindex="0">
-    <button class="game-nav-btn" id="back-game-btn" aria-label="Previous game" type="button">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M16.5 5 7.5 12l9 7Z"></path>
-      </svg>
-    </button>
-    <button class="game-nav-btn random-btn" id="random-game-btn" aria-label="Random game" type="button">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="3" width="18" height="18" rx="4"></rect>
-        <circle cx="8" cy="8" r="1.3" fill="currentColor" stroke="none"></circle>
-        <circle cx="16" cy="8" r="1.3" fill="currentColor" stroke="none"></circle>
-        <circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"></circle>
-        <circle cx="8" cy="16" r="1.3" fill="currentColor" stroke="none"></circle>
-        <circle cx="16" cy="16" r="1.3" fill="currentColor" stroke="none"></circle>
-      </svg>
-    </button>
-    <button class="game-nav-btn" id="next-game-btn" aria-label="Next game" type="button">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M7.5 5l9 7-9 7Z"></path>
-      </svg>
-    </button>
-  </nav>
+<script>
+  const words = [
+    "time", "year", "people", "way", "day", "man", "thing", "woman", "life", "child",
+    "world", "school", "state", "family", "student", "group", "country", "problem", "hand", "part",
+    "place", "case", "week", "company", "system", "program", "question", "work", "government", "number",
+    "night", "point", "home", "water", "room", "mother", "area", "money", "story", "fact",
+    "month", "lot", "right", "study", "book", "eye", "job", "word", "business", "issue",
+    "side", "kind", "head", "house", "service", "friend", "father", "power", "hour", "game",
+    "line", "end", "member", "law", "car", "city", "community", "name", "president", "team",
+    "minute", "idea", "kid", "body", "information", "back", "parent", "face", "others", "level",
+    "office", "door", "health", "person", "art", "war", "history", "party", "result", "change",
+    "morning", "reason", "research", "girl", "guy", "moment", "air", "teacher", "force", "education",
+    "foot", "boy", "age", "policy", "process", "music", "market", "sense", "nation", "plan",
+    "college", "interest", "death", "experience", "effect", "use", "class", "control", "care", "field",
+    "development", "role", "effort", "rate", "heart", "drug", "show", "leader", "light", "voice",
+    "wife", "police", "mind", "step", "record", "paper", "action", "model", "nature", "matter",
+    "center", "space", "board", "rule", "figure", "street", "industry", "direction", "subject", "page",
+    "test", "answer", "sound", "food", "dog", "author", "ground", "glass", "history", "truth",
+    "animal", "blood", "economy", "letter", "plant", "region", "science", "character", "tree", "river",
+    "store", "summer", "winter", "stone", "star", "flower", "moon", "earth", "fire", "wind",
+    "bird", "fish", "horse", "rain", "snow", "cloud", "ocean", "sea", "lake", "forest",
+    "mountain", "valley", "desert", "island", "beach", "road", "bridge", "machine", "engine", "train",
+    "plane", "boat", "ship", "bicycle", "truck", "bus", "farm", "garden", "park", "yard",
+    "building", "hospital", "church", "bank", "library", "hotel", "restaurant", "factory", "station", "airport",
+    "movie", "song", "picture", "painting", "photo", "camera", "phone", "computer", "screen", "keyboard",
+    "mouse", "software", "network", "internet", "website", "email", "message", "video", "radio", "television",
+    "guitar", "piano", "drum", "band", "concert", "singer", "actor", "director", "writer", "artist",
+    "doctor", "nurse", "lawyer", "judge", "engineer", "farmer", "soldier", "pilot", "driver", "chef",
+    "manager", "officer", "player", "coach", "umpire", "referee", "editor", "reporter", "author", "poet",
+    "friend", "neighbor", "guest", "host", "visitor", "stranger", "crowd", "audience", "public", "society",
+    "culture", "religion", "language", "belief", "tradition", "custom", "value", "moral", "ethic", "principle",
+    "goal", "purpose", "target", "vision", "mission", "strategy", "tactic", "method", "system", "process",
+    "theory", "concept", "idea", "thought", "opinion", "belief", "fact", "truth", "lie", "secret",
+    "mystery", "puzzle", "dream", "fantasy", "reality", "illusion", "magic", "wonder", "miracle", "danger",
+    "risk", "threat", "fear", "courage", "bravery", "hero", "villain", "monster", "ghost", "alien",
+    "robot", "cyborg", "mutant", "zombie", "vampire", "dragon", "knight", "wizard", "witch", "fairy",
+    "elf", "dwarf", "giant", "king", "queen", "prince", "princess", "lord", "lady", "knight",
+    "castle", "palace", "fort", "tower", "dungeon", "prison", "cave", "tunnel", "mine", "grave",
+    "tomb", "temple", "shrine", "monument", "statue", "ruin", "relic", "artifact", "treasure", "gem",
+    "gold", "silver", "bronze", "iron", "steel", "copper", "brass", "metal", "wood", "stone",
+    "brick", "glass", "plastic", "rubber", "leather", "cotton", "wool", "silk", "paper", "cardboard",
+    "paint", "ink", "glue", "tape", "string", "rope", "wire", "cable", "chain", "lock",
+    "key", "door", "window", "roof", "floor", "wall", "ceiling", "stairs", "elevator", "escalator",
+    "room", "hall", "closet", "attic", "basement", "kitchen", "bathroom", "bedroom", "living", "dining",
+    "chair", "table", "desk", "bed", "sofa", "couch", "lamp", "mirror", "clock", "watch",
+    "shirt", "pants", "dress", "skirt", "shoe", "boot", "sock", "hat", "coat", "jacket",
+    "glove", "scarf", "belt", "tie", "ring", "necklace", "bracelet", "earring", "glasses", "wallet",
+    "purse", "bag", "backpack", "suitcase", "box", "basket", "bottle", "cup", "glass", "plate",
+    "bowl", "fork", "knife", "spoon", "pan", "pot", "oven", "stove", "fridge", "freezer",
+    "apple", "banana", "orange", "grape", "lemon", "lime", "peach", "pear", "plum", "cherry",
+    "melon", "berry", "carrot", "potato", "onion", "garlic", "tomato", "pepper", "bean", "corn",
+    "wheat", "rice", "bread", "cake", "pie", "cookie", "candy", "sugar", "salt", "spice"
+  ];
 
-<script src="shared.js"></script>
+  let currentWord = "";
+  let currentIndex = 0;
+  let score = 0;
+  let isTransitioning = false;
+  let spanElements = [];
+  
+  const wordDisplayElement = document.getElementById('word-display');
+  const scoreElement = document.getElementById('score');
+
+  function getRandomWord() {
+    const randomIndex = Math.floor(Math.random() * words.length);
+    return words[randomIndex].toLowerCase();
+  }
+
+  function startNextWord() {
+    currentWord = getRandomWord();
+    currentIndex = 0;
+    isTransitioning = false;
+    spanElements = [];
+    
+    // Clear display
+    wordDisplayElement.innerHTML = '';
+    
+    // Create span for each letter
+    for (let i = 0; i < currentWord.length; i++) {
+      const span = document.createElement('span');
+      span.innerText = currentWord[i];
+      span.className = 'letter untyped';
+      wordDisplayElement.appendChild(span);
+      spanElements.push(span);
+    }
+
+    // Trigger pop animation
+    wordDisplayElement.classList.remove('pop-anim');
+    void wordDisplayElement.offsetWidth; // Force reflow to restart animation
+    wordDisplayElement.classList.add('pop-anim');
+  }
+
+  // a (97) -> z (122), b (98) -> y (121), etc.
+  // Formula: 219 - charCode
+  function getReversedChar(char) {
+    const code = char.charCodeAt(0);
+    if (code >= 97 && code <= 122) {
+      return String.fromCharCode(219 - code);
+    }
+    return char;
+  }
+
+  document.addEventListener('keydown', (e) => {
+    // Prevent default scrolling on spacebar or backspace
+    if(e.key === 'Backspace' || e.key === ' ') {
+      e.preventDefault();
+    }
+
+    // Ignore if transitioning between words or modifier keys are pressed
+    if (isTransitioning || e.ctrlKey || e.altKey || e.metaKey || e.key.length !== 1) {
+      return;
+    }
+
+    const pressedKey = e.key.toLowerCase();
+    
+    // Ensure the key pressed is a standard a-z letter
+    if (!/^[a-z]$/.test(pressedKey)) return;
+
+    const targetChar = currentWord[currentIndex];
+    const reversedKey = getReversedChar(pressedKey);
+    const currentSpan = spanElements[currentIndex];
+
+    if (reversedKey === targetChar) {
+      // 1. Correct Reverse Key Pressed -> Green, Move to Next
+      currentSpan.className = 'letter typed';
+      currentIndex++;
+
+      // Check if word is completed
+      if (currentIndex === currentWord.length) {
+        isTransitioning = true;
+        score += 10;
+        scoreElement.innerText = score;
+        setTimeout(startNextWord, 200); // Short delay before next word pops
+      }
+    } else if (pressedKey === targetChar) {
+      // 2. Literal Match Pressed (e.g., typed 't' for 't') -> Yellow, Don't Move
+      currentSpan.className = 'letter literal-error';
+    } else {
+      // 3. Completely Wrong Key Pressed -> Red, Don't Move
+      currentSpan.className = 'letter wrong-error';
+    }
+  });
+
+  // Start the game loop on load
+  window.onload = () => {
+    startNextWord();
+  };
+</script>
 </body>
 </html>
