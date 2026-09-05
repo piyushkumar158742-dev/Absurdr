@@ -7,12 +7,12 @@
 <title>Stop at 5.000 — Cosmic Arcade</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="shared.css">
 <style>
   header{ position:relative; z-index:2; }
   .timer-title{
-    font-family:'Space Mono',monospace; font-weight:700; text-transform:uppercase;
+    font-family:'Orbitron',sans-serif; font-weight:700; text-transform:uppercase;
     font-size:clamp(1.4rem, 5.5vw, 2.2rem); letter-spacing:5px; color:#eafcff;
   }
 
@@ -22,7 +22,7 @@
   }
 
   .timer-display{
-    font-family:'Space Mono',monospace; font-weight:700;
+    font-family:'Orbitron',sans-serif; font-weight:700;
     font-size:clamp(3.2rem, 16vw, 6.5rem); letter-spacing:2px; color:#eafcff;
     transition:opacity .6s ease, color .3s ease;
   }
@@ -48,6 +48,19 @@
   .timer-result.visible{ opacity:1; transform:translateY(0); }
   .timer-result.fail{ color:#ff5470; }
   .timer-result.miss{ color:#2dd4ff; }
+
+  .share-btn{
+    font-family:'Space Mono',monospace; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+    font-size:0.78rem; padding:11px 28px; border-radius:6px; margin-top:6px;
+    border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.05); color:#eafcff;
+    cursor:pointer; display:flex; align-items:center; gap:8px;
+    opacity:0; transform:translateY(6px); pointer-events:none;
+    transition:opacity .35s ease, transform .35s ease, background .25s ease, border-color .25s ease;
+  }
+  .share-btn.visible{ opacity:1; transform:translateY(0); pointer-events:auto; }
+  .share-btn:hover{ background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.35); }
+  .share-btn svg{ width:13px; height:13px; }
+  .share-btn:focus-visible{ outline:2px solid #2dd4ff; outline-offset:3px; }
 </style>
 </head>
 <body data-game-index="2">
@@ -82,6 +95,10 @@
       <div class="timer-display" id="timer-display">0.000</div>
       <button class="timer-btn" id="timer-btn" type="button">Start</button>
       <div class="timer-result" id="timer-result" aria-live="polite"></div>
+      <button class="share-btn" id="share-btn" type="button">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        Share on 𝕏
+      </button>
     </div>
   </div>
 
@@ -115,6 +132,7 @@
   var btn = document.getElementById('timer-btn');
   var result = document.getElementById('timer-result');
   var panel = document.getElementById('timer-panel');
+  var shareBtn = document.getElementById('share-btn');
   var TARGET = 5.000;
   var TIMEOUT = 10.000;
   var HIDE_AFTER = 2.000;
@@ -123,6 +141,7 @@
   var running = false;
   var startTime = 0;
   var rafId = null;
+  var shareText = '';
 
   function tick(){
     if(!running) return;
@@ -147,6 +166,7 @@
     panel.classList.add('running');
     result.classList.remove('visible', 'fail', 'miss');
     result.textContent = '';
+    shareBtn.classList.remove('visible');
     rafId = requestAnimationFrame(tick);
   }
 
@@ -157,10 +177,14 @@
     btn.textContent = 'Try Again';
     btn.classList.remove('stop');
 
+    var pageUrl = window.location.href;
+
     if(timedOut){
       display.textContent = TIMEOUT.toFixed(3);
       result.textContent = "You're too slow.";
       result.classList.add('visible', 'fail');
+      shareText = "I couldn't even stop the timer before 10 seconds! Think you can nail exactly 5.000? " + pageUrl;
+      shareBtn.classList.add('visible');
       return;
     }
 
@@ -174,13 +198,16 @@
     var clamped = Math.min(Math.max(elapsedRaw, 0), TIMEOUT);
     display.textContent = clamped.toFixed(3);
 
+    var diffSeconds = (Math.abs(diffMs) / 1000).toFixed(3);
     if(Math.abs(diffMs) > CLOSE_WINDOW_MS){
       result.textContent = diffMs > 0 ? 'Too late.' : 'Too early.';
     } else {
-      var diffSeconds = (Math.abs(diffMs) / 1000).toFixed(3);
       result.textContent = diffSeconds + 's ' + (diffMs > 0 ? 'late' : 'early') + ' — so close!';
     }
     result.classList.add('visible', 'miss');
+
+    shareText = 'I was just ' + diffSeconds + 's away from stopping the timer at exactly 5.000. You should also try ' + pageUrl;
+    shareBtn.classList.add('visible');
   }
 
   function toggle(){
@@ -193,6 +220,10 @@
   }
 
   btn.addEventListener('click', toggle);
+  shareBtn.addEventListener('click', function(){
+    var intentUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareText);
+    window.open(intentUrl, '_blank');
+  });
   window.addEventListener('keydown', function(e){
     if(e.code === 'Space' || e.key === ' ' || e.key === 'Spacebar'){
       if(e.repeat) return;
@@ -203,4 +234,21 @@
 })();
 </script>
 </body>
-</html
+</html>
+<!--
+  GAME 3 — Stop at 5.000 (precision timer)
+  ==========================================
+  Slot 3 of 7 in the Cosmic Arcade ecosystem (see index.html for the
+  shared-chrome explanation). Start/Space begins a stopwatch counting
+  up from 0.000; Stop/Space again reads out the result versus the
+  5.000s target. Digits fade out past 2.000s so you're timing by feel
+  until you stop. 10s auto-fails as "too slow". An exact hit is
+  nudged 1-4ms so it can never read literally 0. Within 1s of target
+  shows the precise ms early/late; beyond that it just says "Too
+  early."/"Too late." Title and timer digits use Orbitron; buttons
+  and result text use Space Mono. A "Share on 𝕏" button appears below
+  the result once a round finishes (timeout or manual stop) with a
+  prefilled tweet reporting the miss distance and the page link; it's
+  hidden again the moment a new round starts. Same file works for
+  game4.html — just change data-game-index from "2" to "3".
+-->
